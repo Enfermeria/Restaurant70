@@ -19,23 +19,26 @@ public class Producto {
 	private String nombre, descripcion;
 	private int stock;
 	private double precio;
+	private boolean disponible;
 
 	public Producto() {
 	}
 
-	public Producto(String nombre, String descripcion, int stock, double precio) {
+	public Producto(String nombre, String descripcion, int stock, double precio, boolean disponible) {
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 		this.stock = stock;
 		this.precio = precio;
+		this.disponible = disponible;
 	}
 
-	public Producto(int idProducto, String nombre, String descripcion, int stock, double precio) {
+	public Producto(int idProducto, String nombre, String descripcion, int stock, double precio, boolean disponible) {
 		this.idProducto = idProducto;
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 		this.stock = stock;
 		this.precio = precio;
+		this.disponible = disponible;
 	}
 
 	public int getIdProducto() {
@@ -77,10 +80,18 @@ public class Producto {
 	public void setPrecio(double precio) {
 		this.precio = precio;
 	}
+	
+	public boolean getDisponible() {
+		return disponible;
+	}
+
+	public void setDisponible(boolean disponible) {
+		this.disponible = disponible;
+	}
 
 	@Override
 	public String toString() {
-		return "Producto{" + "idproducto=" + idProducto + ", nombre=" + nombre + ", descripcion=" + descripcion + ", stock=" + stock + ", precio=" + precio + '}';
+		return "Producto{" + "idproducto=" + idProducto + ", nombre=" + nombre + ", descripcion=" + descripcion + ", stock=" + stock + ", precio=" + precio + ", disponible=" + disponible + '}';
 	}
 	
 	

@@ -39,7 +39,7 @@ import javax.swing.JOptionPane;
 
 public class ConexionMySQL { //
 	//constantes usadas
-	private static final String DB = "restaurant";
+	private static final String DB = "restaurante";
 	// datos de mysql de john
 	private static final String DRIVERmysql = "com.mysql.cj.jdbc.Driver";     // este es el driver para MySQL que usa John
 	private static final String URLmysql = "jdbc:mysql://localhost/"+DB;      // esta es la ruta que usa John para MySQL

@@ -51,9 +51,9 @@ public class ProductoData {
 	 */
 	public boolean altaProducto(Producto producto){// 
 		// una alternativa es usar ?,?,? y luego insertarlo con preparedStatement.setInt(1, dato) // o setString, setBoolean, setData
-		String sql = "Insert into producto (idproducto, nombre, stock, precio) " +
+		String sql = "Insert into producto (idproducto, nombre, stock, precio, disponible) " +
 			"VALUES " + "(null,'" + producto.getNombre() +  "','" + producto.getStock() + "','" +
-			producto.getPrecio() + "')";
+			producto.getPrecio() +  "','" + producto.getDisponible()+ "')";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Alta de producto exitosa");
 			producto.setIdProducto(conexion.getKeyGenerado()); //asigno el id generado
@@ -154,7 +154,8 @@ public class ProductoData {
 				"nombre='" + producto.getNombre() + "'," + 
 				"descripcion='" + producto.getDescripcion() + "'," +
 				"stock='" + producto.getStock() + "'," +
-				"precio='" + producto.getPrecio() + "'" + " " +
+				"precio='" + producto.getPrecio() + "'" + 
+				"disponible='" + producto.getDisponible() + "'" + " " +
 				"where idProducto='" + producto.getIdProducto() + "'";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Modificación de producto exitosa");
@@ -184,6 +185,7 @@ public class ProductoData {
 			producto.setDescripcion(rs.getString("descripcion"));
 			producto.setStock(rs.getInt("stock"));
 			producto.setPrecio(rs.getDouble("precio"));
+			producto.setDisponible(rs.getBoolean("disponible"));
 		} catch (SQLException ex) {
 			//Logger.getLogger(ProductoData.class.getName()).log(Level.SEVERE, null, ex);
 			mensajeError("Error al pasar de ResultSet a Producto"+ex.getMessage());
