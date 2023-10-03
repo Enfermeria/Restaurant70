@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import entidades.Producto;
-import entidades.Inscripcion;
-import entidades.Materia;
+import entidades.Pedido;
 
 
 /**
@@ -32,7 +31,7 @@ import entidades.Materia;
  */
 public class ProductoData {
 	ConexionMySQL conexion; //gestiona la conexión con la bd
-	public enum OrdenacionProducto {PORIDALUMNO, PORDNI, PORAPYNO}; //tipo de ordenamiento
+	public enum OrdenacionProducto {PORIDPRODUCTO, PORNOMBRE}; //tipo de ordenamiento
 	
 	
 	/**
@@ -52,12 +51,12 @@ public class ProductoData {
 	 */
 	public boolean altaProducto(Producto producto){// 
 		// una alternativa es usar ?,?,? y luego insertarlo con preparedStatement.setInt(1, dato) // o setString, setBoolean, setData
-		String sql = "Insert into producto (idproducto, dni, apellido, nombre, fechaNacimiento, estado) " +
-			"VALUES " + "(null,'" + producto.getDni() +  "','" + producto.getApellido() + "','" +
-			producto.getNombre() + "','" + producto.getFechaNacimiento() + "'," + producto.getEstado() + ")";
+		String sql = "Insert into producto (idproducto, nombre, stock, precio) " +
+			"VALUES " + "(null,'" + producto.getNombre() +  "','" + producto.getStock() + "','" +
+			producto.getPrecio() + "')";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Alta de producto exitosa");
-			producto.setIdproducto(conexion.getKeyGenerado()); //asigno el id generado
+			producto.setIdProducto(conexion.getKeyGenerado()); //asigno el id generado
 			conexion.cerrarSentencia(); //cierra PreparedStatement y como consecuencia tambien el reultSet
 			return true;
 		} else {
@@ -71,11 +70,11 @@ public class ProductoData {
 	
 	/**
 	 * Da de baja al producto de la BD.
-	 * @param producto el producto que se dará debaja (usando su idproducto)
+	 * @param producto el producto que se dará debaja (usando su idProducto)
 	 * @return devuelve true si pudo darlo de baja
 	 */
 	public boolean bajaProducto(Producto producto){// 
-		return bajaProducto(producto.getIdproducto()); // llama a la baja usando el idproducto
+		return bajaProducto(producto.getIdProducto()); // llama a la baja usando el idproducto
 	} //bajaProducto
 	
 	
@@ -88,12 +87,12 @@ public class ProductoData {
 	 */
 	public boolean bajaProducto(int id){// devuelve true si pudo darlo de baja
 		//Averiguo si esta inscripto en alguna materia
-		InscripcionData inscripcionData = new InscripcionData();
-		List<Materia> listamaterias = inscripcionData.getListaMateriasXProducto(id);
-		if (listamaterias.size()>0) {
-			mensajeError("No se puede dar de baja al producto porque está inscripto en materias. Borre dichas inscripciones antes.");
-			return false;
-		}
+		//PedidoData pedidoData = new PedidoData();
+		//List<Pedido> listaPedidos = pedidoData.getListaPedidosXProducto(id);
+		//if (listaPedidos.size()>0) {
+		//	mensajeError("No se puede dar de baja al producto porque está anotado en pedidos. Borre dichos pedidos antes.");
+		//	return false;
+		//}
 		
 		//Doy de baja al producto
 		String sql = "Delete from producto where idproducto=" + id;
@@ -118,12 +117,12 @@ public class ProductoData {
 	 * @param idProducto es el idproducto del producto que se dará de baja
 	 * @return  true si pudo darlo de baja
 	 */
-	public boolean bajaProductoconInscripcionesEnCascada(int idProducto){// devuelve true si pudo darlo de baja
-		//Borro todas las inscripciones de ese producto
-		InscripcionData inscripcionData = new InscripcionData();
-		List<Inscripcion> listaInscripciones = inscripcionData.getListaInscripcionesDelProducto(idProducto);
-		for (Inscripcion inscripcion : listaInscripciones)
-			inscripcionData.bajaInscripcion(inscripcion);
+	public boolean bajaProductoconPedidosEnCascada(int idProducto){// devuelve true si pudo darlo de baja
+		//Borro todas los pedidos de ese producto
+		//PedidoData pedidoData = new PedidoData();
+		//List<Pedido> listaPedidos = pedidoData.getListaPedidosDelProducto(idProducto);
+		//for (Pedido pedido : listaPedidos)
+		//	pedidoData.bajaPedido(pedido);
 		
 		
 		//Doy de baja al producto
@@ -152,12 +151,11 @@ public class ProductoData {
 	public boolean modificarProducto(Producto producto){
 		String sql = 
 				"Update producto set " + 
-				"dni='" + producto.getDni() + "'," + 
-				"apellido='" + producto.getApellido() + "'," +
-				"nombre='" + producto.getNombre() + "'," +
-				"fechaNacimiento='" + producto.getFechaNacimiento() + "'," +
-				"estado=" + producto.getEstado() + " " +
-				"where idproducto='" + producto.getIdproducto() + "'";
+				"nombre='" + producto.getNombre() + "'," + 
+				"descripcion='" + producto.getDescripcion() + "'," +
+				"stock='" + producto.getStock() + "'," +
+				"precio='" + producto.getPrecio() + "'" + " " +
+				"where idProducto='" + producto.getIdProducto() + "'";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Modificación de producto exitosa");
 			conexion.cerrarSentencia();
@@ -181,12 +179,11 @@ public class ProductoData {
 	public Producto resultSet2Producto(ResultSet rs){
 		Producto producto = new Producto();
 		try {
-			producto.setIdproducto(rs.getInt("idproducto"));
-			producto.setDni(rs.getInt("dni"));
-			producto.setApellido(rs.getString("apellido"));
+			producto.setIdProducto(rs.getInt("idProducto"));
 			producto.setNombre(rs.getString("nombre"));
-			producto.setFechaNacimiento(rs.getDate("fechaNacimiento").toLocalDate());
-			producto.setEstado(rs.getBoolean("estado"));
+			producto.setDescripcion(rs.getString("descripcion"));
+			producto.setStock(rs.getInt("stock"));
+			producto.setPrecio(rs.getDouble("precio"));
 		} catch (SQLException ex) {
 			//Logger.getLogger(ProductoData.class.getName()).log(Level.SEVERE, null, ex);
 			mensajeError("Error al pasar de ResultSet a Producto"+ex.getMessage());
@@ -203,7 +200,7 @@ public class ProductoData {
 	 * @return la lista de productos
 	 */
 	public List<Producto> getListaProductos(){ 
-		return getListaProductos(OrdenacionProducto.PORIDALUMNO);
+		return getListaProductos(OrdenacionProducto.PORIDPRODUCTO);
 	} // getListaProductos
 	
 	
@@ -220,12 +217,12 @@ public class ProductoData {
 		String sql = "Select * from producto";
 		
 		//defino orden
-		if (ordenacion == OrdenacionProducto.PORIDALUMNO) 
+		if (ordenacion == OrdenacionProducto.PORIDPRODUCTO) 
 			sql = sql + " Order by idproducto";
-		else if (ordenacion == OrdenacionProducto.PORDNI)
-			sql = sql + " Order by dni";
+		else if (ordenacion == OrdenacionProducto.PORNOMBRE)
+			sql = sql + " Order by nombre";
 		else 
-			sql = sql + " Order by apellido, nombre";
+			sql = sql + " Order by idproducto";
 		
 		//ejecuto
 		ResultSet rs = conexion.sqlSelect(sql);
@@ -269,33 +266,21 @@ public class ProductoData {
 			if ( idProducto != -1 )
 				sql = sql + " idproducto=" + idProducto;
 			
-			if ( dni != -1 ) {
+			if ( ! nombre.equals("") ) {
 				if (idProducto != -1) //Si ya puse el idAlunno agrego and
 					sql = sql+" AND";
-				sql = sql+" dni="+dni;
-			}
-			
-			if ( ! apellido.isEmpty() ){ 
-				if (idProducto != -1 || dni !=-1) //si ya puse idproducto o dni agrego and
-					sql = sql + " AND";
-				sql = sql + " apellido LIKE '" + apellido + "%'";
-			}
-			
-			if ( ! nombre.isEmpty() ){
-				if ( idProducto != -1 || dni !=-1 || ! apellido.isEmpty() ) // si ya puse otro criterio agrego and
-					sql = sql + " AND";
-				sql = sql + " nombre LIKE '" + nombre + "%'";
+				sql = sql+" nombre="+nombre;
 			}
 			
 		}
 		
 		//defino orden
-		if (ordenacion == OrdenacionProducto.PORIDALUMNO) 
+		if (ordenacion == OrdenacionProducto.PORIDPRODUCTO) 
 			sql = sql + " Order by idproducto";
-		else if (ordenacion == OrdenacionProducto.PORDNI)
-			sql = sql + " Order by dni";
+		else if (ordenacion == OrdenacionProducto.PORNOMBRE)
+			sql = sql + " Order by nombre";
 		else 
-			sql = sql + " Order by apellido, nombre";		
+			sql = sql + " Order by idproducto";		
 	
 		// ejecuto
 		ResultSet rs = conexion.sqlSelect(sql);
@@ -345,13 +330,11 @@ public class ProductoData {
 	
 	/**
 	 * Devuelve el producto con ese apellido y nombre y con ese dni
-	 * @param id es el idproducto para identificarlo
+	 * @param nombre es el parametro para identificarlo
 	 * @return  el producto retornado. Si no lo encuentra devuelve null.
 	 */
-	public Producto getProducto(String apellido, String nombre, int dni){
-		String sql = "Select * from producto where nombre='" + nombre + "' " +
-				"and apellido='" + apellido + "' " +
-				"and dni='" + dni + "'";
+	public Producto getProducto(String nombre){
+		String sql = "Select * from producto where nombre='" + nombre + "' ";
 		ResultSet rs = conexion.sqlSelect(sql);
 		Producto producto = null;
 		try {

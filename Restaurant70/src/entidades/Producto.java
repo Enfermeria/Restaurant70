@@ -1,0 +1,87 @@
+/*
+	Trabajo práctico final de la Guía 6 del curso Desarrollo de Apps
+	Universidad de La Punta en el marco del proyecto Argentina Programa 4.0
+
+	Integrantes:
+		John David Molina Velarde
+		Leticia Mores
+		Enrique Germán Martínez
+		Carlos Eduardo Beltrán
+ */
+package entidades;
+
+/**
+ *
+ * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
+ */
+public class Producto {
+	private int idProducto;
+	private String nombre, descripcion;
+	private int stock;
+	private double precio;
+
+	public Producto() {
+	}
+
+	public Producto(String nombre, String descripcion, int stock, double precio) {
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.stock = stock;
+		this.precio = precio;
+	}
+
+	public Producto(int idProducto, String nombre, String descripcion, int stock, double precio) {
+		this.idProducto = idProducto;
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.stock = stock;
+		this.precio = precio;
+	}
+
+	public int getIdProducto() {
+		return idProducto;
+	}
+
+	public void setIdProducto(int idProducto) {
+		this.idProducto = idProducto;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+	public double getPrecio() {
+		return precio;
+	}
+
+	public void setPrecio(double precio) {
+		this.precio = precio;
+	}
+
+	@Override
+	public String toString() {
+		return "Producto{" + "idproducto=" + idProducto + ", nombre=" + nombre + ", descripcion=" + descripcion + ", stock=" + stock + ", precio=" + precio + '}';
+	}
+	
+	
+}
