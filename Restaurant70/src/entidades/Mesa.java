@@ -18,7 +18,7 @@ public class Mesa {
 	private int idMesa, capacidad;
 	private Estado estado;
 	
-	public enum Estado {LIBRE, OCUPADA, ATENDIDA};
+	public enum Estado {LIBRE, OCUPADA, ATENDIDA, SINASIGNAR};
 
 	public Mesa() {
 	}

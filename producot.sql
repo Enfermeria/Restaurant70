@@ -47,3 +47,15 @@ VALUES (NULL, 'Pizza Jamón y Morrones', 'Mozzarella, Jamón y Morrones asados '
 (NULL, 'Agua Mineral', 'Agua mineral sin gas, botella 500ml', '90', '660');
 
 delete from producto;
+
+
+update restaurante.producto set disponible = True;
+
+ALTER TABLE `restaurante`.`items` 
+RENAME TO  `restaurante`.`item` ;
+
+INSERT INTO `mesero` (`idMesero`, `nombreCompleto`, `clave`) VALUES 
+(NULL, 'Leticia Mores', '12345'), 
+(NULL, 'Enrique Martinez', '23456'), 
+(NULL, 'John Molina Velarde', '34567'), 
+(NULL, 'Eduardo Beltran', '45678');

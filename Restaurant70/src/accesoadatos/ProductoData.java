@@ -51,9 +51,10 @@ public class ProductoData {
 	 */
 	public boolean altaProducto(Producto producto){// 
 		// una alternativa es usar ?,?,? y luego insertarlo con preparedStatement.setInt(1, dato) // o setString, setBoolean, setData
-		String sql = "Insert into producto (idproducto, nombre, stock, precio, disponible) " +
-			"VALUES " + "(null,'" + producto.getNombre() +  "','" + producto.getStock() + "','" +
-			producto.getPrecio() +  "','" + producto.getDisponible()+ "')";
+		String sql = "Insert into producto (idproducto, nombre, descripcion, stock, precio, disponible) " +
+			"VALUES " + "(null,'" + producto.getNombre() +  "','" + producto.getDescripcion() + 
+			"','" + producto.getStock() + "','" + producto.getPrecio() +  "', " + 
+			producto.getDisponible()+ " )";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Alta de producto exitosa");
 			producto.setIdProducto(conexion.getKeyGenerado()); //asigno el id generado
@@ -117,7 +118,7 @@ public class ProductoData {
 	 * @param idProducto es el idproducto del producto que se dará de baja
 	 * @return  true si pudo darlo de baja
 	 */
-	public boolean bajaProductoconPedidosEnCascada(int idProducto){// devuelve true si pudo darlo de baja
+	public boolean bajaProductoconPedidosEnCascada(int idProducto){// devuelve true si pudo darlo de baja OJO FALTA PROBAR
 		//Borro todas los pedidos de ese producto
 		//PedidoData pedidoData = new PedidoData();
 		//List<Pedido> listaPedidos = pedidoData.getListaPedidosDelProducto(idProducto);
@@ -154,8 +155,8 @@ public class ProductoData {
 				"nombre='" + producto.getNombre() + "'," + 
 				"descripcion='" + producto.getDescripcion() + "'," +
 				"stock='" + producto.getStock() + "'," +
-				"precio='" + producto.getPrecio() + "'" + 
-				"disponible='" + producto.getDisponible() + "'" + " " +
+				"precio='" + producto.getPrecio() + "'," + 
+				"disponible=" + producto.getDisponible() + "" + " " +
 				"where idProducto='" + producto.getIdProducto() + "'";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Modificación de producto exitosa");
@@ -253,25 +254,37 @@ public class ProductoData {
 	 * Si no hay ningún criterio de búsqueda devuelve toda la tabla
 	 * 
 	 * @param idProducto si idProducto no es -1 usa idProducto como criterio de búsqueda 
-	 * @param dni      si dni no es -1 usa dni como criterio de búsqueda
-	 * @param apellido si apellido no es "" usa apellido como criterio de búsqueda
-	 * @param nombre   si nombre no es "" usa nombre como criterio de búsqueda
+	 * @param nombre     si nombre no es '' usa nombre como criterio de búsqueda
+	 * @param stock      si stock no es -1 usa stock como criterio de búsqueda
+	 * @param precio     si precio no es -1 usa precio como criterio de búsqueda
 	 * @param ordenacion es el orden en el que devolverá la lista
 	 * @return lista de productos que cumplen con el criterio de búsqueda
 	 */
-	public List<Producto> getListaProductosXCriterioDeBusqueda(int idProducto, int dni, String apellido, String nombre, OrdenacionProducto ordenacion){ 
+	public List<Producto> getListaProductosXCriterioDeBusqueda(int idProducto, String nombre, int stock, double precio, OrdenacionProducto ordenacion){ 
 		ArrayList<Producto> lista = new ArrayList();
 		String sql = "Select * from producto";
-		if ( idProducto != -1 || dni !=- 1 || ! apellido.isEmpty() || ! nombre.isEmpty() ) {
+		if ( idProducto != -1 || ! nombre.isEmpty() || stock != -1 ||  precio != -1.0 ) {
 			sql = sql + " Where";
 			
 			if ( idProducto != -1 )
 				sql = sql + " idproducto=" + idProducto;
 			
-			if ( ! nombre.equals("") ) {
-				if (idProducto != -1) //Si ya puse el idAlunno agrego and
+			if ( ! nombre.isEmpty() ) {
+				if (idProducto != -1) //Si ya puse el idProducto agrego and
 					sql = sql+" AND";
-				sql = sql+" nombre="+nombre;
+				sql = sql+ " nombre LIKE '" + nombre + "%'";
+			}
+			
+			if ( stock != -1 ) {
+				if (idProducto != -1 || ! nombre.isEmpty()) //Si ya puse el idProducto o nombre agrego and
+					sql = sql+" AND";
+				sql = sql+" stock="+stock;
+			}
+			
+			if ( precio != -1.0 ) {
+				if (idProducto != -1 || ! nombre.isEmpty() || stock != -1) //Si ya puse el idProducto o nombre agrego and
+					sql = sql+" AND";
+				sql = sql+" precio="+precio;
 			}
 			
 		}
