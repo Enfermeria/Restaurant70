@@ -183,7 +183,7 @@ public class MesaData {
 		String sql = 
 				"Update mesa set " + 
 				"capacidad='" + mesa.getCapacidad() + "'," + 
-				"clave='" + estadoEnumerado2estadoLetra(mesa.getEstado()) + "'" +
+				"estado='" + estadoEnumerado2estadoLetra(mesa.getEstado()) + "'" +
 				" where idMesa='" + mesa.getIdMesa() + "'";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Modificación de mesa exitosa");

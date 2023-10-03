@@ -10,8 +10,10 @@
  */
 package restaurant70;
 
+import accesoadatos.MesaData;
 import accesoadatos.MeseroData;
 import accesoadatos.ProductoData;
+import entidades.Mesa;
 import entidades.Mesero;
 import entidades.Producto;
 import java.util.List;
@@ -66,7 +68,7 @@ public class Restaurant70 {
 	}
 	
 
-		public static void pruebaMeseroData(){
+	public static void pruebaMeseroData(){
 		MeseroData meseroData = new MeseroData();
 		
 		// prueba de alta producto
@@ -115,8 +117,61 @@ public class Restaurant70 {
 	
 
 	
+	
+	
+	
+	public static void pruebaMesaData(){
+		MesaData mesaData = new MesaData();
+		
+		// prueba de alta producto
+		Mesa m = new Mesa(4, Mesa.Estado.ATENDIDA);
+		//mesaData.altaMesa(m);
+		//Producto p2 = productoData.getProducto(p.getIdProducto());
+		//System.out.println("El producto agregado y recuperado de la tabla es " + p2);
+		
+		//prueba de baja producto
+		//productoData.bajaProducto(84);
+		//p = productoData.getProducto(81);
+		//p.setNombre("Cerveza Quilmes 1L");
+		//productoData.modificarProducto(p);
+		
+		
+		
+		List<Mesa> listaMesas = mesaData.getListaMesas();
+		
+		for (Mesa mesa: listaMesas)
+			System.out.println(mesa);
+		
+		System.out.println("");
+		System.out.println("POR CRITERIO DE BUSQUEDA");
+		System.out.println("========================");
+		listaMesas = mesaData.getListaMesasXCriterioDeBusqueda(-1, -1, Mesa.Estado.ATENDIDA, MesaData.OrdenacionMesa.PORCAPACIDAD);
+		
+		for (Mesa mesa: listaMesas)
+			System.out.println("**** " + mesa);
+		
+//		System.out.println("");
+//		System.out.println("POR OTRO ORDEN");
+//		System.out.println("========================");
+//		listaProductos = productoData.getListaProductos(ProductoData.OrdenacionProducto.PORIDPRODUCTO);
+//		
+//		for (Producto producto: listaProductos)
+//			System.out.println("**** " + producto);
+//		
+		
+		m = mesaData.getMesa(3);
+		m.setCapacidad(1);
+		m.setEstado(Mesa.Estado.OCUPADA);
+		mesaData.modificarMesa(m);
+		System.out.println(m);
+		
+		//mesaData.bajaMesa(25);
+	}
+	
+
+	
 	public static void main(String[] args) {
-		pruebaMeseroData();
+		pruebaMesaData();
 	}
 	
 }
