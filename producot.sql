@@ -59,3 +59,15 @@ INSERT INTO `mesero` (`idMesero`, `nombreCompleto`, `clave`) VALUES
 (NULL, 'Enrique Martinez', '23456'), 
 (NULL, 'John Molina Velarde', '34567'), 
 (NULL, 'Eduardo Beltran', '45678');
+
+
+-- cambios desde el 4/10/23
+
+ALTER TABLE `restaurante`.`item` 
+ADD COLUMN `estado` VARCHAR(1) NULL AFTER `idPedido`;
+
+update item set estado = 'A';
+
+ALTER TABLE `restaurante`.`reserva` 
+DROP COLUMN `hora`,
+CHANGE COLUMN `fecha` `fechahora` DATETIME NOT NULL ;

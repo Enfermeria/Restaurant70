@@ -16,19 +16,19 @@ package entidades;
  */
 public class Mesa {
 	private int idMesa, capacidad;
-	private Estado estado;
+	private EstadoMesa estado;
 	
-	public enum Estado {LIBRE, OCUPADA, ATENDIDA, SINASIGNAR};
+	public enum EstadoMesa {LIBRE, OCUPADA, ATENDIDA, SINASIGNAR};
 
 	public Mesa() {
 	}
 
-	public Mesa(int capacidad, Estado estado) {
+	public Mesa(int capacidad, EstadoMesa estado) {
 		this.capacidad = capacidad;
 		this.estado = estado;
 	}
 
-	public Mesa(int idMesa, int capacidad, Estado estado) {
+	public Mesa(int idMesa, int capacidad, EstadoMesa estado) {
 		this.idMesa = idMesa;
 		this.capacidad = capacidad;
 		this.estado = estado;
@@ -50,11 +50,11 @@ public class Mesa {
 		this.capacidad = capacidad;
 	}
 
-	public Estado getEstado() {
+	public EstadoMesa getEstado() {
 		return estado;
 	}
 
-	public void setEstado(Estado estado) {
+	public void setEstado(EstadoMesa estado) {
 		this.estado = estado;
 	}
 

@@ -42,6 +42,48 @@ public class ItemData {
 	} //ItemData
 
 	
+	
+	/**
+	 * Dada un enumerado Item.EstadoItem que puede ser ANOTADO, SOLICITADO, DESPACHADO, ENTREGADO 
+	 * devuelve la letra correspondiente A, S, D, E para almacenarla en el campo 
+	 * Estado de la tabla Mesa de la BD
+	 * @param EstadoMesa (LIBRE, OCUPADA, ATENDIDA)
+	 * @return letra "L", "O", "A"
+	 */
+	private String estadoItemEnumerado2EstadoItemLetra(Item.EstadoItem estado){
+		if (estado == Item.EstadoItem.ANOTADO)
+			return "A";
+		else if (estado == Item.EstadoItem.SOLICITADO)
+			return "S";
+		else if (estado == Item.EstadoItem.DESPACHADO)
+			return "D";
+		else //if (estado == Item.EstadoItem.ENTREGADO)
+			return "E";
+	} // EstadoItemEnumerado2EstadoItemLetra
+	
+	
+	
+	/**
+	 * Dada una letra que puede ser L, O, A en el campo EstadoMesa de la tabla Mesa
+	 * de la BD, devuelve el correspondiente enumerado según la entidad Mesa.
+	 * @param letra
+	 * @return el enumerado LIBRE, OCUPADA, ATENDIDA
+	 */
+	private Item.EstadoItem estadoItemLetra2EstadoItemEnumerado(String letra){
+		if (letra.equalsIgnoreCase("A"))
+			return Item.EstadoItem.ANOTADO;
+		else if (letra.equalsIgnoreCase("S"))
+			return Item.EstadoItem.SOLICITADO;
+		else if (letra.equalsIgnoreCase("D"))
+			return Item.EstadoItem.DESPACHADO;
+		else //if (letra.equalsIgnoreCase("E"))
+			return Item.EstadoItem.ENTREGADO;
+	} //EstadoItemLetra2EstadoItemEnumerado
+	
+	
+	
+	
+	
 
 	/**
 	 * agrega el item a la BD. 
@@ -50,10 +92,11 @@ public class ItemData {
 	 */
 	public boolean altaItem(Item item){// 
 		// una alternativa es usar ?,?,? y luego insertarlo con preparedStatement.setInt(1, dato) // o setString, setBoolean, setData
-		String sql = "Insert into item (iditem,idproducto, idpedido, cantidad) " +
+		String sql = "Insert into item (iditem,idproducto, idpedido, cantidad, estado) " +
 			"VALUES " + "(null,'" + item.getIdProducto() +  "','" + 
 			item.getIdPedido() + "','" + 
-			item.getCantidad() + "' )";
+			item.getCantidad() + "','" + 
+			estadoItemEnumerado2EstadoItemLetra(item.getEstado()) +  "' )";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Alta de item exitosa");
 			item.setIdItem(conexion.getKeyGenerado()); //asigno el id generado

@@ -47,37 +47,37 @@ public class MesaData {
 	
 	
 	/**
-	 * Dada un enumerado Mesa.Estado que puede ser LIBRE, OCUPADO, ATENDIDA, 
+	 * Dada un enumerado Mesa.EstadoMesa que puede ser LIBRE, OCUPADO, ATENDIDA, 
 	 * devuelve la letra correspondiente L, O, A para almacenarla en el campo 
-	 * estado de la tabla Mesa de la BD
-	 * @param estado (LIBRE, OCUPADA, ATENDIDA)
+	 * EstadoMesa de la tabla Mesa de la BD
+	 * @param EstadoMesa (LIBRE, OCUPADA, ATENDIDA)
 	 * @return letra "L", "O", "A"
 	 */
-	private String estadoEnumerado2estadoLetra(Mesa.Estado estado){
-		if (estado == Mesa.Estado.LIBRE)
+	private String estadoMesaEnumerado2EstadoMesaLetra(Mesa.EstadoMesa estado){
+		if (estado == Mesa.EstadoMesa.LIBRE)
 			return "L";
-		else if (estado == Mesa.Estado.OCUPADA)
+		else if (estado == Mesa.EstadoMesa.OCUPADA)
 			return "O";
-		else //if (estado==Mesa.Estado.ATENDIDA)
+		else //if (estado==Mesa.EstadoMesa.ATENDIDA)
 			return "A";
-	} // estadoEnumerado2estadoLetra
+	} // EstadoMesaEnumerado2EstadoMesaLetra
 	
 	
 	
 	/**
-	 * Dada una letra que puede ser L, O, A en el campo estado de la tabla Mesa
+	 * Dada una letra que puede ser L, O, A en el campo EstadoMesa de la tabla Mesa
 	 * de la BD, devuelve el correspondiente enumerado según la entidad Mesa.
 	 * @param letra
 	 * @return el enumerado LIBRE, OCUPADA, ATENDIDA
 	 */
-	private Mesa.Estado estadoLetra2estadoEnumerado(String letra){
+	private Mesa.EstadoMesa estadoMesaLetra2EstadoMesaEnumerado(String letra){
 		if (letra.equalsIgnoreCase("L"))
-			return Mesa.Estado.LIBRE;
+			return Mesa.EstadoMesa.LIBRE;
 		else if (letra.equalsIgnoreCase("O"))
-			return Mesa.Estado.OCUPADA;
+			return Mesa.EstadoMesa.OCUPADA;
 		else //if (letra.equalsIgnoreCase("A"))
-			return Mesa.Estado.ATENDIDA;
-	} //estadoLetra2estadoEnumerado
+			return Mesa.EstadoMesa.ATENDIDA;
+	} //EstadoMesaLetra2EstadoMesaEnumerado
 	
 	
 	
@@ -90,9 +90,9 @@ public class MesaData {
 	 */
 	public boolean altaMesa(Mesa mesa){// 
 		// una alternativa es usar ?,?,? y luego insertarlo con preparedStatement.setInt(1, dato) // o setString, setBoolean, setData
-		String sql = "Insert into mesa (idmesa, capacidad, estado) " +
+		String sql = "Insert into mesa (idmesa, capacidad, EstadoMesa) " +
 			"VALUES " + "(null,'" + mesa.getCapacidad() +  "','" + 
-			estadoEnumerado2estadoLetra(mesa.getEstado()) +  "'" + " )";
+			estadoMesaEnumerado2EstadoMesaLetra(mesa.getEstado()) +  "'" + " )";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Alta de mesa exitosa");
 			mesa.setIdMesa(conexion.getKeyGenerado()); //asigno el id generado
@@ -183,7 +183,7 @@ public class MesaData {
 		String sql = 
 				"Update mesa set " + 
 				"capacidad='" + mesa.getCapacidad() + "'," + 
-				"estado='" + estadoEnumerado2estadoLetra(mesa.getEstado()) + "'" +
+				"estado='" + estadoMesaEnumerado2EstadoMesaLetra(mesa.getEstado()) + "'" +
 				" where idMesa='" + mesa.getIdMesa() + "'";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Modificación de mesa exitosa");
@@ -210,7 +210,7 @@ public class MesaData {
 		try {
 			mesa.setIdMesa(rs.getInt("idMesa"));
 			mesa.setCapacidad(rs.getInt("capacidad"));
-			mesa.setEstado(estadoLetra2estadoEnumerado(rs.getString("estado")) );
+			mesa.setEstado(estadoMesaLetra2EstadoMesaEnumerado(rs.getString("estado")) );
 		} catch (SQLException ex) {
 			//Logger.getLogger(MesaData.class.getName()).log(Level.SEVERE, null, ex);
 			mensajeError("Error al pasar de ResultSet a Mesa"+ex.getMessage());
@@ -283,10 +283,10 @@ public class MesaData {
 	 * @param ordenacion es el orden en el que devolverá la lista
 	 * @return lista de mesas que cumplen con el criterio de búsqueda
 	 */
-	public List<Mesa> getListaMesasXCriterioDeBusqueda(int idMesa, int capacidad, Mesa.Estado estado, OrdenacionMesa ordenacion){ 
+	public List<Mesa> getListaMesasXCriterioDeBusqueda(int idMesa, int capacidad, Mesa.EstadoMesa estado, OrdenacionMesa ordenacion){ 
 		ArrayList<Mesa> lista = new ArrayList();
 		String sql = "Select * from mesa";
-		if ( idMesa != -1 || capacidad != -1 || estado != Mesa.Estado.SINASIGNAR ) {
+		if ( idMesa != -1 || capacidad != -1 || estado != Mesa.EstadoMesa.SINASIGNAR ) {
 			sql = sql + " Where";
 			
 			if ( idMesa != -1 )
@@ -298,10 +298,10 @@ public class MesaData {
 				sql = sql+ " capacidad ='" + capacidad + "'";
 			}
 			
-			if ( estado != Mesa.Estado.SINASIGNAR ) {
+			if ( estado != Mesa.EstadoMesa.SINASIGNAR ) {
 				if (idMesa != -1 || capacidad != -1) //Si ya puse el idMesa o capacidad agrego and
 					sql = sql+" AND";
-				sql = sql+" estado='" + estadoEnumerado2estadoLetra(estado) + "'";
+				sql = sql+" estado='" + estadoMesaEnumerado2EstadoMesaLetra(estado) + "'";
 			}
 			
 		}

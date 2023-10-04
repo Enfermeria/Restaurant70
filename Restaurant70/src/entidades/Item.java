@@ -16,23 +16,37 @@ package entidades;
  */
 public class Item {
 	private int idItem, idProducto, idPedido, cantidad;
+	EstadoItem estado;
+	public enum EstadoItem {ANOTADO, SOLICITADO, DESPACHADO, ENTREGADO};
 
 	public Item() {
 	}
 
-	public Item(int idProducto, int idPedido, int cantidad) {
+	public Item(int idProducto, int idPedido, int cantidad, EstadoItem estado) {
 		this.idProducto = idProducto;
 		this.idPedido = idPedido;
 		this.cantidad = cantidad;
+		this.estado = estado;
 	}
 
-	public Item(int idItem, int idProducto, int idPedido, int cantidad) {
+	public Item(int idItem, int idProducto, int idPedido, int cantidad, EstadoItem estado) {
 		this.idItem = idItem;
 		this.idProducto = idProducto;
 		this.idPedido = idPedido;
 		this.cantidad = cantidad;
+		this.estado = estado;
 	}
 
+	public EstadoItem getEstado() {
+		return estado;
+	}
+
+	public void setEstado(EstadoItem estado) {
+		this.estado = estado;
+	}
+
+	
+	
 	public int getIdItem() {
 		return idItem;
 	}
