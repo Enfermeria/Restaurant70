@@ -10,12 +10,18 @@
  */
 package entidades;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.Calendar;
 /**
  *
  * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
  */
 public class Pedido {
 	private int idPedido, idMesa, idMesero;
+        private  LocalDateTime fechaHora;
 	private boolean pagado;
 
 	public Pedido() {
@@ -24,17 +30,19 @@ public class Pedido {
 	public Pedido(int idMesa, int idMesero, boolean pagado) {
 		this.idMesa = idMesa;
 		this.idMesero = idMesero;
+                this.fechaHora = fechaHora;
 		this.pagado = pagado;
 	}
 
-	public Pedido(int idPedido, int idMesa, int idMesero, boolean pagado) {
-		this.idPedido = idPedido;
-		this.idMesa = idMesa;
-		this.idMesero = idMesero;
-		this.pagado = pagado;
-	}
+	public Pedido(int idPedido, int idMesa, int idMesero, java.time.LocalDateTime fechaHora, boolean pagado) {
+                this.idPedido = idPedido;
+                this.idMesa = idMesa;
+                this.idMesero = idMesero;
+                this.fechaHora = fechaHora;
+                this.pagado = pagado;
+}
 
-	public int getIdPedido() {
+    	public int getIdPedido() {
 		return idPedido;
 	}
 
@@ -58,6 +66,14 @@ public class Pedido {
 		this.idMesero = idMesero;
 	}
 
+         public LocalDateTime getFechaHora() {
+        return fechaHora;
+        }
+
+         public void setFechaHora(LocalDateTime fechaHora) {
+        this.fechaHora = fechaHora;
+        }
+
 	public boolean getPagado() {
 		return pagado;
 	}
@@ -68,7 +84,8 @@ public class Pedido {
 
 	@Override
 	public String toString() {
-		return "Pedido{" + "idPedido=" + idPedido + ", idMesa=" + idMesa + ", idMesero=" + idMesero + ", pagado=" + pagado + '}';
+            
+		return "Pedido{" + "idPedido=" + idPedido + ", idMesa=" + idMesa + ", idMesero=" + idMesero + ", fechaHora=" + fechaHora + ", pagado=" + pagado + '}';
 	}
 	
 	

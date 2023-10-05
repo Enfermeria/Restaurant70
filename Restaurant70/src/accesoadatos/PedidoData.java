@@ -50,9 +50,9 @@ public class PedidoData {
 	 */
 	public boolean altaPedido(Pedido pedido){// 
 		// una alternativa es usar ?,?,? y luego insertarlo con preparedStatement.setInt(1, dato) // o setString, setBoolean, setData
-		String sql = "Insert into pedido (idpedido, idMesa, idMesero, pagado) " +
-			"VALUES " + "(null,'" + pedido.getIdMesa() +  "','" + pedido.getIdMesero() + 
-			"'," + pedido.getPagado() +  " )";
+		String sql = "Insert into pedido (idpedido, idMesa, idMesero, fechaHora, pagado) " +
+			"VALUES " + "(null,'" + pedido.getIdMesa() + "','" +  "','" + pedido.getIdMesero() + 
+			"','" + pedido.getFechaHora()+ pedido.getPagado() +  "' )";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Alta de pedido exitosa");
 			pedido.setIdPedido(conexion.getKeyGenerado()); //asigno el id generado
@@ -66,7 +66,7 @@ public class PedidoData {
 	
 	
 	
-	
+	 
 	/**
 	 * Da de baja al pedido de la BD.
 	 * @param pedido el pedido que se dará debaja (usando su idPedido)

@@ -10,12 +10,18 @@
  */
 package restaurant70;
 
+import accesoadatos.ItemData;
 import accesoadatos.MesaData;
 import accesoadatos.MeseroData;
+import accesoadatos.PedidoData;
 import accesoadatos.ProductoData;
+import entidades.Item;
 import entidades.Mesa;
 import entidades.Mesero;
+import entidades.Pedido;
 import entidades.Producto;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 /**
@@ -28,8 +34,8 @@ public class Restaurant70 {
 		ProductoData productoData = new ProductoData();
 		
 		// prueba de alta producto
-		Producto p = new Producto("Coca Cola Light", "Gaseosa Coca Cola Light Sin azucar 1L", 12, 800.5, true);
-		//productoData.altaProducto(p);
+		Producto p = new Producto("Coca Cola Light", "Gaseosa Coca Cola Light Sin azucar 1L", 12, 1200.5, true);
+//		productoData.altaProducto(p);
 		//Producto p2 = productoData.getProducto(p.getIdProducto());
 		//System.out.println("El producto agregado y recuperado de la tabla es " + p2);
 		
@@ -168,10 +174,35 @@ public class Restaurant70 {
 		//mesaData.bajaMesa(25);
 	}
 	
-
+//        public static void pruebaPedidoData(){
+//                
+//             LocalDateTime fechaHora = LocalDateTime.now();
+////                LocalDateTime fechaPedido = LocalDateTime.of(2023, Month.OCTOBER, 4, 0, 0);
+//             PedidoData pedidoData = new PedidoData();
+            
+        // prueba de alta pedido
+        
+////            LocalDateTime fecha;
+//            LocalDateTime fechaPedido = LocalDateTime.of(2023, Month.OCTOBER, 4, 20, 40);
+//            Pedido p = new Pedido(4, 2, fechaPedido , true);
+//            pedidoData.altaPedido(p);
+//        
+//        }
+        
+//        public static void pruebaItemData(){
+//		ItemData itemData = new ItemData();
+//               
+//                // prueba de alta item
+//		Item i = new Item(4, 2, 1, Item.EstadoItem.ANOTADO);
+//                 itemData.altaItem(i);
+        }
 	
 	public static void main(String[] args) {
 		pruebaMesaData();
+//                pruebaPedidoData();
+//                pruebaItemData();
+//              
 	}
 	
-}
+
+
