@@ -27,19 +27,19 @@ public class Pedido {
 	public Pedido() {
 	}
 
-	public Pedido(int idMesa, int idMesero, boolean pagado) {
+	public Pedido(int idMesa, int idMesero, LocalDateTime fechaHora, boolean pagado) {
 		this.idMesa = idMesa;
 		this.idMesero = idMesero;
-                this.fechaHora = fechaHora;
+        this.fechaHora = fechaHora;
 		this.pagado = pagado;
 	}
 
 	public Pedido(int idPedido, int idMesa, int idMesero, java.time.LocalDateTime fechaHora, boolean pagado) {
-                this.idPedido = idPedido;
-                this.idMesa = idMesa;
-                this.idMesero = idMesero;
-                this.fechaHora = fechaHora;
-                this.pagado = pagado;
+		this.idPedido = idPedido;
+		this.idMesa = idMesa;
+		this.idMesero = idMesero;
+		this.fechaHora = fechaHora;
+		this.pagado = pagado;
 }
 
     	public int getIdPedido() {
@@ -66,13 +66,13 @@ public class Pedido {
 		this.idMesero = idMesero;
 	}
 
-         public LocalDateTime getFechaHora() {
+	public LocalDateTime getFechaHora() {
         return fechaHora;
-        }
+    }
 
-         public void setFechaHora(LocalDateTime fechaHora) {
-        this.fechaHora = fechaHora;
-        }
+	public void setFechaHora(LocalDateTime fechaHora) {
+		this.fechaHora = fechaHora;
+	}
 
 	public boolean getPagado() {
 		return pagado;

@@ -15,6 +15,9 @@ import accesoadatos.MesaData;
 import accesoadatos.MeseroData;
 import accesoadatos.PedidoData;
 import accesoadatos.ProductoData;
+import accesoadatos.Utils;
+import static accesoadatos.Utils.dateTimeBD2LocalDateTime;
+import static accesoadatos.Utils.localDateTime2DateTimeBD;
 import entidades.Item;
 import entidades.Mesa;
 import entidades.Mesero;
@@ -22,6 +25,7 @@ import entidades.Pedido;
 import entidades.Producto;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -173,36 +177,74 @@ public class Restaurant70 {
 		
 		//mesaData.bajaMesa(25);
 	}
+
+	public static void pruebaPedidoData(){
+		PedidoData pedidoData = new PedidoData();
+
+		// prueba de alta producto
+		//						int idMesa, int idMesero, LocalDateTime fechaHora, boolean pagado
+		Pedido p = new Pedido(1, 2, LocalDateTime.now(), true);
+		//System.out.println("Pedido: " + p);
+		//pedidoData.altaPedido(p);
+		//Pedido p2 = pedidoData.getPedido(1);
+		//System.out.println("El pedido agregado y recuperado de la tabla es " + p2);
+
+		//prueba de baja pedido
+		//pedidoData.bajaPedido(2);
+		//p = productoData.getProducto(81);
+		//p.setNombre("Cerveza Quilmes 1L");
+		//productoData.modificarProducto(p);
+
+		//prueba de modificacion
+		Pedido p2= pedidoData.getPedido(3);
+		p2.setIdMesa(3);
+		p2.setIdMesero(2);
+		//pedidoData.modificarPedido(p2);
+
+		// List<Pedido> listaPedidos = pedidoData.getListaPedidos(PedidoData.OrdenacionPedido.PORFECHAHORA);
+		//					idPedido, idMesa, idMesero, fechaDesde, fechaHasta, ordenacion
+		System.out.println( LocalDateTime.of(2023, 9, 1, 0, 0, 0) );
+		List<Pedido> listaPedidos = pedidoData.getListaPedidosXCriterioDeBusqueda(
+				-1, -1, -1,
+				null, //LocalDateTime.of(2023, 9, 1, 0, 0, 0), 
+				LocalDateTime.of(2023, 9, 5, 0, 0, 0), 
+				PedidoData.OrdenacionPedido.PORFECHAHORA);
+
+		for (Pedido pedido: listaPedidos)
+			System.out.println(pedido);
+	}
+        
+	public static void pruebaItemData(){
+		ItemData itemData = new ItemData();
+               
+		// prueba de alta item
+		Item i = new Item(4, 2, 1, Item.EstadoItem.ANOTADO);
+		itemData.altaItem(i);
+	}
 	
-//        public static void pruebaPedidoData(){
-//                
-//             LocalDateTime fechaHora = LocalDateTime.now();
-////                LocalDateTime fechaPedido = LocalDateTime.of(2023, Month.OCTOBER, 4, 0, 0);
-//             PedidoData pedidoData = new PedidoData();
-            
-        // prueba de alta pedido
-        
-////            LocalDateTime fecha;
-//            LocalDateTime fechaPedido = LocalDateTime.of(2023, Month.OCTOBER, 4, 20, 40);
-//            Pedido p = new Pedido(4, 2, fechaPedido , true);
-//            pedidoData.altaPedido(p);
-//        
-//        }
-        
-//        public static void pruebaItemData(){
-//		ItemData itemData = new ItemData();
-//               
-//                // prueba de alta item
-//		Item i = new Item(4, 2, 1, Item.EstadoItem.ANOTADO);
-//                 itemData.altaItem(i);
-        }
+	
+	public static void pruebaDeFecha(){
+		LocalDateTime ldt = LocalDateTime.now();
+		System.out.println(ldt);
+		System.out.println(localDateTime2DateTimeBD(ldt));
+		
+		String s = "2020-05-15 18:05:03";
+		System.out.println(s);
+		System.out.println(dateTimeBD2LocalDateTime(s));
+		System.out.println("");
+		System.out.println("");
+		Date date = new Date();
+		System.out.println("date " + date);
+		System.out.println("localDateTime " + Utils.date2LocalDateTime(date));
+	}
+	
 	
 	public static void main(String[] args) {
-		pruebaMesaData();
-//                pruebaPedidoData();
-//                pruebaItemData();
-//              
+		//pruebaMesaData();
+		pruebaPedidoData();
+		//pruebaItemData();
 	}
+}
 	
 
 

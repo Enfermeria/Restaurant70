@@ -22,6 +22,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import entidades.Pedido;
+import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
 /**
@@ -30,7 +35,7 @@ import entidades.Pedido;
  */
 public class PedidoData {
 	ConexionMySQL conexion; //gestiona la conexión con la bd
-	public enum OrdenacionPedido {PORIDPEDIDO, PORIDMESA, PORIDMESERO}; //tipo de ordenamiento
+	public enum OrdenacionPedido {PORIDPEDIDO, PORIDMESA, PORIDMESERO, PORFECHAHORA}; //tipo de ordenamiento
 	
 	
 	/**
@@ -42,7 +47,9 @@ public class PedidoData {
 	} //PedidoData
 
 	
-
+	
+	
+	
 	/**
 	 * agrega el pedido a la BD. 
 	 * @param pedido El que se dará de alta. Viene sin idpedido (se genera ahora)
@@ -51,8 +58,8 @@ public class PedidoData {
 	public boolean altaPedido(Pedido pedido){// 
 		// una alternativa es usar ?,?,? y luego insertarlo con preparedStatement.setInt(1, dato) // o setString, setBoolean, setData
 		String sql = "Insert into pedido (idpedido, idMesa, idMesero, fechaHora, pagado) " +
-			"VALUES " + "(null,'" + pedido.getIdMesa() + "','" +  "','" + pedido.getIdMesero() + 
-			"','" + pedido.getFechaHora()+ pedido.getPagado() +  "' )";
+			"VALUES " + "(null,'" + pedido.getIdMesa() + "','" + pedido.getIdMesero() + "','" + 
+			localDateTime2DateTimeBD( pedido.getFechaHora() ) + "', " + pedido.getPagado() +  " )";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Alta de pedido exitosa");
 			pedido.setIdPedido(conexion.getKeyGenerado()); //asigno el id generado
@@ -152,6 +159,7 @@ public class PedidoData {
 				"Update pedido set " + 
 				"idMesa='" + pedido.getIdMesa() + "'," + 
 				"idMesero='" + pedido.getIdMesero() + "'," +
+				"fechaHora='" + localDateTime2DateTimeBD( pedido.getFechaHora() ) + "'," +
 				"pagado=" + pedido.getPagado() + " " +
 				"where idPedido='" + pedido.getIdPedido() + "'";
 		if (conexion.sqlUpdate(sql)) {
@@ -180,6 +188,7 @@ public class PedidoData {
 			pedido.setIdPedido(rs.getInt("idPedido"));
 			pedido.setIdMesa(rs.getInt("idMesa"));
 			pedido.setIdMesero(rs.getInt("idMesero"));
+			pedido.setFechaHora( dateYTime2LocalDateTime(rs.getDate("fechaHora"), rs.getTime("fechaHora")) );
 			pedido.setPagado(rs.getBoolean("pagado"));
 		} catch (SQLException ex) {
 			//Logger.getLogger(PedidoData.class.getName()).log(Level.SEVERE, null, ex);
@@ -218,8 +227,10 @@ public class PedidoData {
 			sql = sql + " Order by idpedido";
 		else if (ordenacion == OrdenacionPedido.PORIDMESA)
 			sql = sql + " Order by idmesa";
-		else // (ordenacion == OrdenacionPedido.PORIDMESERO)
+		else if (ordenacion == OrdenacionPedido.PORIDMESERO)
 			sql = sql + " Order by idmesero";
+		else // (ordenacion == OrdenacionPedido.PORFECHAHORA)
+			sql = sql + " Order by fechaHora";
 		
 		//ejecuto
 		ResultSet rs = conexion.sqlSelect(sql);
@@ -249,14 +260,17 @@ public class PedidoData {
 	 * 
 	 * @param idPedido si idPedido no es -1 usa idPedido como criterio de búsqueda 
 	 * @param idMesa   si idMesa no es -1 usa idMesa como criterio de búsqueda
-	 * @param idMesero si idMesero no es -1 usa stock como criterio de búsqueda
+	 * @param idMesero si idMesero no es -1 usa idMesero como criterio de búsqueda
+	 * @param fechaDesde si fechaDesde no es null usa fechaDesde como criterio de búsqueda
+	 * @param fechaHasta si fechaHasta no es null usa fechaHasta como criterio de búsqueda
 	 * @param ordenacion es el orden en el que devolverá la lista
 	 * @return lista de pedidos que cumplen con el criterio de búsqueda
-	 */
-	public List<Pedido> getListaPedidosXCriterioDeBusqueda(int idPedido, int idMesa, int idMesero, OrdenacionPedido ordenacion){ 
+	 */ 
+	public List<Pedido> getListaPedidosXCriterioDeBusqueda(int idPedido, int idMesa, 
+			int idMesero, LocalDateTime fechaDesde, LocalDateTime fechaHasta, OrdenacionPedido ordenacion){ 
 		ArrayList<Pedido> lista = new ArrayList();
 		String sql = "Select * from pedido";
-		if ( idPedido != -1 || idMesa != -1 || idMesero != -1 ) {
+		if ( idPedido != -1 || idMesa != -1 || idMesero != -1 || fechaDesde != null || fechaHasta != null ) {
 			sql = sql + " Where";
 			
 			if ( idPedido != -1 )
@@ -273,6 +287,18 @@ public class PedidoData {
 					sql = sql+" AND";
 				sql = sql+" idMesero=" + idMesero;
 			}
+			
+			if ( fechaDesde != null ) {
+				if (idPedido != -1 || idMesa != -1 || idMesero != -1) //Si ya puse el idPedido o idMesa o idMesero agrego and
+					sql = sql+" AND";
+				sql = sql+" fechaHora>='" + localDateTime2DateTimeBD(fechaDesde) + "'";
+			}
+			
+			if ( fechaHasta != null ) {
+				if (idPedido != -1 || idMesa != -1 || idMesero != -1 || fechaDesde != null) //Si ya puse el idPedido o idMesa o idMesero agrego and
+					sql = sql+" AND";
+				sql = sql+" fechaHora<='" + localDateTime2DateTimeBD(fechaHasta) + "'";
+			}
 		}
 		
 		//defino orden
@@ -280,9 +306,11 @@ public class PedidoData {
 			sql = sql + " Order by idpedido";
 		else if (ordenacion == OrdenacionPedido.PORIDMESA)
 			sql = sql + " Order by idMesa";
-		else // (ordenacion == OrdenacionPedido.PORIDMESERO)
-			sql = sql + " Order by idMesero";		
-	
+		else if (ordenacion == OrdenacionPedido.PORIDMESERO)
+			sql = sql + " Order by idmesero";
+		else // (ordenacion == OrdenacionPedido.PORFECHAHORA)
+			sql = sql + " Order by fechaHora";
+		
 		// ejecuto
 		ResultSet rs = conexion.sqlSelect(sql);
 		
