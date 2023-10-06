@@ -218,8 +218,44 @@ public class Restaurant70 {
 		ItemData itemData = new ItemData();
                
 		// prueba de alta item
-		Item i = new Item(4, 2, 1, Item.EstadoItem.ANOTADO);
+		Item i = new Item(49, 4, 1, Item.EstadoItem.ANOTADO);
+		//itemData.altaItem(i);
+		
+		List<Item> listaItems = itemData.getListaItems();
+		
+		for (Item item: listaItems)
+			System.out.println(item);
+		
+		i = itemData.getItem(4);
+		i.setIdPedido(1);
+		itemData.modificarItem(i);
+		
+		System.out.println("+++++++++++++++++++++++");
+		listaItems = itemData.getListaItemsXCriterioDeBusqueda(
+				//idItem, idProducto, idPedido, ItemData.Ordenacion
+				-1,			52,			-1,		ItemData.OrdenacionItem.PORIDPEDIDO);
+		
+		for (Item item: listaItems)
+			System.out.println(item);
+		
+		i = new Item(58, 4, 15, Item.EstadoItem.ANOTADO);
 		itemData.altaItem(i);
+		
+		System.out.println("======================");
+		listaItems = itemData.getListaItems();
+		
+		for (Item item: listaItems)
+			System.out.println(item);
+		
+		
+		//itemData.bajaItem(i);
+		
+		System.out.println("======================");
+		listaItems = itemData.getListaItems();
+		
+		for (Item item: listaItems)
+			System.out.println(item);
+		
 	}
 	
 	
@@ -241,8 +277,8 @@ public class Restaurant70 {
 	
 	public static void main(String[] args) {
 		//pruebaMesaData();
-		pruebaPedidoData();
-		//pruebaItemData();
+		//pruebaPedidoData();
+		pruebaItemData();
 	}
 }
 	

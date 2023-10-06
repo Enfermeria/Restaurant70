@@ -196,7 +196,8 @@ public class ItemData {
 				"Update item set " + 
 				"idProducto='" + item.getIdProducto() + "'," + 
 				"idPedido='" + item.getIdPedido() + "'," +
-				"cantidad='" + item.getCantidad() +  "' " +
+				"cantidad='" + item.getCantidad() +  "', " +
+				"estado='" + estadoItemEnumerado2EstadoItemLetra( item.getEstado() ) + "' " + 
 				"where idItem='" + item.getIdItem() + "'";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Modificación de item exitosa");
@@ -225,6 +226,7 @@ public class ItemData {
 			item.setIdProducto(rs.getInt("idProducto"));
 			item.setIdPedido(rs.getInt("idPedido"));
 			item.setCantidad(rs.getInt("cantidad"));
+			item.setEstado(estadoItemLetra2EstadoItemEnumerado(rs.getString("estado")));
 		} catch (SQLException ex) {
 			//Logger.getLogger(ItemData.class.getName()).log(Level.SEVERE, null, ex);
 			mensajeError("Error al pasar de ResultSet a Item"+ex.getMessage());
