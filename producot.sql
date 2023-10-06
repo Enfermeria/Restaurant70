@@ -71,3 +71,46 @@ update item set estado = 'A';
 ALTER TABLE `restaurante`.`reserva` 
 DROP COLUMN `hora`,
 CHANGE COLUMN `fecha` `fechahora` DATETIME NOT NULL ;
+
+ALTER TABLE `restaurante`.`pedido` 
+ADD COLUMN `fechaHora` DATETIME NOT NULL AFTER `idMesero`;
+
+
+-- cambios desde el 6/10/23
+CREATE TABLE `restaurante`.`categoria` (
+  `idcategoria` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NULL,
+  PRIMARY KEY (`idcategoria`));
+ALTER TABLE `restaurante`.`producto` 
+ADD COLUMN `idcategoria` INT NULL AFTER `disponible`,
+ADD INDEX `producto_ibfk_idx` (`idcategoria` ASC);
+ALTER TABLE `restaurante`.`producto` 
+ADD CONSTRAINT `producto_ibfk`
+  FOREIGN KEY (`idcategoria`)
+  REFERENCES `restaurante`.`categoria` (`idcategoria`)
+  ON DELETE SET NULL
+  ON UPDATE CASCADE;
+
+CREATE TABLE `restaurante`.`servicio` (
+  `idservicio` INT NOT NULL AUTO_INCREMENT,
+  `nombreServicio` VARCHAR(45) NOT NULL,
+  `host` VARCHAR(45) NOT NULL,
+  `puerto` INT NOT NULL,
+  PRIMARY KEY (`idservicio`));
+
+
+INSERT INTO `categoria`(`nombre`) VALUES 
+('Pizzas'),
+('Sandwiches'),
+('Tacos'),
+('Hamburguesas'),
+('Postres'),
+('Bebidas');
+
+
+ALTER TABLE `restaurante`.`producto` 
+ADD COLUMN `idservicio` INT NULL AFTER `idcategoria`;
+
+ALTER TABLE `restaurante`.`mesa` 
+ADD COLUMN `idmesero` INT NULL AFTER `estado`;
+
