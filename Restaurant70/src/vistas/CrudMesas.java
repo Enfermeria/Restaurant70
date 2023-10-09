@@ -5,31 +5,47 @@
  */
 package vistas;
 
+import accesoadatos.ServicioData;
 import entidades.Servicio;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author john
  */
 public class CrudMesas extends javax.swing.JInternalFrame {
-	ArrayList<Servicio> listaMeseros = new ArrayList<>();
+	List<Servicio> listaMeseros;
 	/**
 	 * Creates new form CrudMesas
 	 */
 	public CrudMesas() {
 		initComponents();
-		listaMeseros = cargarMeseros();
+		cargarMeseros();
 	}
 
 	/**
 	 * Carga la lista de meseros de la tabla de Servicios
 	 * @return la lista de meseros
 	 */
-	private ArrayList<Servicio> cargarMeseros(){
+	private void cargarMeseros(){
+		// cargo la lista de meseros
 		ServicioData servicioData = new ServicioData();
+		listaMeseros = servicioData.getListaServiciosXCriterioDeBusqueda(
+			//idServicio, nombre, host, puerto, Servicio.TipoServicio,		  ordenacion
+			-1,			  "",	  "",   -1,     Servicio.TipoServicio.MESERO, ServicioData.OrdenacionServicio.PORIDSERVICIO);
 		
+		//esa lista de meseros lo cargo al JComboBox cbIdNombreMesero
+		listaMeseros.stream().forEach( mesero -> 
+			cbIdNombreMesero.addItem( mesero.getIdServicio() + mesero.getNombreServicio() ) 
+		);
 	}
+	
+	
+	
+//================================================================================
+//================================================================================
+	
+	
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -84,8 +100,6 @@ public class CrudMesas extends javax.swing.JInternalFrame {
         rbEstadoAtendida.setText("Atendida");
 
         jLabel5.setText("Mesero:");
-
-        cbIdNombreMesero.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         btnGuardar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardar2_32x32.png"))); // NOI18N
@@ -312,85 +326,118 @@ public class CrudMesas extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+	
+	
+//================================================================================
+//================================================================================
+	
+	
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        tipoEdicion = TipoEdicion.AGREGAR;  //para que el boton guardar sepa que estoy queriendo agregar un alumno
-        limpiarCampos(); //Pongo todos los campos de texto en blanco
-        habilitoParaEditar();
+//        tipoEdicion = TipoEdicion.AGREGAR;  //para que el boton guardar sepa que estoy queriendo agregar un alumno
+//        limpiarCampos(); //Pongo todos los campos de texto en blanco
+//        habilitoParaEditar();
     }//GEN-LAST:event_btnAgregarActionPerformed
 
+	
+	
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
-        tipoEdicion = TipoEdicion.MODIFICAR; //para que el boton guardar sepa que estoy queriendo modificar un alumno
-        habilitoParaEditar();
+//        tipoEdicion = TipoEdicion.MODIFICAR; //para que el boton guardar sepa que estoy queriendo modificar un alumno
+//        habilitoParaEditar();
     }//GEN-LAST:event_btnModificarActionPerformed
 
+	
+	
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        if ( eliminarAlumno() ) { // si pudo eliminar
-            limpiarCampos(); //Pongo todos los campos de texto en blanco
-            btnModificar.setEnabled(false); //deshabilito botón modificar
-            btnEliminar.setEnabled(false);  //deshabilito botón eliminar
-            cargarListaAlumnos();
-            cargarTabla();
-        }
+//        if ( eliminarAlumno() ) { // si pudo eliminar
+//            limpiarCampos(); //Pongo todos los campos de texto en blanco
+//            btnModificar.setEnabled(false); //deshabilito botón modificar
+//            btnEliminar.setEnabled(false);  //deshabilito botón eliminar
+//            cargarListaAlumnos();
+//            cargarTabla();
+//        }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
+	
+	
+	
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        tipoEdicion = TipoEdicion.BUSCAR; //para que el boton guardar sepa que estoy queriendo buscar un alumno
-        limpiarCampos();
-        botonGuardarComoBuscar(); //cambio icono y texto del btnGuardar a "Buscar"
-        habilitoParaBuscar();
+//        tipoEdicion = TipoEdicion.BUSCAR; //para que el boton guardar sepa que estoy queriendo buscar un alumno
+//        limpiarCampos();
+//        botonGuardarComoBuscar(); //cambio icono y texto del btnGuardar a "Buscar"
+//        habilitoParaBuscar();
     }//GEN-LAST:event_btnBuscarActionPerformed
 
+	
+	
+	
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
         dispose();//cierra la ventana
     }//GEN-LAST:event_btnSalirActionPerformed
 
+	
+	
+	
     private void cboxOrdenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboxOrdenActionPerformed
-        if (cboxOrden.getSelectedIndex() == 0)
-        ordenacion = OrdenacionAlumno.PORIDALUMNO;
-        else if (cboxOrden.getSelectedIndex() == 1)
-        ordenacion = OrdenacionAlumno.PORDNI;
-        else if (cboxOrden.getSelectedIndex() == 2)
-        ordenacion = OrdenacionAlumno.PORAPYNO;
-        else // por las dudas que no eligio uno correcto
-        ordenacion = OrdenacionAlumno.PORIDALUMNO;
-
-        cargarListaAlumnos();
-        cargarTabla();
-        limpiarCampos();
-        botonGuardarComoGuardar();
-        deshabilitoParaEditar();
+//        if (cboxOrden.getSelectedIndex() == 0)
+//        ordenacion = OrdenacionAlumno.PORIDALUMNO;
+//        else if (cboxOrden.getSelectedIndex() == 1)
+//        ordenacion = OrdenacionAlumno.PORDNI;
+//        else if (cboxOrden.getSelectedIndex() == 2)
+//        ordenacion = OrdenacionAlumno.PORAPYNO;
+//        else // por las dudas que no eligio uno correcto
+//        ordenacion = OrdenacionAlumno.PORIDALUMNO;
+//
+//        cargarListaAlumnos();
+//        cargarTabla();
+//        limpiarCampos();
+//        botonGuardarComoGuardar();
+//        deshabilitoParaEditar();
     }//GEN-LAST:event_cboxOrdenActionPerformed
 
+	
+	
+	
     private void cboxOrdenPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_cboxOrdenPropertyChange
         System.out.println("Cambio property de cboxOrden");
     }//GEN-LAST:event_cboxOrdenPropertyChange
 
+	
+	
+	
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
 
-        if ( tipoEdicion == TipoEdicion.AGREGAR ){ //agregar el alumno
-            agregarAlumno();
-            resetearFiltro();
-        } else if ( tipoEdicion == TipoEdicion.MODIFICAR ) { // modificar el alumno
-            modificarAlumno();
-            resetearFiltro();
-        } else { // tipoEdicion = BUSCAR: quiere buscar un alumno
-            buscarAlumno();
-            setearFiltro();
-        }
-
-        limpiarCampos();
-        botonGuardarComoGuardar();//por si estaba buscando cambio icono y texto del btnGuardar a "Guardar"
-        deshabilitoParaEditar();
+//        if ( tipoEdicion == TipoEdicion.AGREGAR ){ //agregar el alumno
+//            agregarAlumno();
+//            resetearFiltro();
+//        } else if ( tipoEdicion == TipoEdicion.MODIFICAR ) { // modificar el alumno
+//            modificarAlumno();
+//            resetearFiltro();
+//        } else { // tipoEdicion = BUSCAR: quiere buscar un alumno
+//            buscarAlumno();
+//            setearFiltro();
+//        }
+//
+//        limpiarCampos();
+//        botonGuardarComoGuardar();//por si estaba buscando cambio icono y texto del btnGuardar a "Guardar"
+//        deshabilitoParaEditar();
     }//GEN-LAST:event_btnGuardarActionPerformed
 
+	
+	
+	
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        limpiarCampos();
-        botonGuardarComoGuardar(); //por si estaba buscando cambio icono y texto del btnGuardar a "Guardar"
-        deshabilitoParaEditar();
+//        limpiarCampos();
+//        botonGuardarComoGuardar(); //por si estaba buscando cambio icono y texto del btnGuardar a "Guardar"
+//        deshabilitoParaEditar();
 
     }//GEN-LAST:event_btnCancelarActionPerformed
 
 
+//================================================================================
+//================================================================================
+	
+		
+	
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel botonera;
     private javax.swing.JButton btnAgregar;
