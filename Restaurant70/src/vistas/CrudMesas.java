@@ -5,19 +5,31 @@
  */
 package vistas;
 
+import entidades.Servicio;
+import java.util.ArrayList;
+
 /**
  *
  * @author john
  */
 public class CrudMesas extends javax.swing.JInternalFrame {
-
+	ArrayList<Servicio> listaMeseros = new ArrayList<>();
 	/**
 	 * Creates new form CrudMesas
 	 */
 	public CrudMesas() {
 		initComponents();
+		listaMeseros = cargarMeseros();
 	}
 
+	/**
+	 * Carga la lista de meseros de la tabla de Servicios
+	 * @return la lista de meseros
+	 */
+	private ArrayList<Servicio> cargarMeseros(){
+		ServicioData servicioData = new ServicioData();
+		
+	}
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -173,7 +185,7 @@ public class CrudMesas extends javax.swing.JInternalFrame {
         botonera.setBackground(new java.awt.Color(153, 153, 255));
 
         btnAgregar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Mesa y silla 832x32 sf.png"))); // NOI18N
+        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Mesa32x32.png"))); // NOI18N
         btnAgregar.setText("Agregar");
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

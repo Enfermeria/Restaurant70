@@ -90,9 +90,10 @@ public class MesaData {
 	 */
 	public boolean altaMesa(Mesa mesa){// 
 		// una alternativa es usar ?,?,? y luego insertarlo con preparedStatement.setInt(1, dato) // o setString, setBoolean, setData
-		String sql = "Insert into mesa (idmesa, capacidad, EstadoMesa) " +
+		String sql = "Insert into mesa (idmesa, capacidad, EstadoMesa, idmesero) " +
 			"VALUES " + "(null,'" + mesa.getCapacidad() +  "','" + 
-			estadoMesaEnumerado2EstadoMesaLetra(mesa.getEstado()) +  "'" + " )";
+			estadoMesaEnumerado2EstadoMesaLetra(mesa.getEstado()) +  "', '" + 
+			mesa.getIdMesero() + "' )";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Alta de mesa exitosa");
 			mesa.setIdMesa(conexion.getKeyGenerado()); //asigno el id generado
@@ -183,7 +184,8 @@ public class MesaData {
 		String sql = 
 				"Update mesa set " + 
 				"capacidad='" + mesa.getCapacidad() + "'," + 
-				"estado='" + estadoMesaEnumerado2EstadoMesaLetra(mesa.getEstado()) + "'" +
+				"estado='" + estadoMesaEnumerado2EstadoMesaLetra(mesa.getEstado()) + "'," +
+				"idMesero='" + mesa.getIdMesero() + "' " +
 				" where idMesa='" + mesa.getIdMesa() + "'";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Modificación de mesa exitosa");
@@ -211,6 +213,7 @@ public class MesaData {
 			mesa.setIdMesa(rs.getInt("idMesa"));
 			mesa.setCapacidad(rs.getInt("capacidad"));
 			mesa.setEstado(estadoMesaLetra2EstadoMesaEnumerado(rs.getString("estado")) );
+			mesa.setIdMesero( rs.getInt("idMesero") );
 		} catch (SQLException ex) {
 			//Logger.getLogger(MesaData.class.getName()).log(Level.SEVERE, null, ex);
 			mensajeError("Error al pasar de ResultSet a Mesa"+ex.getMessage());

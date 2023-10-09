@@ -11,12 +11,13 @@
 package entidades;
 
 /**
- *
+ *							 
  * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
  */
 public class Mesa {
 	private int idMesa, capacidad;
 	private EstadoMesa estado;
+	private int idMesero; // idServicio del mesero correspondiente de servicios que atiende esa mesa
 	
 	public enum EstadoMesa {LIBRE, OCUPADA, ATENDIDA, SINASIGNAR};
 
@@ -26,12 +27,14 @@ public class Mesa {
 	public Mesa(int capacidad, EstadoMesa estado) {
 		this.capacidad = capacidad;
 		this.estado = estado;
+		this.idMesero = idMesero;
 	}
 
 	public Mesa(int idMesa, int capacidad, EstadoMesa estado) {
 		this.idMesa = idMesa;
 		this.capacidad = capacidad;
 		this.estado = estado;
+		this.idMesero = idMesero;
 	}
 
 	public int getIdMesa() {
@@ -58,10 +61,19 @@ public class Mesa {
 		this.estado = estado;
 	}
 
+	public int getIdMesero() {
+		return idMesero;
+	}
+
+	public void setIdMesero(int idMesero) {
+		this.idMesero = idMesero;
+	}
+
 	@Override
 	public String toString() {
-		return "Mesa{" + "idMesa=" + idMesa + ", capacidad=" + capacidad + ", estado=" + estado + '}';
+		return "Mesa{" + "idMesa=" + idMesa + ", capacidad=" + capacidad + ", estado=" + estado + ", idMesero=" + idMesero + '}';
 	}
+
 	
 	
 
