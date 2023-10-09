@@ -30,6 +30,9 @@ public class Administracion extends javax.swing.JFrame {
         botonera = new javax.swing.JPanel();
         btnProductos = new javax.swing.JButton();
         btnProductos1 = new javax.swing.JButton();
+        btnProductos2 = new javax.swing.JButton();
+        btnProductos3 = new javax.swing.JButton();
+        btnProductos4 = new javax.swing.JButton();
         escritorio = new javax.swing.JDesktopPane();
         Fondo = new javax.swing.JLabel();
 
@@ -37,7 +40,7 @@ public class Administracion extends javax.swing.JFrame {
         setResizable(false);
 
         btnProductos.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
-        btnProductos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/x.jpg"))); // NOI18N
+        btnProductos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/comida 180x98.jpg"))); // NOI18N
         btnProductos.setText("Productos");
         btnProductos.setToolTipText("");
         btnProductos.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -53,22 +56,75 @@ public class Administracion extends javax.swing.JFrame {
         btnProductos1.setBorderPainted(false);
         btnProductos1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnProductos1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnProductos1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProductos1ActionPerformed(evt);
+            }
+        });
+
+        btnProductos2.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        btnProductos2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/chef 180x98.jpg"))); // NOI18N
+        btnProductos2.setText("Pedidos");
+        btnProductos2.setToolTipText("");
+        btnProductos2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnProductos2.setBorderPainted(false);
+        btnProductos2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnProductos2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+
+        btnProductos3.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        btnProductos3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mozo 180x98 final.jpg"))); // NOI18N
+        btnProductos3.setText("Servicios");
+        btnProductos3.setToolTipText("");
+        btnProductos3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnProductos3.setBorderPainted(false);
+        btnProductos3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnProductos3.setMaximumSize(new java.awt.Dimension(187, 157));
+        btnProductos3.setMinimumSize(new java.awt.Dimension(187, 157));
+        btnProductos3.setPreferredSize(new java.awt.Dimension(187, 157));
+        btnProductos3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnProductos3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProductos3ActionPerformed(evt);
+            }
+        });
+
+        btnProductos4.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        btnProductos4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/facturación 180x98.jpg"))); // NOI18N
+        btnProductos4.setText("Facturación");
+        btnProductos4.setToolTipText("");
+        btnProductos4.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnProductos4.setBorderPainted(false);
+        btnProductos4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnProductos4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         javax.swing.GroupLayout botoneraLayout = new javax.swing.GroupLayout(botonera);
         botonera.setLayout(botoneraLayout);
         botoneraLayout.setHorizontalGroup(
             botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(btnProductos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(btnProductos1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(botoneraLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btnProductos3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnProductos2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnProductos, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnProductos1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnProductos4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         botoneraLayout.setVerticalGroup(
             botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(botoneraLayout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnProductos)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(btnProductos1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(btnProductos2)
+                .addGap(18, 18, 18)
+                .addComponent(btnProductos3, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnProductos4)
+                .addContainerGap())
         );
 
         escritorio.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -106,6 +162,14 @@ public class Administracion extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnProductos1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductos1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnProductos1ActionPerformed
+
+    private void btnProductos3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductos3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnProductos3ActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -147,6 +211,9 @@ public class Administracion extends javax.swing.JFrame {
     private javax.swing.JPanel botonera;
     private javax.swing.JButton btnProductos;
     private javax.swing.JButton btnProductos1;
+    private javax.swing.JButton btnProductos2;
+    private javax.swing.JButton btnProductos3;
+    private javax.swing.JButton btnProductos4;
     private javax.swing.JDesktopPane escritorio;
     // End of variables declaration//GEN-END:variables
 }
