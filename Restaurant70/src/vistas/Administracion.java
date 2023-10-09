@@ -33,7 +33,6 @@ public class Administracion extends javax.swing.JFrame {
         escritorio = new javax.swing.JDesktopPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1024, 640));
         setResizable(false);
 
         btnProductos.setText("Productos");
@@ -56,6 +55,8 @@ public class Administracion extends javax.swing.JFrame {
                 .addComponent(btnMesas, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(485, Short.MAX_VALUE))
         );
+
+        escritorio.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
         escritorio.setLayout(escritorioLayout);
