@@ -29,44 +29,64 @@ public class Administracion extends javax.swing.JFrame {
 
         botonera = new javax.swing.JPanel();
         btnProductos = new javax.swing.JButton();
-        btnMesas = new javax.swing.JButton();
+        btnProductos1 = new javax.swing.JButton();
         escritorio = new javax.swing.JDesktopPane();
+        Fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
+        btnProductos.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        btnProductos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/x.jpg"))); // NOI18N
         btnProductos.setText("Productos");
+        btnProductos.setToolTipText("");
+        btnProductos.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnProductos.setBorderPainted(false);
+        btnProductos.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnProductos.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
-        btnMesas.setText("Mesas");
+        btnProductos1.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        btnProductos1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mesa 180x98.jpg"))); // NOI18N
+        btnProductos1.setText("Mesas");
+        btnProductos1.setToolTipText("");
+        btnProductos1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnProductos1.setBorderPainted(false);
+        btnProductos1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnProductos1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         javax.swing.GroupLayout botoneraLayout = new javax.swing.GroupLayout(botonera);
         botonera.setLayout(botoneraLayout);
         botoneraLayout.setHorizontalGroup(
             botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(btnProductos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(btnMesas, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+            .addComponent(btnProductos1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         botoneraLayout.setVerticalGroup(
             botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(botoneraLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnProductos)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnMesas, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(485, Short.MAX_VALUE))
+                .addComponent(btnProductos1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         escritorio.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+        Fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Resto 1024x725.jpg"))); // NOI18N
+        Fondo.setText("jLabel1");
+
+        escritorio.setLayer(Fondo, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
         escritorio.setLayout(escritorioLayout);
         escritorioLayout.setHorizontalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 918, Short.MAX_VALUE)
+            .addComponent(Fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(Fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -123,9 +143,10 @@ public class Administracion extends javax.swing.JFrame {
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Fondo;
     private javax.swing.JPanel botonera;
-    private javax.swing.JButton btnMesas;
     private javax.swing.JButton btnProductos;
+    private javax.swing.JButton btnProductos1;
     private javax.swing.JDesktopPane escritorio;
     // End of variables declaration//GEN-END:variables
 }
