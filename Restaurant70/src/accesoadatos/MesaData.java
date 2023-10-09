@@ -348,7 +348,7 @@ public class MesaData {
 				mesa = resultSet2Mesa(rs);
 				conexion.cerrarSentencia();
 			} else
-				mensaje("Error al obtener un mesa");
+				mensaje("Error al obtener una mesa");
 		} catch (SQLException ex) {
 			//Logger.getLogger(MesaData.class.getName()).log(Level.SEVERE, null, ex);
 			mensajeError("Error al obtener un Mesa " + ex.getMessage());

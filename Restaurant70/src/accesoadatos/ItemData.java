@@ -299,10 +299,11 @@ public class ItemData {
 	 * @param ordenacion es el orden en el que devolverá la lista
 	 * @return lista de items que cumplen con el criterio de búsqueda
 	 */
-	public List<Item> getListaItemsXCriterioDeBusqueda(int idItem, int idProducto, int idPedido, OrdenacionItem ordenacion){ 
+	public List<Item> getListaItemsXCriterioDeBusqueda(int idItem, int idProducto,
+			int idPedido, Item.EstadoItem estado, OrdenacionItem ordenacion){ 
 		ArrayList<Item> lista = new ArrayList();
 		String sql = "Select * from item";
-		if ( idItem != -1 || idProducto != -1 || idPedido != -1 ) {
+		if ( idItem != -1 || idProducto != -1 || idPedido != -1 || estado != null) {
 			sql = sql + " Where";
 			
 			if ( idItem != -1 )
@@ -318,6 +319,12 @@ public class ItemData {
 				if (idItem != -1 || idProducto != -1) //Si ya puse el idItem o idProducto agrego and
 					sql = sql+" AND";
 				sql = sql+" idPedido=" + idPedido;
+			}
+			
+			if ( estado != null ) {
+				if (idItem != -1 || idProducto != -1 || idPedido != -1) //Si ya puse el idItem o idProducto agrego and
+					sql = sql+" AND";
+				sql = sql+" estado='" + estadoItemEnumerado2EstadoItemLetra(estado) + "'";
 			}
 		}
 		

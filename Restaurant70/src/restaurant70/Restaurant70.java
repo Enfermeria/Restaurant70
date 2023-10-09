@@ -12,7 +12,7 @@ package restaurant70;
 
 import accesoadatos.ItemData;
 import accesoadatos.MesaData;
-import accesoadatos.MeseroData;
+import accesoadatos.ServicioData;
 import accesoadatos.PedidoData;
 import accesoadatos.ProductoData;
 import accesoadatos.Utils;
@@ -20,7 +20,7 @@ import static accesoadatos.Utils.dateTimeBD2LocalDateTime;
 import static accesoadatos.Utils.localDateTime2DateTimeBD;
 import entidades.Item;
 import entidades.Mesa;
-import entidades.Mesero;
+import entidades.Servicio;
 import entidades.Pedido;
 import entidades.Producto;
 import java.time.LocalDateTime;
@@ -38,8 +38,8 @@ public class Restaurant70 {
 		ProductoData productoData = new ProductoData();
 		
 		// prueba de alta producto
-		Producto p = new Producto("Coca Cola Light", "Gaseosa Coca Cola Light Sin azucar 1L", 12, 1200.5, true);
-//		productoData.altaProducto(p);
+		Producto p = new Producto("Coca Cola Light", "Gaseosa Coca Cola Light Sin azucar 1L", 12, 1200.5, true, 1, 3);
+		//productoData.altaProducto(p);
 		//Producto p2 = productoData.getProducto(p.getIdProducto());
 		//System.out.println("El producto agregado y recuperado de la tabla es " + p2);
 		
@@ -52,9 +52,7 @@ public class Restaurant70 {
 		
 		
 		List<Producto> listaProductos = productoData.getListaProductos();
-		
-		for (Producto producto: listaProductos)
-			System.out.println(producto);
+		listaProductos.stream().forEach(producto -> System.out.println(producto));
 		
 //		System.out.println("");
 //		System.out.println("POR CRITERIO DE BUSQUEDA");
@@ -74,60 +72,16 @@ public class Restaurant70 {
 //		
 		
 		p = productoData.getProducto("Taco de cerdo");
+		System.out.println("=================");
+		System.out.println(p);
+		p.setPrecio(3555.0);
+		productoData.modificarProducto(p);
+		p = productoData.getProducto("Taco de cerdo");
 		System.out.println(p);
 	}
 	
 
-	public static void pruebaMeseroData(){
-		MeseroData meseroData = new MeseroData();
-		
-		// prueba de alta producto
-		Mesero m = new Mesero("Juan Perez", "12345");
-		//meseroData.altaMesero(m);
-		//Producto p2 = productoData.getProducto(p.getIdProducto());
-		//System.out.println("El producto agregado y recuperado de la tabla es " + p2);
-		
-		//prueba de baja producto
-		//productoData.bajaProducto(84);
-		//p = productoData.getProducto(81);
-		//p.setNombre("Cerveza Quilmes 1L");
-		//productoData.modificarProducto(p);
-		
-		
-		
-		List<Mesero> listaMeseros = meseroData.getListaMeseros();
-		
-		//for (Mesero mesero: listaMeseros)
-		//	System.out.println(mesero);
-		
-		System.out.println("");
-		System.out.println("POR CRITERIO DE BUSQUEDA");
-		System.out.println("========================");
-		listaMeseros = meseroData.getListaMeserosXCriterioDeBusqueda(-1, "", "", MeseroData.OrdenacionMesero.PORIDMESERO);
-		
-		for (Mesero mesero: listaMeseros)
-			System.out.println("**** " + mesero);
-		
-//		System.out.println("");
-//		System.out.println("POR OTRO ORDEN");
-//		System.out.println("========================");
-//		listaProductos = productoData.getListaProductos(ProductoData.OrdenacionProducto.PORIDPRODUCTO);
-//		
-//		for (Producto producto: listaProductos)
-//			System.out.println("**** " + producto);
-//		
-		
-		m = meseroData.getMesero(3);
-		m.setNombreCompleto("John Molina");
-		//meseroData.modificarMesero(m);
-		//System.out.println(m);
-		
-		//meseroData.bajaMesero(5);
-	}
-	
 
-	
-	
 	
 	
 	public static void pruebaMesaData(){
@@ -169,10 +123,12 @@ public class Restaurant70 {
 //			System.out.println("**** " + producto);
 //		
 		
-		m = mesaData.getMesa(3);
+		System.out.println("=========================");
+		m = mesaData.getMesa(4);
+		System.out.println(m);
 		m.setCapacidad(1);
 		m.setEstado(Mesa.EstadoMesa.OCUPADA);
-		mesaData.modificarMesa(m);
+		//mesaData.modificarMesa(m);
 		System.out.println(m);
 		
 		//mesaData.bajaMesa(25);
@@ -222,39 +178,29 @@ public class Restaurant70 {
 		//itemData.altaItem(i);
 		
 		List<Item> listaItems = itemData.getListaItems();
-		
-		for (Item item: listaItems)
-			System.out.println(item);
+		listaItems.stream().forEach( item -> System.out.println(item) );
 		
 		i = itemData.getItem(4);
 		i.setIdPedido(1);
-		itemData.modificarItem(i);
+		//itemData.modificarItem(i);
 		
 		System.out.println("+++++++++++++++++++++++");
 		listaItems = itemData.getListaItemsXCriterioDeBusqueda(
-				//idItem, idProducto, idPedido, ItemData.Ordenacion
-				-1,			52,			-1,		ItemData.OrdenacionItem.PORIDPEDIDO);
+				//idItem, idProducto, idPedido, estado, ItemData.Ordenacion
+				-1,			-1,			-1,		Item.EstadoItem.ENTREGADO,	ItemData.OrdenacionItem.PORIDPEDIDO);
+		listaItems.stream().forEach( item -> System.out.println(item) );
 		
-		for (Item item: listaItems)
-			System.out.println(item);
+		//i = new Item(58, 4, 15, Item.EstadoItem.ANOTADO);
+		//itemData.altaItem(i);
 		
-		i = new Item(58, 4, 15, Item.EstadoItem.ANOTADO);
-		itemData.altaItem(i);
-		
-		System.out.println("======================");
-		listaItems = itemData.getListaItems();
-		
-		for (Item item: listaItems)
-			System.out.println(item);
-		
+		//System.out.println("======================");
+		//listaItems = itemData.getListaItems();
+		//listaItems.stream().forEach( item -> System.out.println(item) );
 		
 		//itemData.bajaItem(i);
-		
-		System.out.println("======================");
-		listaItems = itemData.getListaItems();
-		
-		for (Item item: listaItems)
-			System.out.println(item);
+		//System.out.println("======================");
+		//listaItems = itemData.getListaItems();
+		//listaItems.stream().forEach( item -> System.out.println(item) );
 		
 	}
 	
@@ -275,10 +221,67 @@ public class Restaurant70 {
 	}
 	
 	
+	
+	public static void pruebaServicioData(){
+		ServicioData servicioData = new ServicioData();
+		
+		// prueba de alta producto
+		Servicio m = new Servicio("Luis Gonzalez", "localhost", 20016, Servicio.TipoServicio.RECEPCION, "miclave");
+		//servicioData.altaServicio(m);
+		
+		//prueba de getServicio
+		//Servicio s2 = servicioData.getServicio(10);
+		//System.out.println(s2);
+		
+		//prueba de baja servicio
+		//servicioData.bajaServicio(10);
+		
+		//prueba de modificacion servicio
+		Servicio s3 = servicioData.getServicio(1);
+		//System.out.println(s3);
+		//System.out.println("==================");
+		//s3.setNombreServicio("Administración");
+		//s3.setTipo(Servicio.TipoServicio.ADMINISTRACION);
+		//s3.setClave("12345");
+		//servicioData.modificarServicio(s3);
+		
+		
+		
+		List<Servicio> listaServicios = servicioData.getListaServicios();
+		
+		for (Servicio servicio: listaServicios)
+			System.out.println(servicio);
+		
+		System.out.println("");
+		System.out.println("POR CRITERIO DE BUSQUEDA");
+		System.out.println("========================");
+		listaServicios = servicioData.getListaServiciosXCriterioDeBusqueda(
+		//idServicio, nombreServicio, host, puerto, tipo,						ordenacion
+			-1,			"",				"",		-1, Servicio.TipoServicio.MESERO, ServicioData.OrdenacionServicio.PORIDSERVICIO);
+		
+		listaServicios.stream().forEach(servicio -> System.out.println("**** " + servicio)); //listo listaServicios con streams y lambda
+		// el equivalente clasico es for (Servicio servicio: listaServicios) System.out.println("**** " + servicio);
+		
+		System.out.println("");
+		System.out.println("POR OTRO ORDEN");
+		System.out.println("========================");
+		listaServicios = servicioData.getListaServicios(ServicioData.OrdenacionServicio.PORTIPOSERVICIO);
+		
+        listaServicios.stream().forEach(servicio -> System.out.println("**** " + servicio)); //listo listaServicios con streams y lambda
+		// el equivalente clasico es: for (Servicio servicio: listaServicios) System.out.println("**** " + servicio);
+		
+	}
+	
+
+	
+	
+	
 	public static void main(String[] args) {
 		//pruebaMesaData();
 		//pruebaPedidoData();
-		pruebaItemData();
+		//pruebaItemData();
+		//pruebaServicioData();
+		pruebaProductoData();
 	}
 }
 	

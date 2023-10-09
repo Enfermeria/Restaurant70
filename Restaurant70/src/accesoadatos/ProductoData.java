@@ -51,10 +51,15 @@ public class ProductoData {
 	 */
 	public boolean altaProducto(Producto producto){// 
 		// una alternativa es usar ?,?,? y luego insertarlo con preparedStatement.setInt(1, dato) // o setString, setBoolean, setData
-		String sql = "Insert into producto (idproducto, nombre, descripcion, stock, precio, disponible) " +
-			"VALUES " + "(null,'" + producto.getNombre() +  "','" + producto.getDescripcion() + 
-			"','" + producto.getStock() + "','" + producto.getPrecio() +  "', " + 
-			producto.getDisponible()+ " )";
+		String sql = "Insert into producto (idproducto, nombre, descripcion, stock, precio, disponible, idcategoria, despachadopor) " +
+			"VALUES " + "(null,'" + 
+			producto.getNombre() +  "',' " + 
+			producto.getDescripcion() + "',' " + 
+			producto.getStock() + "',' " + 
+			producto.getPrecio() +  "', " + 
+			producto.getDisponible()+ ", '" + 
+			producto.getIdCategoria() + "', '" + 
+			producto.getDespachadoPor() + "' )";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Alta de producto exitosa");
 			producto.setIdProducto(conexion.getKeyGenerado()); //asigno el id generado
@@ -156,7 +161,9 @@ public class ProductoData {
 				"descripcion='" + producto.getDescripcion() + "'," +
 				"stock='" + producto.getStock() + "'," +
 				"precio='" + producto.getPrecio() + "'," + 
-				"disponible=" + producto.getDisponible() + "" + " " +
+				"disponible=" + producto.getDisponible() + ", " +
+				"idcategoria=" + ( (producto.getIdCategoria()== 0 ) ? null : "'" + producto.getIdCategoria() + "'" ) + ", " +
+				"despachadopor=" + ( (producto.getDespachadoPor() == 0) ? null : "'" + producto.getDespachadoPor() + "'" ) + " " +
 				"where idProducto='" + producto.getIdProducto() + "'";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Modificación de producto exitosa");
@@ -187,6 +194,8 @@ public class ProductoData {
 			producto.setStock(rs.getInt("stock"));
 			producto.setPrecio(rs.getDouble("precio"));
 			producto.setDisponible(rs.getBoolean("disponible"));
+			producto.setIdCategoria(rs.getInt("idCategoria"));
+			producto.setDespachadoPor(rs.getInt("despachadoPor"));
 		} catch (SQLException ex) {
 			//Logger.getLogger(ProductoData.class.getName()).log(Level.SEVERE, null, ex);
 			mensajeError("Error al pasar de ResultSet a Producto"+ex.getMessage());
@@ -260,10 +269,13 @@ public class ProductoData {
 	 * @param ordenacion es el orden en el que devolverá la lista
 	 * @return lista de productos que cumplen con el criterio de búsqueda
 	 */
-	public List<Producto> getListaProductosXCriterioDeBusqueda(int idProducto, String nombre, int stock, double precio, OrdenacionProducto ordenacion){ 
+	public List<Producto> getListaProductosXCriterioDeBusqueda(
+			int idProducto, String nombre, int stock, double precio, Boolean disponible,
+			int idCategoria, int despachadoPor, OrdenacionProducto ordenacion){ 
 		ArrayList<Producto> lista = new ArrayList();
 		String sql = "Select * from producto";
-		if ( idProducto != -1 || ! nombre.isEmpty() || stock != -1 ||  precio != -1.0 ) {
+		if ( idProducto != -1 || ! nombre.isEmpty() || stock != -1 ||  
+			precio != -1.0 || disponible != null || idCategoria != -1 || despachadoPor != -1 ) {
 			sql = sql + " Where";
 			
 			if ( idProducto != -1 )
@@ -285,6 +297,24 @@ public class ProductoData {
 				if (idProducto != -1 || ! nombre.isEmpty() || stock != -1) //Si ya puse el idProducto o nombre agrego and
 					sql = sql+" AND";
 				sql = sql+" precio="+precio;
+			}
+			
+			if ( idCategoria != -1 ) {
+				if (idProducto != -1 || ! nombre.isEmpty() || stock != -1 || precio != -1.0) //Si ya puse el idProducto o nombre agrego and
+					sql = sql+" AND";
+				sql = sql+" idcategoria=" + idCategoria;
+			}
+			
+			if ( despachadoPor != -1 ) {
+				if (idProducto != -1 || ! nombre.isEmpty() || stock != -1 || precio != -1.0 || idCategoria != -1) //Si ya puse el idProducto o nombre agrego and
+					sql = sql+" AND";
+				sql = sql+" despachadoPor=" + despachadoPor;
+			}
+			
+			if ( disponible != null ) {
+				if (idProducto != -1 || ! nombre.isEmpty() || stock != -1 || precio != -1.0 || idCategoria != -1 || despachadoPor != -1) //Si ya puse el idProducto o nombre agrego and
+					sql = sql+" AND";
+				sql = sql+" disponible=" + disponible;
 			}
 			
 		}
