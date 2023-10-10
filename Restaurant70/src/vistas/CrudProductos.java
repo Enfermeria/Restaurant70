@@ -519,7 +519,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
                         .addComponent(btnGuardar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnCancelar)))
-                .addContainerGap(80, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelCamposMesaLayout.setVerticalGroup(
             panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

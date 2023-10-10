@@ -553,11 +553,15 @@ public class CrudMesas extends javax.swing.JInternalFrame {
                                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtIdMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(txtCapacidad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                                    .addComponent(btnGuardar)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnCancelar))
                                 .addGroup(panelCamposMesaLayout.createSequentialGroup()
                                     .addComponent(jLabel5)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(cbIdNombreMesero, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(cbIdNombreMesero, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGroup(panelCamposMesaLayout.createSequentialGroup()
                                     .addComponent(jLabel4)
                                     .addGap(12, 12, 12)
@@ -565,13 +569,8 @@ public class CrudMesas extends javax.swing.JInternalFrame {
                                     .addGap(18, 18, 18)
                                     .addComponent(rbEstadoOcupada)
                                     .addGap(18, 18, 18)
-                                    .addComponent(rbEstadoAtendida)))))
-                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addGap(60, 60, 60)
-                        .addComponent(btnGuardar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnCancelar)))
-                .addContainerGap(80, Short.MAX_VALUE))
+                                    .addComponent(rbEstadoAtendida))))))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
         panelCamposMesaLayout.setVerticalGroup(
             panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -649,10 +648,13 @@ public class CrudMesas extends javax.swing.JInternalFrame {
         });
         jScrollPane1.setViewportView(tablaMesas);
         if (tablaMesas.getColumnModel().getColumnCount() > 0) {
-            tablaMesas.getColumnModel().getColumn(0).setPreferredWidth(5);
-            tablaMesas.getColumnModel().getColumn(1).setPreferredWidth(5);
-            tablaMesas.getColumnModel().getColumn(2).setPreferredWidth(5);
-            tablaMesas.getColumnModel().getColumn(3).setPreferredWidth(45);
+            tablaMesas.getColumnModel().getColumn(0).setResizable(false);
+            tablaMesas.getColumnModel().getColumn(0).setPreferredWidth(4);
+            tablaMesas.getColumnModel().getColumn(1).setResizable(false);
+            tablaMesas.getColumnModel().getColumn(1).setPreferredWidth(4);
+            tablaMesas.getColumnModel().getColumn(2).setResizable(false);
+            tablaMesas.getColumnModel().getColumn(2).setPreferredWidth(4);
+            tablaMesas.getColumnModel().getColumn(3).setPreferredWidth(75);
         }
 
         javax.swing.GroupLayout panelTablaLayout = new javax.swing.GroupLayout(panelTabla);
