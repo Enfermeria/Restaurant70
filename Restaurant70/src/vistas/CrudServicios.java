@@ -529,7 +529,7 @@ public class CrudMesas extends javax.swing.JInternalFrame {
         });
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel7.setText("Gestión de Mesas");
+        jLabel7.setText("Gestión de Servicios");
 
         txtCapacidad.setEditable(false);
 
@@ -540,9 +540,6 @@ public class CrudMesas extends javax.swing.JInternalFrame {
             .addGroup(panelCamposMesaLayout.createSequentialGroup()
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addGap(97, 97, 97)
-                        .addComponent(jLabel7))
-                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
                         .addGap(21, 21, 21)
                         .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelCamposMesaLayout.createSequentialGroup()
@@ -550,9 +547,9 @@ public class CrudMesas extends javax.swing.JInternalFrame {
                                     .addComponent(jLabel2)
                                     .addComponent(jLabel3))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtIdMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtCapacidad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtIdMesa, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+                                    .addComponent(txtCapacidad)))
                             .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addGroup(panelCamposMesaLayout.createSequentialGroup()
                                     .addComponent(btnGuardar)
@@ -569,7 +566,10 @@ public class CrudMesas extends javax.swing.JInternalFrame {
                                     .addGap(18, 18, 18)
                                     .addComponent(rbEstadoOcupada)
                                     .addGap(18, 18, 18)
-                                    .addComponent(rbEstadoAtendida))))))
+                                    .addComponent(rbEstadoAtendida)))))
+                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                        .addGap(72, 72, 72)
+                        .addComponent(jLabel7)))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
         panelCamposMesaLayout.setVerticalGroup(

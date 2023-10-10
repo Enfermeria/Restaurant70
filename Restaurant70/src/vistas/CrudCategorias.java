@@ -331,9 +331,6 @@ public class CrudCategorias extends javax.swing.JInternalFrame {
             .addGroup(panelCamposMesaLayout.createSequentialGroup()
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addGap(44, 44, 44)
-                        .addComponent(jLabel7))
-                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
                         .addGap(21, 21, 21)
                         .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(panelCamposMesaLayout.createSequentialGroup()
@@ -347,7 +344,10 @@ public class CrudCategorias extends javax.swing.JInternalFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtIdCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(jLabel7)))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
         panelCamposMesaLayout.setVerticalGroup(

@@ -540,9 +540,6 @@ public class CrudMesas extends javax.swing.JInternalFrame {
             .addGroup(panelCamposMesaLayout.createSequentialGroup()
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addGap(97, 97, 97)
-                        .addComponent(jLabel7))
-                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
                         .addGap(21, 21, 21)
                         .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelCamposMesaLayout.createSequentialGroup()
@@ -569,7 +566,10 @@ public class CrudMesas extends javax.swing.JInternalFrame {
                                     .addGap(18, 18, 18)
                                     .addComponent(rbEstadoOcupada)
                                     .addGap(18, 18, 18)
-                                    .addComponent(rbEstadoAtendida))))))
+                                    .addComponent(rbEstadoAtendida)))))
+                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                        .addGap(77, 77, 77)
+                        .addComponent(jLabel7)))
                 .addContainerGap(24, Short.MAX_VALUE))
         );
         panelCamposMesaLayout.setVerticalGroup(
