@@ -96,11 +96,6 @@ public class Administracion extends javax.swing.JFrame {
         btnFacturacion.setBorderPainted(false);
         btnFacturacion.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnFacturacion.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnFacturacion.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFacturacionActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout botoneraLayout = new javax.swing.GroupLayout(botonera);
         botonera.setLayout(botoneraLayout);
@@ -202,18 +197,6 @@ public class Administracion extends javax.swing.JFrame {
     private void btnServiciosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnServiciosActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnServiciosActionPerformed
-
-    private void btnFacturacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFacturacionActionPerformed
-        escritorio.removeAll(); // cierro todas las ventanas del escritorio
-		mostrarFondo(); // recargo la foto de la ULP
-		escritorio.repaint();
-		
-		CrudCategorias crudCategorias = new CrudCategorias(); // creo un internal Frame
-		crudCategorias.setVisible(true); // lo pongo visible
-		
-		escritorio.add(crudCategorias); // lo pongo en el escritorio
-		escritorio.moveToFront(crudCategorias); //pongo la ventana al frente:       // TODO add your handling code here:
-    }//GEN-LAST:event_btnFacturacionActionPerformed
 
 	/**
 	 * @param args the command line arguments
