@@ -31,7 +31,7 @@ import entidades.Pedido;
  */
 public class MesaData {
 	ConexionMySQL conexion; //gestiona la conexión con la bd
-	public enum OrdenacionMesa {PORIDMESA, PORCAPACIDAD}; //tipo de ordenamiento
+	public enum OrdenacionMesa {PORIDMESA, PORCAPACIDAD, PORESTADO}; //tipo de ordenamiento
 	
 	
 	/**
@@ -92,8 +92,8 @@ public class MesaData {
 		// una alternativa es usar ?,?,? y luego insertarlo con preparedStatement.setInt(1, dato) // o setString, setBoolean, setData
 		String sql = "Insert into mesa (idmesa, capacidad, estado, idmesero) " +
 			"VALUES " + "(null,'" + mesa.getCapacidad() +  "','" + 
-			estadoMesaEnumerado2EstadoMesaLetra(mesa.getEstado()) +  "', '" + 
-			mesa.getIdMesero() + "' )";
+			estadoMesaEnumerado2EstadoMesaLetra(mesa.getEstado()) +  "', " + 
+			( (mesa.getIdMesero()==0) ? null : "'" + mesa.getIdMesero() + "'") + " )";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Alta de mesa exitosa");
 			mesa.setIdMesa(conexion.getKeyGenerado()); //asigno el id generado
@@ -185,7 +185,7 @@ public class MesaData {
 				"Update mesa set " + 
 				"capacidad='" + mesa.getCapacidad() + "'," + 
 				"estado='" + estadoMesaEnumerado2EstadoMesaLetra(mesa.getEstado()) + "'," +
-				"idMesero='" + mesa.getIdMesero() + "' " +
+				"idMesero=" + ( (mesa.getIdMesero()==0) ? null : "'" + mesa.getIdMesero() + "'") + " " +
 				" where idMesa='" + mesa.getIdMesa() + "'";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Modificación de mesa exitosa");
@@ -251,8 +251,8 @@ public class MesaData {
 			sql = sql + " Order by idmesa";
 		else if (ordenacion == OrdenacionMesa.PORCAPACIDAD)
 			sql = sql + " Order by capacidad";
-		else 
-			sql = sql + " Order by idmesa";
+		else //if (ordenacion == OrdenacionMesa.PORESTADO)
+			sql = sql + " Order by estado";
 		
 		//ejecuto
 		ResultSet rs = conexion.sqlSelect(sql);
@@ -311,7 +311,7 @@ public class MesaData {
 			if ( idMesero != -1 ) {
 				if (idMesa != -1 || capacidad != -1 || estado != null) //Si ya puse el idMesa o capacidad agrego and
 					sql = sql+" AND";
-				sql = sql+" idMesero=" + ((idMesero==0) ? "null" : ("'" + idMesero + "'"));
+				sql = sql+" idMesero" + ((idMesero==0) ? " is null" : ("='" + idMesero + "'"));
 			}
 		}
 		
@@ -321,7 +321,7 @@ public class MesaData {
 		else if (ordenacion == OrdenacionMesa.PORCAPACIDAD)
 			sql = sql + " Order by capacidad";
 		else 
-			sql = sql + " Order by idmesa";		
+			sql = sql + " Order by estado";		
 	
 		System.out.println(sql);
 		// ejecuto

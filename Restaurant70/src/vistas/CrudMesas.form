@@ -395,7 +395,7 @@
                       <Component id="jLabel6" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="cboxOrden" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="122" max="32767" attributes="0"/>
+                  <EmptySpace pref="157" max="32767" attributes="0"/>
                   <Component id="btnSalir" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -500,9 +500,9 @@
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="3">
-                <StringItem index="0" value="por Id"/>
-                <StringItem index="1" value="por DNI"/>
-                <StringItem index="2" value="por Apellido y nombre"/>
+                <StringItem index="0" value="por IdMesa"/>
+                <StringItem index="1" value="por Capacidad"/>
+                <StringItem index="2" value="por Estado"/>
               </StringArray>
             </Property>
           </Properties>

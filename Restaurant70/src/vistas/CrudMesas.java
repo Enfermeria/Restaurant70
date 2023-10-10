@@ -312,9 +312,10 @@ public class CrudMesas extends javax.swing.JInternalFrame {
 		//pongo los campos en blanco
 		txtIdMesa.setText("");
 		txtCapacidad.setText("");
-		rbEstadoLibre.setSelected(false);
-		rbEstadoOcupada.setSelected(false);
-		rbEstadoAtendida.setSelected(false);
+		//rbEstadoLibre.setSelected(false);
+		//rbEstadoOcupada.setSelected(false);
+		//rbEstadoAtendida.setSelected(false);
+		btngrpEstado.clearSelection();
 		cbIdNombreMesero.setSelectedIndex(-1);
 		
 		if (tablaMesas.getRowCount() > 0) 
@@ -728,7 +729,7 @@ public class CrudMesas extends javax.swing.JInternalFrame {
             }
         });
 
-        cboxOrden.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "por Id", "por DNI", "por Apellido y nombre" }));
+        cboxOrden.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "por IdMesa", "por Capacidad", "por Estado" }));
         cboxOrden.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboxOrdenActionPerformed(evt);
@@ -755,7 +756,7 @@ public class CrudMesas extends javax.swing.JInternalFrame {
                 .addGroup(botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel6)
                     .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, Short.MAX_VALUE)
                 .addComponent(btnSalir)
                 .addContainerGap())
         );
@@ -871,6 +872,8 @@ public class CrudMesas extends javax.swing.JInternalFrame {
 			ordenacion = OrdenacionMesa.PORIDMESA;
         else if (cboxOrden.getSelectedIndex() == 1)
         ordenacion = OrdenacionMesa.PORCAPACIDAD;
+		else if (cboxOrden.getSelectedIndex() == 2)
+			ordenacion = OrdenacionMesa.PORESTADO;
         else // por las dudas que no eligio uno correcto
         ordenacion = OrdenacionMesa.PORIDMESA;
 
