@@ -151,7 +151,7 @@ public class CategoriaData {
 	public boolean modificarCategoria(Categoria categoria){
 		String sql = 
 				"Update categoria set " + 
-				"nombre='" + categoria.getNombre() + " " +
+				"nombre='" + categoria.getNombre() + "' " +
 				"where idCategoria='" + categoria.getIdCategoria() + "'";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Modificación de categoria exitosa");
