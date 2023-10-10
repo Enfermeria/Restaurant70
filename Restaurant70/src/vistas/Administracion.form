@@ -47,11 +47,11 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                      <Component id="btnProductos3" max="32767" attributes="0"/>
-                      <Component id="btnProductos2" max="32767" attributes="0"/>
+                      <Component id="btnServicios" max="32767" attributes="0"/>
+                      <Component id="btnPedidos" max="32767" attributes="0"/>
                       <Component id="btnProductos" alignment="0" max="32767" attributes="0"/>
-                      <Component id="btnProductos1" alignment="0" max="32767" attributes="0"/>
-                      <Component id="btnProductos4" max="32767" attributes="0"/>
+                      <Component id="btnMesas" alignment="0" max="32767" attributes="0"/>
+                      <Component id="btnFacturacion" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -63,13 +63,13 @@
                   <EmptySpace max="32767" attributes="0"/>
                   <Component id="btnProductos" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="btnProductos1" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnMesas" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="btnProductos2" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnPedidos" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="btnProductos3" min="-2" pref="127" max="-2" attributes="0"/>
+                  <Component id="btnServicios" min="-2" pref="127" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="btnProductos4" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnFacturacion" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -96,7 +96,7 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="btnProductos1">
+        <Component class="javax.swing.JButton" name="btnMesas">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Georgia" size="18" style="1"/>
@@ -116,10 +116,10 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnProductos1ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMesasActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="btnProductos2">
+        <Component class="javax.swing.JButton" name="btnPedidos">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Georgia" size="18" style="1"/>
@@ -139,7 +139,7 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="btnProductos3">
+        <Component class="javax.swing.JButton" name="btnServicios">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Georgia" size="18" style="1"/>
@@ -168,10 +168,10 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnProductos3ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnServiciosActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="btnProductos4">
+        <Component class="javax.swing.JButton" name="btnFacturacion">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Georgia" size="18" style="1"/>
@@ -203,17 +203,17 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="Fondo" alignment="0" max="32767" attributes="0"/>
+              <Component id="fondo" alignment="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="Fondo" alignment="0" max="32767" attributes="0"/>
+              <Component id="fondo" alignment="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="Fondo">
+        <Component class="javax.swing.JLabel" name="fondo">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/imagenes/Resto 1024x725.jpg"/>

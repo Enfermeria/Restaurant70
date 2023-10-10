@@ -29,12 +29,12 @@ public class Administracion extends javax.swing.JFrame {
 
         botonera = new javax.swing.JPanel();
         btnProductos = new javax.swing.JButton();
-        btnProductos1 = new javax.swing.JButton();
-        btnProductos2 = new javax.swing.JButton();
-        btnProductos3 = new javax.swing.JButton();
-        btnProductos4 = new javax.swing.JButton();
+        btnMesas = new javax.swing.JButton();
+        btnPedidos = new javax.swing.JButton();
+        btnServicios = new javax.swing.JButton();
+        btnFacturacion = new javax.swing.JButton();
         escritorio = new javax.swing.JDesktopPane();
-        Fondo = new javax.swing.JLabel();
+        fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -48,54 +48,54 @@ public class Administracion extends javax.swing.JFrame {
         btnProductos.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnProductos.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
-        btnProductos1.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
-        btnProductos1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mesa 180x98.jpg"))); // NOI18N
-        btnProductos1.setText("Mesas");
-        btnProductos1.setToolTipText("");
-        btnProductos1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        btnProductos1.setBorderPainted(false);
-        btnProductos1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnProductos1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnProductos1.addActionListener(new java.awt.event.ActionListener() {
+        btnMesas.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        btnMesas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mesa 180x98.jpg"))); // NOI18N
+        btnMesas.setText("Mesas");
+        btnMesas.setToolTipText("");
+        btnMesas.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnMesas.setBorderPainted(false);
+        btnMesas.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnMesas.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnMesas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnProductos1ActionPerformed(evt);
+                btnMesasActionPerformed(evt);
             }
         });
 
-        btnProductos2.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
-        btnProductos2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/chef 180x98.jpg"))); // NOI18N
-        btnProductos2.setText("Pedidos");
-        btnProductos2.setToolTipText("");
-        btnProductos2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        btnProductos2.setBorderPainted(false);
-        btnProductos2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnProductos2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnPedidos.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        btnPedidos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/chef 180x98.jpg"))); // NOI18N
+        btnPedidos.setText("Pedidos");
+        btnPedidos.setToolTipText("");
+        btnPedidos.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnPedidos.setBorderPainted(false);
+        btnPedidos.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnPedidos.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
-        btnProductos3.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
-        btnProductos3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mozo 180x98 final.jpg"))); // NOI18N
-        btnProductos3.setText("Servicios");
-        btnProductos3.setToolTipText("");
-        btnProductos3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        btnProductos3.setBorderPainted(false);
-        btnProductos3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnProductos3.setMaximumSize(new java.awt.Dimension(187, 157));
-        btnProductos3.setMinimumSize(new java.awt.Dimension(187, 157));
-        btnProductos3.setPreferredSize(new java.awt.Dimension(187, 157));
-        btnProductos3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnProductos3.addActionListener(new java.awt.event.ActionListener() {
+        btnServicios.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        btnServicios.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mozo 180x98 final.jpg"))); // NOI18N
+        btnServicios.setText("Servicios");
+        btnServicios.setToolTipText("");
+        btnServicios.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnServicios.setBorderPainted(false);
+        btnServicios.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnServicios.setMaximumSize(new java.awt.Dimension(187, 157));
+        btnServicios.setMinimumSize(new java.awt.Dimension(187, 157));
+        btnServicios.setPreferredSize(new java.awt.Dimension(187, 157));
+        btnServicios.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnServicios.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnProductos3ActionPerformed(evt);
+                btnServiciosActionPerformed(evt);
             }
         });
 
-        btnProductos4.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
-        btnProductos4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/facturación 180x98.jpg"))); // NOI18N
-        btnProductos4.setText("Facturación");
-        btnProductos4.setToolTipText("");
-        btnProductos4.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        btnProductos4.setBorderPainted(false);
-        btnProductos4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnProductos4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnFacturacion.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        btnFacturacion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/facturación 180x98.jpg"))); // NOI18N
+        btnFacturacion.setText("Facturación");
+        btnFacturacion.setToolTipText("");
+        btnFacturacion.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnFacturacion.setBorderPainted(false);
+        btnFacturacion.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnFacturacion.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
         javax.swing.GroupLayout botoneraLayout = new javax.swing.GroupLayout(botonera);
         botonera.setLayout(botoneraLayout);
@@ -104,11 +104,11 @@ public class Administracion extends javax.swing.JFrame {
             .addGroup(botoneraLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(btnProductos3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnProductos2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnServicios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnProductos, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnProductos1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnProductos4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnMesas, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnFacturacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         botoneraLayout.setVerticalGroup(
@@ -117,32 +117,32 @@ public class Administracion extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnProductos)
                 .addGap(18, 18, 18)
-                .addComponent(btnProductos1)
+                .addComponent(btnMesas)
                 .addGap(18, 18, 18)
-                .addComponent(btnProductos2)
+                .addComponent(btnPedidos)
                 .addGap(18, 18, 18)
-                .addComponent(btnProductos3, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnServicios, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnProductos4)
+                .addComponent(btnFacturacion)
                 .addContainerGap())
         );
 
         escritorio.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-        Fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Resto 1024x725.jpg"))); // NOI18N
-        Fondo.setText("jLabel1");
+        fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Resto 1024x725.jpg"))); // NOI18N
+        fondo.setText("jLabel1");
 
-        escritorio.setLayer(Fondo, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        escritorio.setLayer(fondo, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
         escritorio.setLayout(escritorioLayout);
         escritorioLayout.setHorizontalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -163,13 +163,40 @@ public class Administracion extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnProductos1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductos1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnProductos1ActionPerformed
+	/**
+	 * Carga una imagen de la ULP en el fondo del escritorio.
+	 */
+	private void mostrarFondo(){
+		escritorio.setLayer(fondo, javax.swing.JLayeredPane.DEFAULT_LAYER);
+		javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
+        escritorio.setLayout(escritorioLayout);
+        escritorioLayout.setHorizontalGroup(
+            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        escritorioLayout.setVerticalGroup(
+            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+	} // mostrarFondo
+	
+	
+	
+    private void btnMesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMesasActionPerformed
+        escritorio.removeAll(); // cierro todas las ventanas del escritorio
+		mostrarFondo(); // recargo la foto de la ULP
+		escritorio.repaint();
+		
+		CrudMesas crudMesas = new CrudMesas(); // creo un internal Frame
+		crudMesas.setVisible(true); // lo pongo visible
+		
+		escritorio.add(crudMesas); // lo pongo en el escritorio
+		escritorio.moveToFront(crudMesas); //pongo la ventana al frente:
+    }//GEN-LAST:event_btnMesasActionPerformed
 
-    private void btnProductos3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductos3ActionPerformed
+    private void btnServiciosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnServiciosActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnProductos3ActionPerformed
+    }//GEN-LAST:event_btnServiciosActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -207,13 +234,13 @@ public class Administracion extends javax.swing.JFrame {
 	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel Fondo;
     private javax.swing.JPanel botonera;
+    private javax.swing.JButton btnFacturacion;
+    private javax.swing.JButton btnMesas;
+    private javax.swing.JButton btnPedidos;
     private javax.swing.JButton btnProductos;
-    private javax.swing.JButton btnProductos1;
-    private javax.swing.JButton btnProductos2;
-    private javax.swing.JButton btnProductos3;
-    private javax.swing.JButton btnProductos4;
+    private javax.swing.JButton btnServicios;
     private javax.swing.JDesktopPane escritorio;
+    private javax.swing.JLabel fondo;
     // End of variables declaration//GEN-END:variables
 }

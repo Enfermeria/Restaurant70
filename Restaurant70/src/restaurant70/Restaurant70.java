@@ -88,7 +88,7 @@ public class Restaurant70 {
 		MesaData mesaData = new MesaData();
 		
 		// prueba de alta producto
-		Mesa m = new Mesa(4, Mesa.EstadoMesa.ATENDIDA);
+		Mesa m = new Mesa(4, Mesa.EstadoMesa.ATENDIDA, 0);
 		//mesaData.altaMesa(m);
 		//Producto p2 = productoData.getProducto(p.getIdProducto());
 		//System.out.println("El producto agregado y recuperado de la tabla es " + p2);
@@ -109,7 +109,7 @@ public class Restaurant70 {
 		System.out.println("");
 		System.out.println("POR CRITERIO DE BUSQUEDA");
 		System.out.println("========================");
-		listaMesas = mesaData.getListaMesasXCriterioDeBusqueda(-1, -1, Mesa.EstadoMesa.ATENDIDA, MesaData.OrdenacionMesa.PORCAPACIDAD);
+		listaMesas = mesaData.getListaMesasXCriterioDeBusqueda(-1, -1, Mesa.EstadoMesa.ATENDIDA, -1, MesaData.OrdenacionMesa.PORCAPACIDAD);
 		
 		for (Mesa mesa: listaMesas)
 			System.out.println("**** " + mesa);

@@ -90,7 +90,7 @@ public class MesaData {
 	 */
 	public boolean altaMesa(Mesa mesa){// 
 		// una alternativa es usar ?,?,? y luego insertarlo con preparedStatement.setInt(1, dato) // o setString, setBoolean, setData
-		String sql = "Insert into mesa (idmesa, capacidad, EstadoMesa, idmesero) " +
+		String sql = "Insert into mesa (idmesa, capacidad, estado, idmesero) " +
 			"VALUES " + "(null,'" + mesa.getCapacidad() +  "','" + 
 			estadoMesaEnumerado2EstadoMesaLetra(mesa.getEstado()) +  "', '" + 
 			mesa.getIdMesero() + "' )";
@@ -281,15 +281,16 @@ public class MesaData {
 	 * Si no hay ningún criterio de búsqueda devuelve toda la tabla
 	 * 
 	 * @param idMesa si idMesa no es -1 usa idMesa como criterio de búsqueda 
-	 * @param nombreCompleto si nombre completo no es '' usa nombre como criterio de búsqueda
-	 * @param clave      si clave no es '' usa clave como criterio de búsqueda
+	 * @param capacidad si capacidad no es -1 usa capacidad como criterio de búsqueda
+	 * @param estado    si el estado no es null, usa estado como criterio de búsqueda
+	 * @param idMesero  si el idMesero no es -1, usa idMesero como criterio de búsqueda
 	 * @param ordenacion es el orden en el que devolverá la lista
 	 * @return lista de mesas que cumplen con el criterio de búsqueda
 	 */
-	public List<Mesa> getListaMesasXCriterioDeBusqueda(int idMesa, int capacidad, Mesa.EstadoMesa estado, OrdenacionMesa ordenacion){ 
+	public List<Mesa> getListaMesasXCriterioDeBusqueda(int idMesa, int capacidad, Mesa.EstadoMesa estado, int idMesero,OrdenacionMesa ordenacion){ 
 		ArrayList<Mesa> lista = new ArrayList();
 		String sql = "Select * from mesa";
-		if ( idMesa != -1 || capacidad != -1 || estado != Mesa.EstadoMesa.SINASIGNAR ) {
+		if ( idMesa != -1 || capacidad != -1 || estado != null || idMesero != -1 ) {
 			sql = sql + " Where";
 			
 			if ( idMesa != -1 )
@@ -301,12 +302,17 @@ public class MesaData {
 				sql = sql+ " capacidad ='" + capacidad + "'";
 			}
 			
-			if ( estado != Mesa.EstadoMesa.SINASIGNAR ) {
+			if ( estado != null ) {
 				if (idMesa != -1 || capacidad != -1) //Si ya puse el idMesa o capacidad agrego and
 					sql = sql+" AND";
 				sql = sql+" estado='" + estadoMesaEnumerado2EstadoMesaLetra(estado) + "'";
 			}
 			
+			if ( idMesero != -1 ) {
+				if (idMesa != -1 || capacidad != -1 || estado != null) //Si ya puse el idMesa o capacidad agrego and
+					sql = sql+" AND";
+				sql = sql+" idMesero=" + ((idMesero==0) ? "null" : ("'" + idMesero + "'"));
+			}
 		}
 		
 		//defino orden
@@ -317,6 +323,7 @@ public class MesaData {
 		else 
 			sql = sql + " Order by idmesa";		
 	
+		System.out.println(sql);
 		// ejecuto
 		ResultSet rs = conexion.sqlSelect(sql);
 		

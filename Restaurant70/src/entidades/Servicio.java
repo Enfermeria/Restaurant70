@@ -98,7 +98,8 @@ public class Servicio {
 
 	@Override
 	public String toString() {
-		return "Servicio{" + "idServicio=" + idServicio + ", nombreServicio=" + nombreServicio + ", host=" + host + ", puerto=" + puerto + ", tipo=" + tipo + ", clave=" + clave + '}';
+		//return "Servicio{" + "idServicio=" + idServicio + ", nombreServicio=" + nombreServicio + ", host=" + host + ", puerto=" + puerto + ", tipo=" + tipo + ", clave=" + clave + '}';
+		return "" + idServicio + " " + nombreServicio;
 	}
 	
 }

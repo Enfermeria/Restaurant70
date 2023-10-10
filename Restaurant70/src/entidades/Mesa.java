@@ -19,18 +19,18 @@ public class Mesa {
 	private EstadoMesa estado;
 	private int idMesero; // idServicio del mesero correspondiente de servicios que atiende esa mesa
 	
-	public enum EstadoMesa {LIBRE, OCUPADA, ATENDIDA, SINASIGNAR};
+	public enum EstadoMesa {LIBRE, OCUPADA, ATENDIDA};
 
 	public Mesa() {
 	}
 
-	public Mesa(int capacidad, EstadoMesa estado) {
+	public Mesa(int capacidad, EstadoMesa estado, int idMesero) {
 		this.capacidad = capacidad;
 		this.estado = estado;
 		this.idMesero = idMesero;
 	}
 
-	public Mesa(int idMesa, int capacidad, EstadoMesa estado) {
+	public Mesa(int idMesa, int capacidad, EstadoMesa estado, int idMesero) {
 		this.idMesa = idMesa;
 		this.capacidad = capacidad;
 		this.estado = estado;
