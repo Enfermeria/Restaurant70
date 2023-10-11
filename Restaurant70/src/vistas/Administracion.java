@@ -203,7 +203,15 @@ public class Administracion extends javax.swing.JFrame {
     }//GEN-LAST:event_btnMesasActionPerformed
 
     private void btnServiciosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnServiciosActionPerformed
-        // TODO add your handling code here:
+		escritorio.removeAll(); // cierro todas las ventanas del escritorio
+		mostrarFondo(); // recargo la foto de la ULP
+		escritorio.repaint();
+		
+		CrudServicios crudServicios = new CrudServicios(); // creo un internal Frame
+		crudServicios.setVisible(true); // lo pongo visible
+		
+		escritorio.add(crudServicios); // lo pongo en el escritorio
+		escritorio.moveToFront(crudServicios); //pongo la ventana al frente:
     }//GEN-LAST:event_btnServiciosActionPerformed
 
     private void btnFacturacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFacturacionActionPerformed

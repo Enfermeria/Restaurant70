@@ -81,7 +81,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 			listaServicios = servicioData.getListaServicios(ordenacion);
 		
 		mapaServicios = new LinkedHashMap(); 
-		listaServicios.stream().forEach( servicio -> mapaServicios.put(servicio.getIdServicio(), servicio) );
+		listaServicios.stream().forEach( servicio -> mapaServicios.put(servicio.getIdServicio(), servicio) ); // notación labmda con streams
 	}
 	
 	
@@ -323,6 +323,13 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		txtPuerto.setText(tablaServicios.getValueAt(numfila,3)+"");
 		cbTipo.setSelectedItem(tablaServicios.getValueAt(numfila,3) );
 		pwdClave.setText( mapaServicios.get(Integer.valueOf( txtIdServicio.getText())).getClave() );
+		
+		//para debugguear
+		System.out.println("txtIdServicio: " + txtIdServicio.getText());
+		System.out.println("txtNombre: " + txtNombre.getText());
+		System.out.println("txtHost: " + txtHost.getText());
+		System.out.println("txtPuerto: " + txtPuerto.getText());
+		
 	} //filaTabla2Campos
 
 
@@ -502,7 +509,6 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel7.setText("Gestión de Servicios");
 
-        txtNombre.setEditable(false);
         txtNombre.setBorder(javax.swing.BorderFactory.createTitledBorder("Nombre"));
         txtNombre.setPreferredSize(new java.awt.Dimension(16, 42));
 
@@ -665,7 +671,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         botonera.setBackground(new java.awt.Color(153, 153, 255));
 
         btnAgregar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Mesa32x32.png"))); // NOI18N
+        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/bandeja.png"))); // NOI18N
         btnAgregar.setText("Agregar");
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -848,15 +854,15 @@ public class CrudServicios extends javax.swing.JInternalFrame {
  */	
     private void cboxOrdenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboxOrdenActionPerformed
         if (cboxOrden.getSelectedIndex() == 0)
-			ordenacion = OrdenacionServicio.PORIDMESA;
+			ordenacion = OrdenacionServicio.PORIDSERVICIO;
         else if (cboxOrden.getSelectedIndex() == 1)
-        ordenacion = OrdenacionServicio.PORCAPACIDAD;
+        ordenacion = OrdenacionServicio.PORNOMBRESERVICIO;
 		else if (cboxOrden.getSelectedIndex() == 2)
-			ordenacion = OrdenacionServicio.PORESTADO;
+			ordenacion = OrdenacionServicio.PORTIPOSERVICIO;
         else // por las dudas que no eligio uno correcto
-        ordenacion = OrdenacionServicio.PORIDMESA;
+        ordenacion = OrdenacionServicio.PORIDSERVICIO;
 
-        cargarListaServicios();
+        cargarMapaServicios();
         cargarTabla();
         limpiarCampos();
         botonGuardarComoGuardar();
@@ -906,7 +912,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	 */
     private void btnResetearFiltroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetearFiltroActionPerformed
         resetearFiltro();
-        cargarListaServicios();
+        cargarMapaServicios();
         cargarTabla();
         limpiarCampos();
         botonGuardarComoGuardar();//por si estaba buscando cambio icono y texto del btnGuardar a "Guardar"
@@ -921,8 +927,6 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	 */
     private void tablaServiciosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaServiciosMouseClicked
        //tabla.addRowSelectionInterval(filaTabla, filaTabla); //selecciono esa fila de la tabla
-        if (tablaServicios.getSelectedRow() != -1){ // si hay alguna fila seleccionada
-		}
 		int numfila = tablaServicios.getSelectedRow();
 		if (numfila != -1) {			
 			btnEliminar.setEnabled(true); // habilito el botón de eliminar
