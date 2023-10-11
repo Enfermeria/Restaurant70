@@ -42,6 +42,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	
 	public CrudServicios() {
 		initComponents();
+		cargaCbTipo(); // carga el combo box de Tipo
 		servicioData = new ServicioData(); 
 		mesaData = new MesaData();
 		modeloTabla = (DefaultTableModel) tablaServicios.getModel();
@@ -69,6 +70,16 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		//	cbIdNombreMesero.addItem( mesero ) 
 		//);
 	}
+	
+	/**
+	 * carga el combo box cbTipo con los valores correctos ADMINISTRACION, SERVICIO, MESERO, RECEPCION
+	 */
+	private void cargaCbTipo(){ 
+		cbTipo.addItem(Servicio.TipoServicio.ADMINISTRACION);
+		cbTipo.addItem(Servicio.TipoServicio.SERVICIO);
+		cbTipo.addItem(Servicio.TipoServicio.MESERO);
+		cbTipo.addItem(Servicio.TipoServicio.RECEPCION);
+	} //cargaCbTipo
 	
 	
 	
@@ -253,7 +264,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		txtNombre.setEditable(true);
 		txtHost.setEditable(true);
 		txtPuerto.setEditable(true);
-		cbTipo.setEnabled(true);
+		cbTipo.setEditable(true);
 		pwdClave.setEditable(true);
 	} //habilitoParaEditar
 
@@ -287,7 +298,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		txtNombre.setEditable(false);
 		txtHost.setEditable(false);
 		txtPuerto.setEditable(false);
-		cbTipo.setEnabled(false);
+		cbTipo.setEditable(false);
 		pwdClave.setEditable(false);
 	} //deshabilitoParaEditar
 
@@ -302,7 +313,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		txtNombre.setText("");
 		txtHost.setText("");
 		txtPuerto.setText("");
-		cbTipo.setSelectedIndex(-1);
+		cbTipo.setSelectedIndex(-1); //lo mismo se logra con cbTipo.setSelectedItem(null);
 		pwdClave.setText("");
 		
 		if (tablaServicios.getRowCount() > 0) 
@@ -321,7 +332,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		txtNombre.setText(tablaServicios.getValueAt(numfila, 1)+"");
 		txtHost.setText(tablaServicios.getValueAt(numfila, 2)+"");
 		txtPuerto.setText(tablaServicios.getValueAt(numfila,3)+"");
-		cbTipo.setSelectedItem(tablaServicios.getValueAt(numfila,3) );
+		cbTipo.setSelectedItem(tablaServicios.getValueAt(numfila,4) );
 		pwdClave.setText( mapaServicios.get(Integer.valueOf( txtIdServicio.getText())).getClave() );
 		
 		//para debugguear
@@ -482,7 +493,6 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         txtIdServicio.setPreferredSize(new java.awt.Dimension(16, 42));
 
         cbTipo.setBorder(javax.swing.BorderFactory.createTitledBorder("Tipo"));
-        cbTipo.setEnabled(false);
         cbTipo.setMinimumSize(new java.awt.Dimension(28, 42));
         cbTipo.setPreferredSize(new java.awt.Dimension(28, 42));
 
@@ -509,6 +519,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel7.setText("Gestión de Servicios");
 
+        txtNombre.setEditable(false);
         txtNombre.setBorder(javax.swing.BorderFactory.createTitledBorder("Nombre"));
         txtNombre.setPreferredSize(new java.awt.Dimension(16, 42));
 
@@ -522,6 +533,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         txtPuerto.setMinimumSize(new java.awt.Dimension(16, 42));
         txtPuerto.setPreferredSize(new java.awt.Dimension(16, 42));
 
+        pwdClave.setEditable(false);
         pwdClave.setBorder(javax.swing.BorderFactory.createTitledBorder("Clave"));
         pwdClave.setMinimumSize(new java.awt.Dimension(16, 42));
         pwdClave.setPreferredSize(new java.awt.Dimension(121, 42));
@@ -552,13 +564,13 @@ public class CrudServicios extends javax.swing.JInternalFrame {
             .addGroup(panelCamposMesaLayout.createSequentialGroup()
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addGap(62, 62, 62)
+                        .addGap(85, 85, 85)
+                        .addComponent(jLabel7))
+                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                        .addGap(64, 64, 64)
                         .addComponent(btnGuardar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnCancelar))
-                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addGap(85, 85, 85)
-                        .addComponent(jLabel7)))
+                        .addComponent(btnCancelar)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelCamposMesaLayout.setVerticalGroup(
@@ -566,22 +578,25 @@ public class CrudServicios extends javax.swing.JInternalFrame {
             .addGroup(panelCamposMesaLayout.createSequentialGroup()
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtIdServicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPuerto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(pwdClave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
+                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtIdServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtHost, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
+                    .addComponent(txtPuerto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(cbTipo, javax.swing.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE))
+                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(pwdClave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnGuardar)
                     .addComponent(btnCancelar))
-                .addGap(21, 21, 21))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panelTabla.setBackground(new java.awt.Color(153, 153, 255));
@@ -665,7 +680,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
                     .addComponent(btnResetearFiltro))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         botonera.setBackground(new java.awt.Color(153, 153, 255));
@@ -749,18 +764,15 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         botoneraLayout.setVerticalGroup(
             botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(botoneraLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, botoneraLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnAgregar)
-                            .addComponent(btnModificar)
-                            .addComponent(btnEliminar)
-                            .addComponent(btnBuscar)
-                            .addComponent(btnSalir)))
-                    .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(12, 12, 12)
+                .addGroup(botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAgregar)
+                    .addComponent(btnModificar)
+                    .addComponent(btnEliminar)
+                    .addComponent(btnBuscar)
+                    .addComponent(btnSalir))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(cboxOrden, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -776,12 +788,12 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelCamposMesa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(panelTabla, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(panelTabla, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelCamposMesa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(botonera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(205, Short.MAX_VALUE))
+                .addContainerGap(215, Short.MAX_VALUE))
         );
 
         pack();
@@ -856,11 +868,11 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         if (cboxOrden.getSelectedIndex() == 0)
 			ordenacion = OrdenacionServicio.PORIDSERVICIO;
         else if (cboxOrden.getSelectedIndex() == 1)
-        ordenacion = OrdenacionServicio.PORNOMBRESERVICIO;
+			ordenacion = OrdenacionServicio.PORNOMBRESERVICIO;
 		else if (cboxOrden.getSelectedIndex() == 2)
 			ordenacion = OrdenacionServicio.PORTIPOSERVICIO;
         else // por las dudas que no eligio uno correcto
-        ordenacion = OrdenacionServicio.PORIDSERVICIO;
+			ordenacion = OrdenacionServicio.PORIDSERVICIO;
 
         cargarMapaServicios();
         cargarTabla();
@@ -952,7 +964,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnResetearFiltro;
     private javax.swing.JButton btnSalir;
-    private javax.swing.JComboBox<Servicio> cbTipo;
+    private javax.swing.JComboBox<Servicio.TipoServicio> cbTipo;
     private javax.swing.JComboBox<String> cboxOrden;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;

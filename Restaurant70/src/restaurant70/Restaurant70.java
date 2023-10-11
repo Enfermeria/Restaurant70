@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Date;
 import java.util.List;
+import vistas.Administracion;
 
 /**
  *
@@ -281,7 +282,10 @@ public class Restaurant70 {
 		//pruebaPedidoData();
 		//pruebaItemData();
 		//pruebaServicioData();
-		pruebaProductoData();
+		//pruebaProductoData();
+		Administracion administracion = new Administracion(); //creo una pantalla de login
+		administracion.setVisible(true); // lo hago visible
+		administracion.setLocationRelativeTo(null); // abrirlo en el centro		
 	}
 }
 	
