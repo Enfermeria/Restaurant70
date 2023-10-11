@@ -10,14 +10,13 @@
  */
 package vistas;
 
-import entidades.Servicio;
-import accesoadatos.ServicioData;
-import accesoadatos.ServicioData.OrdenacionServicio;
 import entidades.Mesa;
 import accesoadatos.MesaData;
+import accesoadatos.MesaData.OrdenacionMesa;
+import entidades.Servicio;
+import accesoadatos.ServicioData;
 import accesoadatos.Utils;
 import java.awt.Color;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -27,83 +26,79 @@ import javax.swing.table.DefaultTableModel;
  *							 
  * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
  */
-public class CrudServicios extends javax.swing.JInternalFrame {
-	private DefaultTableModel modeloTabla;
-	private ServicioData servicioData;
-	private MesaData mesaData;
-	private LinkedHashMap<Integer, Mesa> mapaMesas;
-	private LinkedHashMap<Integer,Servicio> mapaServicios;
+public class CrudMesas extends javax.swing.JInternalFrame {
+	LinkedHashMap<Integer, Servicio> mapaMeseros = new LinkedHashMap<>();
+	Servicio servicioSinAsignar = new Servicio(0, "SIN ASIGNAR", "", 0, Servicio.TipoServicio.MESERO, "");
+	DefaultTableModel modeloTabla;
+	public static List<Mesa> listaMesas;
+	private final MesaData mesaData;	
 	private enum TipoEdicion {AGREGAR, MODIFICAR, BUSCAR};
 	private TipoEdicion tipoEdicion = TipoEdicion.AGREGAR; //para que el boton guardar sepa que estoy queriendo hacer:
-														   // Si con los campos voy a agregar, modificar o buscar una servicio
-	private OrdenacionServicio ordenacion = OrdenacionServicio.PORIDSERVICIO; // defino el tipo de orden por defecto 
-	private FiltroServicios filtro = new FiltroServicios();  //el filtro de búsqueda
+														   // Si con los campos voy a agregar, modificar o buscar una mesa
+	private OrdenacionMesa ordenacion = OrdenacionMesa.PORIDMESA; // defino el tipo de orden por defecto 
+	private FiltroMesas filtro = new FiltroMesas();  //el filtro de búsqueda
 	
 	
-	public CrudServicios() {
+	public CrudMesas() {
 		initComponents();
-		servicioData = new ServicioData(); 
-		mesaData = new MesaData();
-		modeloTabla = (DefaultTableModel) tablaServicios.getModel();
-		cargarMapaServicios(); //carga la base de datos
-		cargarTabla(); // cargo la tabla con las servicios
+		cargarMapaMeseros();
+		mesaData = new MesaData(); 
+		modeloTabla = (DefaultTableModel) tablaMesas.getModel();
+		cargarListaMesas(); //carga la base de datos
+		cargarTabla(); // cargo la tabla con las mesas
 	}
 
 	/**
 	 * Carga la lista de meseros de la tabla de Servicios y también los agrega al combo box
 	 */
-	private void cargarMapaMesas(){
+	private void cargarMapaMeseros(){
 		// cargo la lista de meseros
-		//ServicioData servicioData = new ServicioData();
-		//List<Servicio> listaMeseros = servicioData.getListaServiciosXCriterioDeBusqueda(
+		ServicioData servicioData = new ServicioData();
+		List<Servicio> listaMeseros = servicioData.getListaServiciosXCriterioDeBusqueda(
 			//idServicio, nombre, host, puerto, Servicio.TipoServicio,		  ordenacion
-		//	-1,			  "",	  "",   -1,     Servicio.TipoServicio.MESERO, ServicioData.OrdenacionServicio.PORIDSERVICIO);
-		//listaMeseros.add(0, servicioSinAsignar);// para cuando no hay un mesero asignado a la servicio.
+			-1,			  "",	  "",   -1,     Servicio.TipoServicio.MESERO, ServicioData.OrdenacionServicio.PORIDSERVICIO);
+		listaMeseros.add(0, servicioSinAsignar);// para cuando no hay un mesero asignado a la mesa.
 		
 		//copio esa lista de meseros a un mapa
-		//mapaMesas = new LinkedHashMap();
-		//listaMeseros.stream().forEach( mesero -> mapaMeseros.put(mesero.getIdServicio(), mesero) );
+		mapaMeseros = new LinkedHashMap();
+		listaMeseros.stream().forEach( mesero -> mapaMeseros.put(mesero.getIdServicio(), mesero) );
 		
 		//esa lista de meseros lo cargo al JComboBox cbIdNombreMesero
-		//listaMeseros.stream().forEach( mesero -> 
-		//	cbIdNombreMesero.addItem( mesero ) 
-		//);
+		listaMeseros.stream().forEach( mesero -> 
+			cbIdNombreMesero.addItem( mesero ) 
+		);
 	}
 	
 	
 	
-	/** carga la lista de servicios de la BD */
-	private void cargarMapaServicios(){ 
-		List<Servicio> listaServicios;
+	/** carga la lista de mesas de la BD */
+	private void cargarListaMesas(){ 
 		if (filtro.estoyFiltrando) 
-			listaServicios = servicioData.getListaServiciosXCriterioDeBusqueda(filtro.idServicio, filtro.nombreServicio, "", -1, filtro.tipo, ordenacion);
+			listaMesas = mesaData.getListaMesasXCriterioDeBusqueda(filtro.idMesa, filtro.capacidad, filtro.estado, filtro.idMesero, ordenacion);
 		else
-			listaServicios = servicioData.getListaServicios(ordenacion);
-		
-		mapaServicios = new LinkedHashMap(); 
-		listaServicios.stream().forEach( servicio -> mapaServicios.put(servicio.getIdServicio(), servicio) );
+			listaMesas = mesaData.getListaMesas(ordenacion);
 	}
 	
 	
-	/** carga servicios de la lista a la tabla */
+	/** carga mesas de la lista a la tabla */
 	private void cargarTabla(){ 
 		//borro las filas de la tabla
 		for (int fila = modeloTabla.getRowCount() -  1; fila >= 0; fila--)
 			modeloTabla.removeRow(fila);
 		
-		//cargo los servicios de listaServicios a la tabla
-		for (Servicio servicio : mapaServicios.values()) {
+		//cargo los mesas de listaMesas a la tabla
+		for (Mesa mesa : listaMesas) {
 			modeloTabla.addRow(new Object[] {
-				servicio.getIdServicio(),
-				servicio.getNombreServicio(),
-				servicio.getHost(),
-				servicio.getPuerto(),
-				servicio.getTipo()
-			} );
+				mesa.getIdMesa(),
+				mesa.getCapacidad(),
+				mesa.getEstado(),
+				mapaMeseros.get(mesa.getIdMesero()) //almaceno el objeto Servicio del mesero idMesero
+			}
+			);
 		}
 		
 		//como no hay fila seleccionada, deshabilito el botón Eliminar y Modificar
-		if (tablaServicios.getSelectedRow() == -1) {// si no hay alguna fila seleccionada
+		if (tablaMesas.getSelectedRow() == -1) {// si no hay alguna fila seleccionada
 			btnEliminar.setEnabled(false); // deshabilito el botón de eliminar
 			btnModificar.setEnabled(false); // deshabilito el botón de Modificar
 		}
@@ -111,66 +106,66 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	
 	
 	/** 
-	 * Elimina al servicio seleccionado de la lista y la bd. 
+	 * Elimina al mesa seleccionado de la lista y la bd. 
 	 * @return Devuelve true si pudo eliminarlo
 	 */
-	private boolean eliminarServicio(){ 
-		int fila = tablaServicios.getSelectedRow();
+	private boolean eliminarMesa(){ 
+		int fila = tablaMesas.getSelectedRow();
         if (fila != -1) { // Si hay alguna fila seleccionada
-			int idServicio = Integer.parseInt(txtIdServicio.getText());
-			if (servicioData.bajaServicio(idServicio)){ 
-				mapaServicios.remove(idServicio);
+			int idMesa = Integer.parseInt(txtIdMesa.getText());
+			if (mesaData.bajaMesa(idMesa)){ 
+				listaMesas.remove(fila);
 				return true;
 			} else
 				return false;
             //tabla.removeRowSelectionInterval(0, tabla.getRowCount()-1); //des-selecciono las filas de la tabla
         } else {
-			JOptionPane.showMessageDialog(this, "Debe seleccionar un servicio para eliminar", "Ningún servicio seleccionado", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Debe seleccionar una mesa para eliminar", "Ninguna mesa seleccionado", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
-	} //eliminarServicio
+	} //eliminarMesa
 	
 	
 	/**
-	 * si no hay errores en los campos, agrega un servicio con dichos campos. 
+	 * si no hay errores en los campos, agrega un mesa con dichos campos. 
 	 * @return Devuelve true si pudo agregarlo
 	 */
-	private boolean agregarServicio(){
-		Servicio servicio = campos2Servicio();
-		if ( servicio != null ) {
-			if ( servicioData.altaServicio(servicio) ) {// si pudo dar de alta al servicio
-				cargarMapaServicios();
+	private boolean agregarMesa(){
+		Mesa mesa = campos2Mesa();
+		if ( mesa != null ) {
+			if ( mesaData.altaMesa(mesa) ) {// si pudo dar de alta al mesa
+				cargarListaMesas();
 				cargarTabla();
 				return true;
 			} else {
-				JOptionPane.showMessageDialog(this, "Debe completar correctamente todos los datos del servicio para agregarlo", "No se puede agregar", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Debe completar correctamente todos los datos de la mesa para agregarla", "No se puede agregar", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
 		} else {
-			// si servicio es null, no pudo transformarlo a servicio. Sigo editando
+			// si mesa es null, no pudo transformarlo a mesa. Sigo editando
 			return false;
 		}
-	} //agregarServicio
+	} //agregarMesa
 
 	
-	/** si no hay errores en los campos, modifica un servicio con dichos campos */
-	private void modificarServicio() {
-		Servicio servicio = campos2Servicio();
-		if ( servicio != null ) {
-			if ( servicioData.modificarServicio(servicio) )  {// si pudo  modificar al servicio
-				cargarMapaServicios();
+	/** si no hay errores en los campos, modifica un mesa con dichos campos */
+	private void modificarMesa() {
+		Mesa mesa = campos2Mesa();
+		if ( mesa != null ) {
+			if ( mesaData.modificarMesa(mesa) )  {// si pudo  modificar al mesa
+				cargarListaMesas();
 				cargarTabla();
 			} else 
-				JOptionPane.showMessageDialog(this, "Debe completar correctamente todos los datos del servicio para modificarlo", "No se puede modificar", JOptionPane.ERROR_MESSAGE);			
+				JOptionPane.showMessageDialog(this, "Debe completar correctamente todos los datos de la mesa para modificarla", "No se puede agregar", JOptionPane.ERROR_MESSAGE);			
 		} else {
-			// si servicio es null, no pudo transformarlo a servicio. Sigo editando
+			// si mesa es null, no pudo transformarlo a mesa. Sigo editando
 		}	
-	} //modificarServicio
+	} //modificarMesa
 	
 	
 	
 	/**
-	 * Busca al servicio por id, por capacidad, por estado o por idMesero (o por 
+	 * Busca al mesa por id, por capacidad, por estado o por idMesero (o por 
 	 * combinación de dichos campos). 
 	 * El criterio para usar un campo en la búsqueda es que no esté en blanco. 
 	 * Es decir, si tiene datos, se buscará por ese dato. Por ejemplo, si puso 
@@ -179,46 +174,63 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	 * 
 	 * @return devuelve true sio pudo usar algún criterio de búsqueda
 	 */
-	private boolean buscarServicio(){ 
-		// cargo los campos de texto id, nombre, tipo para buscar por esos criterior
-		int idServicio;
-		String nombreServicio;
-		Servicio.TipoServicio tipo;
+	private boolean buscarMesa(){ 
+		// cargo los campos de texto id, dni, apellido y nombre para buscar por esos criterior
+		int idMesa, capacidad;
+		Mesa.EstadoMesa estado;
+		int idMesero;
 		
-		//idServicio
+		//idMesa
 		try {
-			if (txtIdServicio.getText().isEmpty()) // si está vacío no se usa para buscar
-				idServicio = -1;
+			if (txtIdMesa.getText().isEmpty()) // si está vacío no se usa para buscar
+				idMesa = -1;
 			else
-				idServicio = Integer.valueOf(txtIdServicio.getText()); //no vacío, participa del criterio de búsqueda
+				idMesa = Integer.valueOf(txtIdMesa.getText()); //no vacío, participa del criterio de búsqueda
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this, "El Id debe ser un número válido", "Id no válido", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
+		//capacidad
+		try {
+			if (txtCapacidad.getText().isEmpty()) // si está vacío no se usa para buscar
+				capacidad = -1;
+			else
+				capacidad = Integer.valueOf(txtCapacidad.getText()); // no vacío, participa del criterio de búsqueda
+				
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "La capacidad debe ser un número válido", "Capacidad no válida", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
 		
-		//nombreServicio
-		if (txtNombre.getText().isEmpty()) // si está vacío no se usa para buscar
-			nombreServicio = "";
-		else
-			nombreServicio = txtNombre.getText(); // no vacío, participa del criterio de búsqueda
+		//estado
+		if (rbEstadoLibre.isSelected())
+			estado = Mesa.EstadoMesa.LIBRE;
+		else if (rbEstadoOcupada.isSelected())
+			estado = Mesa.EstadoMesa.OCUPADA;
+		else if (rbEstadoAtendida.isSelected())
+			estado = Mesa.EstadoMesa.ATENDIDA;
+		else 
+			estado = null;
 		
-		//tipo
-		tipo = (Servicio.TipoServicio)cbTipo.getSelectedItem();
+		//idMesero
+		Servicio mesero = (Servicio) cbIdNombreMesero.getSelectedItem();
+		idMesero = (mesero==null) ? -1 : mesero.getIdServicio();
 		
 		//testeo que hay al menos un criterio de búsqueda
-		if ( idServicio==-1 && nombreServicio.isEmpty() && tipo==null )   {
+		if ( idMesa==-1 && capacidad==-1 && estado==null && idMesero==-1  )   {
 			JOptionPane.showMessageDialog(this, "Debe ingresar algún criterio para buscar", "Ningun criterio de búsqueda", JOptionPane.ERROR_MESSAGE);
 			return false;
 		} else { //todo Ok. Buscar por alguno de los criterior de búsqueda
-			filtro.idServicio = idServicio;
-			filtro.nombreServicio = nombreServicio;
-			filtro.tipo = tipo;
+			filtro.idMesa = idMesa;
+			filtro.capacidad = capacidad;
+			filtro.estado = estado;
+			filtro.idMesero = idMesero;
 			filtro.estoyFiltrando = true;
-			cargarMapaServicios();
+			cargarListaMesas();
 			cargarTabla();
 			return true; // pudo buscar
 		}
-	} //buscarServicio
+	} //buscarMesa
 	
 
 	
@@ -227,7 +239,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	/** deshabilito todos los botones y tabla, habilito guardar/cancelar */
 	private void habilitoParaBuscar(){ 
 		habilitoParaEditar();
-		txtIdServicio.setEditable(true);
+		txtIdMesa.setEditable(true);
 	} //habilitoParaBuscar
 
 	
@@ -243,18 +255,18 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		cboxOrden.setEnabled(false);
 		
 		//Deshabilito la Tabla para que no pueda hacer click
-		tablaServicios.setEnabled(false);
+		tablaMesas.setEnabled(false);
 		
 		//Habilito los botones guardar y cancelar
-		btnGuardar.setEnabled(true); // este botón es el que realmente se encargará de agregegar el servicio
+		btnGuardar.setEnabled(true); // este botón es el que realmente se encargará de agregegar el mesa
 		btnCancelar.setEnabled(true);
 		
 		//Habilito los campos para poder editar
-		txtNombre.setEditable(true);
-		txtHost.setEditable(true);
-		txtPuerto.setEditable(true);
-		cbTipo.setEnabled(true);
-		pwdClave.setEditable(true);
+		txtCapacidad.setEditable(true);
+		rbEstadoLibre.setEnabled(true);
+		rbEstadoOcupada.setEnabled(true);
+		rbEstadoAtendida.setEnabled(true);
+		cbIdNombreMesero.setEnabled(true);
 	} //habilitoParaEditar
 
 	
@@ -273,7 +285,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		btnEliminar.setEnabled(false);  //deshabilito botón eliminar
 		
 		//Habilito la Tabla para que pueda hacer click
-		tablaServicios.setEnabled(true);
+		tablaMesas.setEnabled(true);
 		
 		//Deshabilito el boton guardar 
 		btnGuardar.setEnabled(false);  
@@ -283,12 +295,12 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		btnCancelar.setEnabled(false);
 
 		//deshabilito los campos para poder que no pueda editar
-		txtIdServicio.setEditable(false);
-		txtNombre.setEditable(false);
-		txtHost.setEditable(false);
-		txtPuerto.setEditable(false);
-		cbTipo.setEnabled(false);
-		pwdClave.setEditable(false);
+		txtIdMesa.setEditable(false);
+		txtCapacidad.setEditable(false);
+		rbEstadoLibre.setEnabled(false);
+		rbEstadoOcupada.setEnabled(false);
+		rbEstadoAtendida.setEnabled(false);
+		cbIdNombreMesero.setEnabled(false);
 	} //deshabilitoParaEditar
 
 	
@@ -298,15 +310,16 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	/** pongo los campos txtfield en blanco y deselecciono la fila de tabla */
 	private void limpiarCampos(){
 		//pongo los campos en blanco
-		txtIdServicio.setText("");
-		txtNombre.setText("");
-		txtHost.setText("");
-		txtPuerto.setText("");
-		cbTipo.setSelectedIndex(-1);
-		pwdClave.setText("");
+		txtIdMesa.setText("");
+		txtCapacidad.setText("");
+		//rbEstadoLibre.setSelected(false);
+		//rbEstadoOcupada.setSelected(false);
+		//rbEstadoAtendida.setSelected(false);
+		btngrpEstado.clearSelection();
+		cbIdNombreMesero.setSelectedIndex(-1);
 		
-		if (tablaServicios.getRowCount() > 0) 
-			tablaServicios.removeRowSelectionInterval(0, tablaServicios.getRowCount()-1); //des-selecciono las filas de la tabla
+		if (tablaMesas.getRowCount() > 0) 
+			tablaMesas.removeRowSelectionInterval(0, tablaMesas.getRowCount()-1); //des-selecciono las filas de la tabla
 	} // limpiarCampos
 
 
@@ -317,69 +330,66 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	 * @param numfila el número de fila a cargar a los campos
 	 */
 	private void filaTabla2Campos(int numfila){
-		txtIdServicio.setText(tablaServicios.getValueAt(numfila, 0)+"");
-		txtNombre.setText(tablaServicios.getValueAt(numfila, 1)+"");
-		txtHost.setText(tablaServicios.getValueAt(numfila, 2)+"");
-		txtPuerto.setText(tablaServicios.getValueAt(numfila,3)+"");
-		cbTipo.setSelectedItem(tablaServicios.getValueAt(numfila,3) );
-		pwdClave.setText( mapaServicios.get(Integer.valueOf( txtIdServicio.getText())).getClave() );
+		txtIdMesa.setText(tablaMesas.getValueAt(numfila, 0)+"");
+		txtCapacidad.setText(tablaMesas.getValueAt(numfila, 1)+"");
+		
+		if ((Mesa.EstadoMesa)tablaMesas.getValueAt(numfila, 2) == Mesa.EstadoMesa.LIBRE)
+			rbEstadoLibre.setSelected(true);
+		else if ((Mesa.EstadoMesa)tablaMesas.getValueAt(numfila, 2) == Mesa.EstadoMesa.OCUPADA)
+			rbEstadoOcupada.setSelected(true);
+		else if ((Mesa.EstadoMesa)tablaMesas.getValueAt(numfila, 2) == Mesa.EstadoMesa.ATENDIDA)
+			rbEstadoAtendida.setSelected(true);
+		
+		cbIdNombreMesero.setSelectedItem(tablaMesas.getValueAt(numfila, 3));
 	} //filaTabla2Campos
 
 
 	
 	
 	/**
-	 * Cargo los campos de texto de la pantalla a un objeto tipo Servicio
-	 * @return El Servicio devuelto. Si hay algún error, devuelve null
+	 * Cargo los campos de texto de la pantalla a un objeto tipo Mesa
+	 * @return El Mesa devuelto. Si hay algún error, devuelve null
 	 */
-	private Servicio campos2Servicio(){ 
-		int idServicio;
-		String nombre, host;
-		int puerto;
-		Servicio.TipoServicio tipo;
-		String clave;
+	private Mesa campos2Mesa(){ 
+		int idMesa, capacidad;
+		Mesa.EstadoMesa estado;
+		int idMesero;
 		
-		//idServicio
+		//idMesa
 		try {
-			if (txtIdServicio.getText().isEmpty()) // en el alta será un string vacío
-				idServicio = -1;
+			if (txtIdMesa.getText().isEmpty()) // en el alta será un string vacío
+				idMesa = -1;
 			else
-				idServicio = Integer.valueOf(txtIdServicio.getText()); // obtengo el identificador el servicio
+				idMesa = Integer.valueOf(txtIdMesa.getText()); // obtengo el identificador el mesa
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "El IdServicio debe ser un número válido", "IdServicio no válido", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "El IdMesa debe ser un número válido", "IdMesa no válido", JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
 		
-		//nombre
-		nombre = txtNombre.getText();
-		
-		//host
-		host = txtHost.getText();
+		//capacidad
+		try {
+			capacidad = Integer.valueOf(txtCapacidad.getText());
 				
-		//puerto
-		try {
-			if (txtPuerto.getText().isEmpty()) // en el alta será un string vacío
-				puerto = -1;
-			else
-				puerto = Integer.valueOf(txtPuerto.getText()); 
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "El Puerto debe ser un número válido", "Puerto no válido", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "La capacidad debe ser un número válido", "Capacidad no válida", JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
 		
+		//estado
+		if (rbEstadoLibre.isSelected())
+			estado = Mesa.EstadoMesa.LIBRE;
+		else if (rbEstadoOcupada.isSelected())
+			estado = Mesa.EstadoMesa.OCUPADA;
+		else if (rbEstadoAtendida.isSelected())
+			estado = Mesa.EstadoMesa.ATENDIDA;
+		else 
+			estado = null;
 		
-		//tipoServicio
-		if (cbTipo.getSelectedItem()!= null)
-			tipo = (Servicio.TipoServicio) cbTipo.getSelectedItem();
-		else {
-			JOptionPane.showMessageDialog(this, "Debe seleccionar el tipo de servicio", "Tipo de servicio no válido", JOptionPane.ERROR_MESSAGE);
-			return null;
-		}
-			
-		//clave
-		clave = Arrays.toString(pwdClave.getPassword());
-		return new Servicio(idServicio, nombre, host, puerto, tipo, clave);
-	} // campos2Servicio
+		//idMesero
+		idMesero = (cbIdNombreMesero.getSelectedItem()==null) ? 0 : ((Servicio) cbIdNombreMesero.getSelectedItem()).getIdServicio();
+		
+		return new Mesa(idMesa, capacidad, estado, idMesero);
+	} // campos2Mesa
 	
 	
 	
@@ -403,7 +413,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	*/
 	private void setearFiltro(){
 			//cambio el titulo de la tabla y color panel de tabla para que muestre que está filtrado
-			lblTituloTabla.setText("Listado de servicios filtradas por búsqueda");
+			lblTituloTabla.setText("Listado de mesas filtradas por búsqueda");
 			panelTabla.setBackground(new Color(255, 51, 51));
 			btnResetearFiltro.setEnabled(true);
 			filtro.estoyFiltrando = true;
@@ -417,7 +427,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	private void resetearFiltro(){
 			//cambio el titulo de la tabla y color panel de tabla para que muestre que no está filtrado
 			//cambio el titulo de la tabla y color panel de tabla para que muestre que está filtrado
-			lblTituloTabla.setText("Listado de servicios");
+			lblTituloTabla.setText("Listado de mesas");
 			panelTabla.setBackground(new Color(153, 153, 255));
 			btnResetearFiltro.setEnabled(false);
 			filtro.estoyFiltrando = false;
@@ -442,21 +452,26 @@ public class CrudServicios extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btngrpEstado = new javax.swing.ButtonGroup();
         panelCamposMesa = new javax.swing.JPanel();
-        txtIdServicio = new javax.swing.JTextField();
-        cbTipo = new javax.swing.JComboBox<>();
+        jLabel2 = new javax.swing.JLabel();
+        txtIdMesa = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        rbEstadoLibre = new javax.swing.JRadioButton();
+        rbEstadoOcupada = new javax.swing.JRadioButton();
+        rbEstadoAtendida = new javax.swing.JRadioButton();
+        jLabel5 = new javax.swing.JLabel();
+        cbIdNombreMesero = new javax.swing.JComboBox<>();
         btnGuardar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
-        txtNombre = new javax.swing.JTextField();
-        txtHost = new javax.swing.JTextField();
-        txtPuerto = new javax.swing.JTextField();
-        pwdClave = new javax.swing.JPasswordField();
+        txtCapacidad = new javax.swing.JTextField();
         panelTabla = new javax.swing.JPanel();
         lblTituloTabla = new javax.swing.JLabel();
         btnResetearFiltro = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tablaServicios = new javax.swing.JTable();
+        tablaMesas = new javax.swing.JTable();
         botonera = new javax.swing.JPanel();
         btnAgregar = new javax.swing.JButton();
         btnModificar = new javax.swing.JButton();
@@ -464,20 +479,34 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         btnBuscar = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
         cboxOrden = new javax.swing.JComboBox<>();
+        jLabel6 = new javax.swing.JLabel();
 
         panelCamposMesa.setBackground(new java.awt.Color(153, 153, 255));
         panelCamposMesa.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
 
-        txtIdServicio.setEditable(false);
-        txtIdServicio.setBorder(javax.swing.BorderFactory.createTitledBorder("Id Servicio"));
-        txtIdServicio.setMinimumSize(new java.awt.Dimension(16, 42));
-        txtIdServicio.setName(""); // NOI18N
-        txtIdServicio.setPreferredSize(new java.awt.Dimension(16, 42));
+        jLabel2.setText("Id Mesa:");
 
-        cbTipo.setBorder(javax.swing.BorderFactory.createTitledBorder("Tipo"));
-        cbTipo.setEnabled(false);
-        cbTipo.setMinimumSize(new java.awt.Dimension(28, 42));
-        cbTipo.setPreferredSize(new java.awt.Dimension(28, 42));
+        txtIdMesa.setEditable(false);
+
+        jLabel3.setText("Capacidad:");
+
+        jLabel4.setText("Estado:");
+
+        btngrpEstado.add(rbEstadoLibre);
+        rbEstadoLibre.setText("Libre");
+        rbEstadoLibre.setEnabled(false);
+
+        btngrpEstado.add(rbEstadoOcupada);
+        rbEstadoOcupada.setText("Ocupada");
+        rbEstadoOcupada.setEnabled(false);
+
+        btngrpEstado.add(rbEstadoAtendida);
+        rbEstadoAtendida.setText("Atendida");
+        rbEstadoAtendida.setEnabled(false);
+
+        jLabel5.setText("Mesero:");
+
+        cbIdNombreMesero.setEnabled(false);
 
         btnGuardar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardar2_32x32.png"))); // NOI18N
@@ -500,88 +529,83 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         });
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jLabel7.setText("Gestión de Servicios");
+        jLabel7.setText("Gestión de Mesas");
 
-        txtNombre.setEditable(false);
-        txtNombre.setBorder(javax.swing.BorderFactory.createTitledBorder("Nombre"));
-        txtNombre.setPreferredSize(new java.awt.Dimension(16, 42));
-
-        txtHost.setEditable(false);
-        txtHost.setBorder(javax.swing.BorderFactory.createTitledBorder("Host"));
-        txtHost.setMinimumSize(new java.awt.Dimension(16, 42));
-        txtHost.setPreferredSize(new java.awt.Dimension(16, 42));
-
-        txtPuerto.setEditable(false);
-        txtPuerto.setBorder(javax.swing.BorderFactory.createTitledBorder("Puerto"));
-        txtPuerto.setMinimumSize(new java.awt.Dimension(16, 42));
-        txtPuerto.setPreferredSize(new java.awt.Dimension(16, 42));
-
-        pwdClave.setBorder(javax.swing.BorderFactory.createTitledBorder("Clave"));
-        pwdClave.setMinimumSize(new java.awt.Dimension(16, 42));
-        pwdClave.setPreferredSize(new java.awt.Dimension(121, 42));
+        txtCapacidad.setEditable(false);
 
         javax.swing.GroupLayout panelCamposMesaLayout = new javax.swing.GroupLayout(panelCamposMesa);
         panelCamposMesa.setLayout(panelCamposMesaLayout);
         panelCamposMesaLayout.setHorizontalGroup(
             panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addComponent(txtIdServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                        .addGap(21, 21, 21)
                         .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                                .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(pwdClave, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                                .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtPuerto, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(20, 20, 20))
-            .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtIdMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtCapacidad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                                    .addComponent(btnGuardar)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnCancelar))
+                                .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                                    .addComponent(jLabel5)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(cbIdNombreMesero, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                                    .addComponent(jLabel4)
+                                    .addGap(12, 12, 12)
+                                    .addComponent(rbEstadoLibre)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(rbEstadoOcupada)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(rbEstadoAtendida)))))
                     .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addGap(62, 62, 62)
-                        .addComponent(btnGuardar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnCancelar))
-                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addGap(85, 85, 85)
+                        .addGap(77, 77, 77)
                         .addComponent(jLabel7)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
         panelCamposMesaLayout.setVerticalGroup(
             panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCamposMesaLayout.createSequentialGroup()
                 .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(12, 12, 12)
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtIdServicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel2)
+                    .addComponent(txtIdMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPuerto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtCapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addGap(18, 18, 18)
+                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(rbEstadoLibre, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel4)
+                        .addComponent(rbEstadoOcupada)
+                        .addComponent(rbEstadoAtendida)))
                 .addGap(18, 18, 18)
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(pwdClave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
+                    .addComponent(jLabel5)
+                    .addComponent(cbIdNombreMesero, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnGuardar)
                     .addComponent(btnCancelar))
-                .addGap(21, 21, 21))
+                .addGap(24, 24, 24))
         );
 
         panelTabla.setBackground(new java.awt.Color(153, 153, 255));
 
         lblTituloTabla.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        lblTituloTabla.setText("Listado de Servicios");
+        lblTituloTabla.setText("Listado de Mesas");
         lblTituloTabla.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         btnResetearFiltro.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -594,19 +618,19 @@ public class CrudServicios extends javax.swing.JInternalFrame {
             }
         });
 
-        tablaServicios.setModel(new javax.swing.table.DefaultTableModel(
+        tablaMesas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Id", "Nombre", "Host", "Puerto", "Tipo"
+                "Id", "Capacidad", "Estado", "Mesero"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -617,24 +641,20 @@ public class CrudServicios extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        tablaServicios.addMouseListener(new java.awt.event.MouseAdapter() {
+        tablaMesas.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tablaServiciosMouseClicked(evt);
+                tablaMesasMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tablaServicios);
-        if (tablaServicios.getColumnModel().getColumnCount() > 0) {
-            tablaServicios.getColumnModel().getColumn(0).setPreferredWidth(30);
-            tablaServicios.getColumnModel().getColumn(0).setMaxWidth(30);
-            tablaServicios.getColumnModel().getColumn(1).setMinWidth(150);
-            tablaServicios.getColumnModel().getColumn(1).setPreferredWidth(50);
-            tablaServicios.getColumnModel().getColumn(1).setMaxWidth(150);
-            tablaServicios.getColumnModel().getColumn(2).setResizable(false);
-            tablaServicios.getColumnModel().getColumn(2).setPreferredWidth(30);
-            tablaServicios.getColumnModel().getColumn(3).setPreferredWidth(60);
-            tablaServicios.getColumnModel().getColumn(3).setMaxWidth(60);
-            tablaServicios.getColumnModel().getColumn(4).setResizable(false);
-            tablaServicios.getColumnModel().getColumn(4).setPreferredWidth(20);
+        jScrollPane1.setViewportView(tablaMesas);
+        if (tablaMesas.getColumnModel().getColumnCount() > 0) {
+            tablaMesas.getColumnModel().getColumn(0).setResizable(false);
+            tablaMesas.getColumnModel().getColumn(0).setPreferredWidth(4);
+            tablaMesas.getColumnModel().getColumn(1).setResizable(false);
+            tablaMesas.getColumnModel().getColumn(1).setPreferredWidth(4);
+            tablaMesas.getColumnModel().getColumn(2).setResizable(false);
+            tablaMesas.getColumnModel().getColumn(2).setPreferredWidth(4);
+            tablaMesas.getColumnModel().getColumn(3).setPreferredWidth(75);
         }
 
         javax.swing.GroupLayout panelTablaLayout = new javax.swing.GroupLayout(panelTabla);
@@ -659,7 +679,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
                     .addComponent(btnResetearFiltro))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         botonera.setBackground(new java.awt.Color(153, 153, 255));
@@ -711,15 +731,15 @@ public class CrudServicios extends javax.swing.JInternalFrame {
             }
         });
 
-        cboxOrden.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "por Id Servicio", "por Nombre", "por Tipo" }));
-        cboxOrden.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ordenado", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
-        cboxOrden.setMinimumSize(new java.awt.Dimension(104, 42));
-        cboxOrden.setPreferredSize(new java.awt.Dimension(104, 42));
+        cboxOrden.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "por IdMesa", "por Capacidad", "por Estado" }));
         cboxOrden.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboxOrdenActionPerformed(evt);
             }
         });
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel6.setText("Ordenado");
 
         javax.swing.GroupLayout botoneraLayout = new javax.swing.GroupLayout(botonera);
         botonera.setLayout(botoneraLayout);
@@ -735,25 +755,28 @@ public class CrudServicios extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addComponent(btnBuscar)
                 .addGap(18, 18, 18)
-                .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, Short.MAX_VALUE)
                 .addComponent(btnSalir)
                 .addContainerGap())
         );
         botoneraLayout.setVerticalGroup(
             botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, botoneraLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAgregar)
+                    .addComponent(btnModificar)
+                    .addComponent(btnEliminar)
+                    .addComponent(btnBuscar)
+                    .addComponent(btnSalir)
+                    .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
             .addGroup(botoneraLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, botoneraLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(botoneraLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnAgregar)
-                            .addComponent(btnModificar)
-                            .addComponent(btnEliminar)
-                            .addComponent(btnBuscar)
-                            .addComponent(btnSalir)))
-                    .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jLabel6)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -770,12 +793,12 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelCamposMesa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(panelTabla, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(panelTabla, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelCamposMesa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(botonera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(205, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -789,7 +812,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	/** permite editar en los campos, habilita boton de guardar/cancelar y deshabilita otros botones.
 	    El alta verdadera lo realiza el botón de guardar (si no eligió cancelar) */
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        tipoEdicion = TipoEdicion.AGREGAR;  //para que el boton guardar sepa que estoy queriendo agregar una servicio
+        tipoEdicion = TipoEdicion.AGREGAR;  //para que el boton guardar sepa que estoy queriendo agregar una mesa
         limpiarCampos(); //Pongo todos los campos de texto en blanco
         habilitoParaEditar();
     }//GEN-LAST:event_btnAgregarActionPerformed
@@ -800,21 +823,21 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	 * La modificación verdadera lo realiza el botón de guardar (si no eligió cancelar)
 	 */ 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
-        tipoEdicion = TipoEdicion.MODIFICAR; //para que el boton guardar sepa que estoy queriendo modificar un servicio
+        tipoEdicion = TipoEdicion.MODIFICAR; //para que el boton guardar sepa que estoy queriendo modificar un mesa
         habilitoParaEditar();
     }//GEN-LAST:event_btnModificarActionPerformed
 
 	
 	/** 
-	 * Elimina la servicio seleccionado de la tabla. 
+	 * Elimina la mesa seleccionado de la tabla. 
 	 * Como no queda ninguna seleccionado, deshabilito botones btnModificar y btnEliminar
 	 */
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        if ( eliminarServicio() ) { // si pudo eliminar
+        if ( eliminarMesa() ) { // si pudo eliminar
             limpiarCampos(); //Pongo todos los campos de texto en blanco
             btnModificar.setEnabled(false); //deshabilito botón modificar
             btnEliminar.setEnabled(false);  //deshabilito botón eliminar
-            cargarMapaServicios();
+            cargarListaMesas();
             cargarTabla();
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
@@ -827,7 +850,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	 * La búsqueda verdadera lo realiza el botón de guardar (si no eligió cancelar)
 	 */
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        tipoEdicion = TipoEdicion.BUSCAR; //para que el boton guardar sepa que estoy queriendo buscar un servicio
+        tipoEdicion = TipoEdicion.BUSCAR; //para que el boton guardar sepa que estoy queriendo buscar un mesa
         limpiarCampos();
         botonGuardarComoBuscar(); //cambio icono y texto del btnGuardar a "Buscar"
         habilitoParaBuscar();
@@ -835,7 +858,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 
 	
 	
-	/** Cierra la ventana (termina CrudServicios */
+	/** Cierra la ventana (termina CrudMesas */
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
         dispose();//cierra la ventana
     }//GEN-LAST:event_btnSalirActionPerformed
@@ -843,20 +866,20 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	
 	
 /**
- * Permite ordenar la lista de servicios por el criterio de este combo box
+ * Permite ordenar la lista de mesas por el criterio de este combo box
  * @param evt 
  */	
     private void cboxOrdenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboxOrdenActionPerformed
         if (cboxOrden.getSelectedIndex() == 0)
-			ordenacion = OrdenacionServicio.PORIDMESA;
+			ordenacion = OrdenacionMesa.PORIDMESA;
         else if (cboxOrden.getSelectedIndex() == 1)
-        ordenacion = OrdenacionServicio.PORCAPACIDAD;
+        ordenacion = OrdenacionMesa.PORCAPACIDAD;
 		else if (cboxOrden.getSelectedIndex() == 2)
-			ordenacion = OrdenacionServicio.PORESTADO;
+			ordenacion = OrdenacionMesa.PORESTADO;
         else // por las dudas que no eligio uno correcto
-        ordenacion = OrdenacionServicio.PORIDMESA;
+        ordenacion = OrdenacionMesa.PORIDMESA;
 
-        cargarListaServicios();
+        cargarListaMesas();
         cargarTabla();
         limpiarCampos();
         botonGuardarComoGuardar();
@@ -868,17 +891,17 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	
 	
 	
-	/** con los campos de texto de la pantalla hace un agregarServicio, modificarServicio o buscarServicio
+	/** con los campos de texto de la pantalla hace un agregarMesa, modificarMesa o buscarMesa
 	    en base a la variable tipoEdicion, ya sea AGREGAR, MODIFICAR o BUSCAR */
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        if ( tipoEdicion == TipoEdicion.AGREGAR ){ //agregar el servicio
-            agregarServicio();
+        if ( tipoEdicion == TipoEdicion.AGREGAR ){ //agregar el mesa
+            agregarMesa();
             resetearFiltro();
-        } else if ( tipoEdicion == TipoEdicion.MODIFICAR ) { // modificar el servicio
-            modificarServicio();
+        } else if ( tipoEdicion == TipoEdicion.MODIFICAR ) { // modificar el mesa
+            modificarMesa();
             resetearFiltro();
-        } else { // tipoEdicion = BUSCAR: quiere buscar un servicio
-            buscarServicio();
+        } else { // tipoEdicion = BUSCAR: quiere buscar un mesa
+            buscarMesa();
             setearFiltro();
         }
 
@@ -906,7 +929,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	 */
     private void btnResetearFiltroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetearFiltroActionPerformed
         resetearFiltro();
-        cargarListaServicios();
+        cargarListaMesas();
         cargarTabla();
         limpiarCampos();
         botonGuardarComoGuardar();//por si estaba buscando cambio icono y texto del btnGuardar a "Guardar"
@@ -915,22 +938,22 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 
 	
 	
-	/** al hacer clik en una fila de la tabla, queda seleccionado una servicio.
+	/** al hacer clik en una fila de la tabla, queda seleccionado una mesa.
 	 * Entonces habilita los botones de eliminar y modificar
 	 * @param evt 
 	 */
-    private void tablaServiciosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaServiciosMouseClicked
+    private void tablaMesasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMesasMouseClicked
        //tabla.addRowSelectionInterval(filaTabla, filaTabla); //selecciono esa fila de la tabla
-        if (tablaServicios.getSelectedRow() != -1){ // si hay alguna fila seleccionada
+        if (tablaMesas.getSelectedRow() != -1){ // si hay alguna fila seleccionada
 		}
-		int numfila = tablaServicios.getSelectedRow();
+		int numfila = tablaMesas.getSelectedRow();
 		if (numfila != -1) {			
 			btnEliminar.setEnabled(true); // habilito el botón de eliminar
 			btnModificar.setEnabled(true); // habilito el botón de modificar
 			
 			filaTabla2Campos(numfila); // cargo los campos de texto de la pantalla con datos de la fila seccionada de la tabla
 		}  
-    }//GEN-LAST:event_tablaServiciosMouseClicked
+    }//GEN-LAST:event_tablaMesasMouseClicked
 
 
 //================================================================================
@@ -948,21 +971,27 @@ public class CrudServicios extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnResetearFiltro;
     private javax.swing.JButton btnSalir;
-    private javax.swing.JComboBox<Servicio> cbTipo;
+    private javax.swing.ButtonGroup btngrpEstado;
+    private javax.swing.JComboBox<Servicio> cbIdNombreMesero;
     private javax.swing.JComboBox<String> cboxOrden;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblTituloTabla;
     private javax.swing.JPanel panelCamposMesa;
     private javax.swing.JPanel panelTabla;
-    private javax.swing.JPasswordField pwdClave;
-    private javax.swing.JTable tablaServicios;
-    private javax.swing.JTextField txtHost;
-    private javax.swing.JTextField txtIdServicio;
-    private javax.swing.JTextField txtNombre;
-    private javax.swing.JTextField txtPuerto;
+    private javax.swing.JRadioButton rbEstadoAtendida;
+    private javax.swing.JRadioButton rbEstadoLibre;
+    private javax.swing.JRadioButton rbEstadoOcupada;
+    private javax.swing.JTable tablaMesas;
+    private javax.swing.JTextField txtCapacidad;
+    private javax.swing.JTextField txtIdMesa;
     // End of variables declaration//GEN-END:variables
-} // CrudServicios
+} // CrudMesas
 
 
 
@@ -975,16 +1004,18 @@ public class CrudServicios extends javax.swing.JInternalFrame {
  * Es una clase para agrupar y almacenar los datos con los que se filtra una búsqueda
  * @author John David Molina Velarde
  */
-class FiltroServicios{
-	int idServicio;
-	String nombreServicio;
-	Servicio.TipoServicio tipo;
+class FiltroMesas{
+	int idMesa;
+	int capacidad;
+	Mesa.EstadoMesa estado;
+	int idMesero;
 	boolean estoyFiltrando;
 
-	public FiltroServicios() { // constructor
-		idServicio = -1;
-		nombreServicio = "";
-		tipo = null;
+	public FiltroMesas() { // constructor
+		idMesa = -1;
+		capacidad = -1;
+		estado = null;
+		idMesero = -1;
 		estoyFiltrando = false;
-	} // constructor FiltroServicios
-} //FiltroServicios
+	} // constructor FiltroMesas
+} //FiltroMesas
