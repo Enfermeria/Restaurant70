@@ -28,10 +28,10 @@ import javax.swing.table.DefaultTableModel;
  * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
  */
 public class CrudServicios extends javax.swing.JInternalFrame {
-	private DefaultTableModel modeloTabla;
+	private DefaultTableModel modeloTabla, modeloTablaMesasAsignadas, modeloTablaMesasNoAsignadas;
 	private ServicioData servicioData;
 	private MesaData mesaData;
-	private LinkedHashMap<Integer, Mesa> mapaMesas;
+	private List<Mesa> listaMesas;
 	private LinkedHashMap<Integer,Servicio> mapaServicios;
 	private enum TipoEdicion {AGREGAR, MODIFICAR, BUSCAR};
 	private TipoEdicion tipoEdicion = TipoEdicion.AGREGAR; //para que el boton guardar sepa que estoy queriendo hacer:
@@ -46,29 +46,20 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		servicioData = new ServicioData(); 
 		mesaData = new MesaData();
 		modeloTabla = (DefaultTableModel) tablaServicios.getModel();
+		modeloTablaMesasAsignadas = (DefaultTableModel) tablaMesasAsignadas.getModel();
+		modeloTablaMesasNoAsignadas = (DefaultTableModel) tablaMesasNoAsignadas.getModel();
 		cargarMapaServicios(); //carga la base de datos
+		cargarListaMesas();
 		cargarTabla(); // cargo la tabla con las servicios
+		cargarTablaMesas(-1); // cargo la tabla con las mesas asignadas y no asignadas al mesero 0 (nadie)
 	}
 
 	/**
-	 * Carga la lista de meseros de la tabla de Servicios y también los agrega al combo box
+	 * Carga la lista de mesas de la tabla de Mesas
 	 */
-	private void cargarMapaMesas(){
-		// cargo la lista de meseros
-		//ServicioData servicioData = new ServicioData();
-		//List<Servicio> listaMeseros = servicioData.getListaServiciosXCriterioDeBusqueda(
-			//idServicio, nombre, host, puerto, Servicio.TipoServicio,		  ordenacion
-		//	-1,			  "",	  "",   -1,     Servicio.TipoServicio.MESERO, ServicioData.OrdenacionServicio.PORIDSERVICIO);
-		//listaMeseros.add(0, servicioSinAsignar);// para cuando no hay un mesero asignado a la servicio.
-		
-		//copio esa lista de meseros a un mapa
-		//mapaMesas = new LinkedHashMap();
-		//listaMeseros.stream().forEach( mesero -> mapaMeseros.put(mesero.getIdServicio(), mesero) );
-		
-		//esa lista de meseros lo cargo al JComboBox cbIdNombreMesero
-		//listaMeseros.stream().forEach( mesero -> 
-		//	cbIdNombreMesero.addItem( mesero ) 
-		//);
+	private void cargarListaMesas(){
+		// cargo la lista de mesas
+		listaMesas = mesaData.getListaMesas();
 	}
 	
 	/**
@@ -121,6 +112,51 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	} //cargarTabla
 	
 	
+	/**
+	 * Carga la tabla de mesas asignadas al mesero y las no asignadas a él.
+	 * @param idMesero el mesero cuyas mesas se cargarán.
+	 */
+	private void cargarTablaMesas(int idMesero){ 
+		//borro las filas de la tabla mesas asignadas
+		for (int fila = modeloTablaMesasAsignadas.getRowCount() -  1; fila >= 0; fila--)
+			modeloTablaMesasAsignadas.removeRow(fila);
+		
+		//borro las filas de la tabla mesas no asignadas
+		for (int fila = modeloTablaMesasNoAsignadas.getRowCount() -  1; fila >= 0; fila--)
+			modeloTablaMesasNoAsignadas.removeRow(fila);
+		
+		//cargo los servicios de listaMesas a la tabla de mesas
+		for (Mesa mesa : listaMesas) {
+			if (mesa.getIdMesero() == idMesero) 
+				modeloTablaMesasAsignadas.addRow(new Object[] {
+					mesa.getIdMesa()
+				} );
+			else {
+				System.out.println("IdMesa: " + mesa.getIdMesa() + "  IdMesero(idServicio): " + mesa.getIdMesero());
+				modeloTablaMesasNoAsignadas.addRow(new Object[] {
+					mesa.getIdMesa(), 
+					mesa.getIdMesero(),
+					mapaServicios.get(mesa.getIdMesero()).getNombreServicio()
+				} );
+			}
+		}
+		
+		
+		//como no hay fila seleccionada en la tablaMesasAsignadas, deshabilito el botón Desasignar
+		if (tablaMesasAsignadas.getSelectedRow() == -1) // si no hay alguna fila seleccionada
+			btnDesasignarMesa.setEnabled(false); // deshabilito el botón de Desasignar
+		else //hay una fila seleccionada
+			btnDesasignarMesa.setEnabled(true); // habilito el botón de Desasignar
+        
+		//como no hay fila seleccionada tablaMesasNoAsignadas, deshabilito el botón Asignar
+		if (tablaMesasNoAsignadas.getSelectedRow() == -1) // si no hay alguna fila seleccionada
+			btnAsignarMesa.setEnabled(false); // deshabilito el botón de Asignar Mesa
+		else //hay una fila seleccionada
+			btnAsignarMesa.setEnabled(true); // deshabilito el botón de Asignar mesa
+	} //cargarTablaMesas
+	
+	
+	
 	/** 
 	 * Elimina al servicio seleccionado de la lista y la bd. 
 	 * @return Devuelve true si pudo eliminarlo
@@ -152,6 +188,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 			if ( servicioData.altaServicio(servicio) ) {// si pudo dar de alta al servicio
 				cargarMapaServicios();
 				cargarTabla();
+				cargarTablaMesas(-1);
 				return true;
 			} else {
 				JOptionPane.showMessageDialog(this, "Debe completar correctamente todos los datos del servicio para agregarlo", "No se puede agregar", JOptionPane.ERROR_MESSAGE);
@@ -239,6 +276,12 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	private void habilitoParaBuscar(){ 
 		habilitoParaEditar();
 		txtIdServicio.setEditable(true);
+		txtNombre.setEditable(true);
+		txtHost.setEditable(false);
+		txtPuerto.setEditable(false);
+		cbTipo.setEditable(true);
+		cbTipo.setEnabled(true);
+		pwdClave.setEditable(false);
 	} //habilitoParaBuscar
 
 	
@@ -252,9 +295,17 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		btnEliminar.setEnabled(false);  //deshabilito botón eliminar
 		btnBuscar.setEnabled(false);
 		cboxOrden.setEnabled(false);
+		btnAsignarMesa.setEnabled(false);
+		btnDesasignarMesa.setEnabled(false);
 		
 		//Deshabilito la Tabla para que no pueda hacer click
 		tablaServicios.setEnabled(false);
+		tablaMesasAsignadas.setEnabled(false);
+		tablaMesasNoAsignadas.setEnabled(false);
+		if (tablaMesasAsignadas.getRowCount() > 0)
+			tablaMesasAsignadas.removeRowSelectionInterval(0, tablaMesasAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
+		if (tablaMesasNoAsignadas.getRowCount() > 0)
+			tablaMesasNoAsignadas.removeRowSelectionInterval(0, tablaMesasAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
 		
 		//Habilito los botones guardar y cancelar
 		btnGuardar.setEnabled(true); // este botón es el que realmente se encargará de agregegar el servicio
@@ -265,6 +316,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		txtHost.setEditable(true);
 		txtPuerto.setEditable(true);
 		cbTipo.setEditable(true);
+		cbTipo.setEnabled(true);
 		pwdClave.setEditable(true);
 	} //habilitoParaEditar
 
@@ -299,6 +351,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		txtHost.setEditable(false);
 		txtPuerto.setEditable(false);
 		cbTipo.setEditable(false);
+		cbTipo.setEnabled(false);
 		pwdClave.setEditable(false);
 	} //deshabilitoParaEditar
 
@@ -318,6 +371,11 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		
 		if (tablaServicios.getRowCount() > 0) 
 			tablaServicios.removeRowSelectionInterval(0, tablaServicios.getRowCount()-1); //des-selecciono las filas de la tabla
+		cargarTablaMesas(0);
+		if (tablaMesasAsignadas.getRowCount() > 0)
+			tablaMesasAsignadas.removeRowSelectionInterval(0, tablaMesasAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
+		if (tablaMesasNoAsignadas.getRowCount() > 0)
+			tablaMesasNoAsignadas.removeRowSelectionInterval(0, tablaMesasAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
 	} // limpiarCampos
 
 
@@ -395,7 +453,9 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		}
 			
 		//clave
-		clave = Arrays.toString(pwdClave.getPassword());
+		clave = "";
+		for (int i = 0; i < pwdClave.getPassword().length; i++)
+			clave += pwdClave.getPassword()[i];
 		return new Servicio(idServicio, nombre, host, puerto, tipo, clave);
 	} // campos2Servicio
 	
@@ -421,7 +481,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 	*/
 	private void setearFiltro(){
 			//cambio el titulo de la tabla y color panel de tabla para que muestre que está filtrado
-			lblTituloTabla.setText("Listado de servicios filtradas por búsqueda");
+			lblTituloTabla.setText("Servicios filtrados por búsqueda");
 			panelTabla.setBackground(new Color(255, 51, 51));
 			btnResetearFiltro.setEnabled(true);
 			filtro.estoyFiltrando = true;
@@ -482,6 +542,15 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         btnBuscar = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
         cboxOrden = new javax.swing.JComboBox<>();
+        panelMesas = new javax.swing.JPanel();
+        panelMesasAsignadas = new javax.swing.JScrollPane();
+        tablaMesasAsignadas = new javax.swing.JTable();
+        lblTituloTabla1 = new javax.swing.JLabel();
+        panelMesasNoAsignadas = new javax.swing.JScrollPane();
+        tablaMesasNoAsignadas = new javax.swing.JTable();
+        lblTituloTabla2 = new javax.swing.JLabel();
+        btnAsignarMesa = new javax.swing.JButton();
+        btnDesasignarMesa = new javax.swing.JButton();
 
         panelCamposMesa.setBackground(new java.awt.Color(153, 153, 255));
         panelCamposMesa.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -493,6 +562,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         txtIdServicio.setPreferredSize(new java.awt.Dimension(16, 42));
 
         cbTipo.setBorder(javax.swing.BorderFactory.createTitledBorder("Tipo"));
+        cbTipo.setEnabled(false);
         cbTipo.setMinimumSize(new java.awt.Dimension(28, 42));
         cbTipo.setPreferredSize(new java.awt.Dimension(28, 42));
 
@@ -543,23 +613,25 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         panelCamposMesaLayout.setHorizontalGroup(
             panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addComponent(txtIdServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                        .addGap(21, 21, 21)
                         .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                                .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtIdServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(pwdClave, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(panelCamposMesaLayout.createSequentialGroup()
                                 .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtPuerto, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addComponent(txtPuerto, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 1, Short.MAX_VALUE))))
+                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(cbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pwdClave, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)))
                 .addGap(20, 20, 20))
             .addGroup(panelCamposMesaLayout.createSequentialGroup()
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -567,7 +639,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
                         .addGap(85, 85, 85)
                         .addComponent(jLabel7))
                     .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addGap(64, 64, 64)
+                        .addGap(67, 67, 67)
                         .addComponent(btnGuardar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnCancelar)))
@@ -578,25 +650,24 @@ public class CrudServicios extends javax.swing.JInternalFrame {
             .addGroup(panelCamposMesaLayout.createSequentialGroup()
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(txtIdServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtHost, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
+                    .addComponent(txtIdServicio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(24, 24, 24)
+                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtHost, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtPuerto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(29, 29, 29)
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(cbTipo, javax.swing.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE))
-                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(pwdClave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(1, 1, 1)
+                        .addComponent(cbTipo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(pwdClave, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnGuardar)
                     .addComponent(btnCancelar))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         panelTabla.setBackground(new java.awt.Color(153, 153, 255));
@@ -665,11 +736,11 @@ public class CrudServicios extends javax.swing.JInternalFrame {
             .addGroup(panelTablaLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelTablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE)
                     .addGroup(panelTablaLayout.createSequentialGroup()
                         .addComponent(lblTituloTabla)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnResetearFiltro))
-                    .addComponent(jScrollPane1))
+                        .addComponent(btnResetearFiltro)))
                 .addContainerGap())
         );
         panelTablaLayout.setVerticalGroup(
@@ -686,7 +757,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         botonera.setBackground(new java.awt.Color(153, 153, 255));
 
         btnAgregar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/bandeja.png"))); // NOI18N
+        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mesero32x32.png"))); // NOI18N
         btnAgregar.setText("Agregar");
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -734,8 +805,8 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 
         cboxOrden.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "por Id Servicio", "por Nombre", "por Tipo" }));
         cboxOrden.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ordenado", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
-        cboxOrden.setMinimumSize(new java.awt.Dimension(104, 42));
-        cboxOrden.setPreferredSize(new java.awt.Dimension(104, 42));
+        cboxOrden.setMinimumSize(new java.awt.Dimension(104, 50));
+        cboxOrden.setPreferredSize(new java.awt.Dimension(104, 50));
         cboxOrden.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboxOrdenActionPerformed(evt);
@@ -756,8 +827,8 @@ public class CrudServicios extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addComponent(btnBuscar)
                 .addGap(18, 18, 18)
-                .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, Short.MAX_VALUE)
+                .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnSalir)
                 .addContainerGap())
         );
@@ -772,7 +843,150 @@ public class CrudServicios extends javax.swing.JInternalFrame {
                     .addComponent(btnBuscar)
                     .addComponent(btnSalir))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(cboxOrden, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, botoneraLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        panelMesas.setBackground(new java.awt.Color(153, 255, 204));
+
+        tablaMesasAsignadas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null},
+                {null},
+                {null},
+                {null}
+            },
+            new String [] {
+                "Mesa"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablaMesasAsignadas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaMesasAsignadasMouseClicked(evt);
+            }
+        });
+        panelMesasAsignadas.setViewportView(tablaMesasAsignadas);
+        if (tablaMesasAsignadas.getColumnModel().getColumnCount() > 0) {
+            tablaMesasAsignadas.getColumnModel().getColumn(0).setResizable(false);
+        }
+
+        lblTituloTabla1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblTituloTabla1.setText("Mesas asignadas al mesero");
+        lblTituloTabla1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        tablaMesasNoAsignadas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Mesa", "IdMesero", "Nombre"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablaMesasNoAsignadas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaMesasNoAsignadasMouseClicked(evt);
+            }
+        });
+        panelMesasNoAsignadas.setViewportView(tablaMesasNoAsignadas);
+        if (tablaMesasNoAsignadas.getColumnModel().getColumnCount() > 0) {
+            tablaMesasNoAsignadas.getColumnModel().getColumn(0).setResizable(false);
+            tablaMesasNoAsignadas.getColumnModel().getColumn(1).setResizable(false);
+            tablaMesasNoAsignadas.getColumnModel().getColumn(2).setResizable(false);
+        }
+
+        lblTituloTabla2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblTituloTabla2.setText("Mesas no asignadas al mesero");
+        lblTituloTabla2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        btnAsignarMesa.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/flecha_izquierda32x32 .png"))); // NOI18N
+        btnAsignarMesa.setText("    Asignar mesa");
+        btnAsignarMesa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAsignarMesaActionPerformed(evt);
+            }
+        });
+
+        btnDesasignarMesa.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/flecha_derecha32x32.png"))); // NOI18N
+        btnDesasignarMesa.setText("Desasignar mesa");
+        btnDesasignarMesa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDesasignarMesaActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panelMesasLayout = new javax.swing.GroupLayout(panelMesas);
+        panelMesas.setLayout(panelMesasLayout);
+        panelMesasLayout.setHorizontalGroup(
+            panelMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelMesasLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lblTituloTabla1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelMesasAsignadas, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGap(102, 102, 102)
+                .addGroup(panelMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnDesasignarMesa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnAsignarMesa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(panelMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelMesasNoAsignadas, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTituloTabla2, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+        panelMesasLayout.setVerticalGroup(
+            panelMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelMesasLayout.createSequentialGroup()
+                .addGroup(panelMesasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblTituloTabla1)
+                    .addComponent(lblTituloTabla2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(panelMesasAsignadas, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGap(5, 5, 5))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMesasLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(panelMesasNoAsignadas, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addGroup(panelMesasLayout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addComponent(btnAsignarMesa)
+                .addGap(28, 28, 28)
+                .addComponent(btnDesasignarMesa)
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -780,10 +994,14 @@ public class CrudServicios extends javax.swing.JInternalFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(panelCamposMesa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelTabla, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(botonera, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(panelCamposMesa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelTabla, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(botonera, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelMesas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -793,7 +1011,9 @@ public class CrudServicios extends javax.swing.JInternalFrame {
                     .addComponent(panelCamposMesa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(botonera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(215, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(panelMesas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -945,8 +1165,74 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 			btnModificar.setEnabled(true); // habilito el botón de modificar
 			
 			filaTabla2Campos(numfila); // cargo los campos de texto de la pantalla con datos de la fila seccionada de la tabla
+			cargarTablaMesas(0);
+			if (tablaMesasAsignadas.getRowCount() > 0)
+				tablaMesasAsignadas.removeRowSelectionInterval(0, tablaMesasAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
+			tablaMesasAsignadas.setEnabled(true);
+			if (tablaMesasNoAsignadas.getRowCount() > 0)
+				tablaMesasNoAsignadas.removeRowSelectionInterval(0, tablaMesasAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
+			tablaMesasNoAsignadas.setEnabled(true);
 		}  
     }//GEN-LAST:event_tablaServiciosMouseClicked
+
+    private void btnDesasignarMesaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDesasignarMesaActionPerformed
+        if (tablaMesasAsignadas.getSelectedRow() != -1){ // si hay alguna fila seleccionada
+			btnDesasignarMesa.setEnabled(false); // deshabilito botón Desasignar.
+        }
+        int numfilaAsignadas = tablaMesasAsignadas.getSelectedRow();
+        if (numfilaAsignadas != -1) { //si hay alguna fila seleccionada en la tabla de mesas asignadas
+			int idMesa = (Integer)tablaMesasAsignadas.getValueAt(numfilaAsignadas, 0);//averiguamos el idMesa
+			int idMesero = (Integer) tablaServicios.getValueAt(tablaServicios.getSelectedRow(), 0);
+			//modifico el mesero de la mesa, poniendolo a 0 (para que almacene null)
+			Mesa mesa = mesaData.getMesa(idMesa);
+			mesa.setIdMesero(0);
+			mesaData.modificarMesa(mesa);
+			
+			//actualizamos las listas y tablas de mesas
+			cargarListaMesas();
+			cargarTablaMesas( idMesero );
+		}
+    }//GEN-LAST:event_btnDesasignarMesaActionPerformed
+
+    private void btnAsignarMesaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarMesaActionPerformed
+        if (tablaMesasNoAsignadas.getSelectedRow() != -1){ // si hay alguna fila seleccionada
+			btnAsignarMesa.setEnabled(false); // deshabilito botón Desasignar.
+        }
+        int numfilaNoAsignadas = tablaMesasNoAsignadas.getSelectedRow();
+        if (numfilaNoAsignadas != -1) { //si hay alguna fila seleccionada en la tabla de mesas asignadas
+			int idMesa = (Integer)tablaMesasNoAsignadas.getValueAt(numfilaNoAsignadas, 0);//averiguamos el idMesa
+			int idMesero = (Integer) tablaServicios.getValueAt(tablaServicios.getSelectedRow(), 0);
+			
+			//modifico el mesero de la mesa, poniendolo a 0 (para que almacene null)
+			Mesa mesa = mesaData.getMesa(idMesa);
+			mesa.setIdMesero(idMesero);
+			mesaData.modificarMesa(mesa);
+			
+			//actualizamos las listas y tablas de mesas
+			cargarListaMesas();
+			cargarTablaMesas( idMesero );
+		}
+    }//GEN-LAST:event_btnAsignarMesaActionPerformed
+
+    private void tablaMesasNoAsignadasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMesasNoAsignadasMouseClicked
+        if (tablaMesasNoAsignadas.getSelectedRow() != -1){ // si hay alguna fila seleccionada
+			btnAsignarMesa.setEnabled(false); // deshabilito botón Asignar mesa
+        }
+        int numfila = tablaMesasNoAsignadas.getSelectedRow();
+        if (numfila != -1) { //si hay alguna fila seleccionada en la tabla de mesas no asignadas
+			btnAsignarMesa.setEnabled(true);
+        } 
+    }//GEN-LAST:event_tablaMesasNoAsignadasMouseClicked
+
+    private void tablaMesasAsignadasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMesasAsignadasMouseClicked
+        if (tablaMesasAsignadas.getSelectedRow() != -1){ // si hay alguna fila seleccionada
+			btnDesasignarMesa.setEnabled(false); // deshabilito botón Desasignar
+        }
+        int numfila = tablaMesasAsignadas.getSelectedRow();
+        if (numfila != -1) { //si hay alguna fila seleccionada en la tabla de mesas asignadas
+			btnDesasignarMesa.setEnabled(true);
+        } 
+    }//GEN-LAST:event_tablaMesasAsignadasMouseClicked
 
 
 //================================================================================
@@ -957,8 +1243,10 @@ public class CrudServicios extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel botonera;
     private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnAsignarMesa;
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnDesasignarMesa;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnModificar;
@@ -969,9 +1257,16 @@ public class CrudServicios extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblTituloTabla;
+    private javax.swing.JLabel lblTituloTabla1;
+    private javax.swing.JLabel lblTituloTabla2;
     private javax.swing.JPanel panelCamposMesa;
+    private javax.swing.JPanel panelMesas;
+    private javax.swing.JScrollPane panelMesasAsignadas;
+    private javax.swing.JScrollPane panelMesasNoAsignadas;
     private javax.swing.JPanel panelTabla;
     private javax.swing.JPasswordField pwdClave;
+    private javax.swing.JTable tablaMesasAsignadas;
+    private javax.swing.JTable tablaMesasNoAsignadas;
     private javax.swing.JTable tablaServicios;
     private javax.swing.JTextField txtHost;
     private javax.swing.JTextField txtIdServicio;

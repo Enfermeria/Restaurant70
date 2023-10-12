@@ -261,7 +261,7 @@ public class ServicioData {
 		if (ordenacion == OrdenacionServicio.PORIDSERVICIO) 
 			sql = sql + " Order by idservicio";
 		else if (ordenacion == OrdenacionServicio.PORNOMBRESERVICIO)
-			sql = sql + " Order by nombreCompleto";
+			sql = sql + " Order by nombreServicio";
 		else // (ordenacion == OrdenacionServicio.PORTIPOSERVICIO)
 			sql = sql + " Order by tipo";
 		
