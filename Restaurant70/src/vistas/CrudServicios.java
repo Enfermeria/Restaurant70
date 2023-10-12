@@ -132,15 +132,13 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 					mesa.getIdMesa()
 				} );
 			else {
-				System.out.println("IdMesa: " + mesa.getIdMesa() + "  IdMesero(idServicio): " + mesa.getIdMesero());
 				modeloTablaMesasNoAsignadas.addRow(new Object[] {
 					mesa.getIdMesa(), 
 					mesa.getIdMesero(),
-					mapaServicios.get(mesa.getIdMesero()).getNombreServicio()
+					( (mesa.getIdMesero() <= 0) ? "" : mapaServicios.get(mesa.getIdMesero()).getNombreServicio() )
 				} );
 			}
 		}
-		
 		
 		//como no hay fila seleccionada en la tablaMesasAsignadas, deshabilito el botón Desasignar
 		if (tablaMesasAsignadas.getSelectedRow() == -1) // si no hay alguna fila seleccionada
@@ -1165,7 +1163,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 			btnModificar.setEnabled(true); // habilito el botón de modificar
 			
 			filaTabla2Campos(numfila); // cargo los campos de texto de la pantalla con datos de la fila seccionada de la tabla
-			cargarTablaMesas(0);
+			cargarTablaMesas( (Integer) tablaServicios.getValueAt(numfila, 0) );
 			if (tablaMesasAsignadas.getRowCount() > 0)
 				tablaMesasAsignadas.removeRowSelectionInterval(0, tablaMesasAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
 			tablaMesasAsignadas.setEnabled(true);
