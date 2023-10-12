@@ -390,13 +390,6 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		txtPuerto.setText(tablaServicios.getValueAt(numfila,3)+"");
 		cbTipo.setSelectedItem(tablaServicios.getValueAt(numfila,4) );
 		pwdClave.setText( mapaServicios.get(Integer.valueOf( txtIdServicio.getText())).getClave() );
-		
-		//para debugguear
-		System.out.println("txtIdServicio: " + txtIdServicio.getText());
-		System.out.println("txtNombre: " + txtNombre.getText());
-		System.out.println("txtHost: " + txtHost.getText());
-		System.out.println("txtPuerto: " + txtPuerto.getText());
-		
 	} //filaTabla2Campos
 
 
@@ -1168,7 +1161,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 				tablaMesasAsignadas.removeRowSelectionInterval(0, tablaMesasAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
 			tablaMesasAsignadas.setEnabled(true);
 			if (tablaMesasNoAsignadas.getRowCount() > 0)
-				tablaMesasNoAsignadas.removeRowSelectionInterval(0, tablaMesasAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
+				tablaMesasNoAsignadas.removeRowSelectionInterval(0, tablaMesasNoAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
 			tablaMesasNoAsignadas.setEnabled(true);
 		}  
     }//GEN-LAST:event_tablaServiciosMouseClicked
