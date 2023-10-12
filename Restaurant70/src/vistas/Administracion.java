@@ -219,11 +219,17 @@ public class Administracion extends javax.swing.JFrame {
 		mostrarFondo(); // recargo la foto de la ULP
 		escritorio.repaint();
 		
-		CrudCategorias crudCategorias = new CrudCategorias(); // creo un internal Frame
-		crudCategorias.setVisible(true); // lo pongo visible
+		Prueba prueba = new Prueba(); // creo un internal Frame
+		prueba.setVisible(true); // lo pongo visible
 		
-		escritorio.add(crudCategorias); // lo pongo en el escritorio
-		escritorio.moveToFront(crudCategorias); //pongo la ventana al frente:        // TODO add your handling code here:
+		escritorio.add(prueba); // lo pongo en el escritorio
+		escritorio.moveToFront(prueba); //pongo la ventana al frente:     
+		
+//		CrudCategorias crudCategorias = new CrudCategorias(); // creo un internal Frame
+//		crudCategorias.setVisible(true); // lo pongo visible
+//		
+//		escritorio.add(crudCategorias); // lo pongo en el escritorio
+//		escritorio.moveToFront(crudCategorias); //pongo la ventana al frente:       
     }//GEN-LAST:event_btnFacturacionActionPerformed
 
 	/**
