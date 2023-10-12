@@ -454,19 +454,16 @@ public class CrudMesas extends javax.swing.JInternalFrame {
 
         btngrpEstado = new javax.swing.ButtonGroup();
         panelCamposMesa = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
         txtIdMesa = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        rbEstadoLibre = new javax.swing.JRadioButton();
-        rbEstadoOcupada = new javax.swing.JRadioButton();
-        rbEstadoAtendida = new javax.swing.JRadioButton();
-        jLabel5 = new javax.swing.JLabel();
         cbIdNombreMesero = new javax.swing.JComboBox<>();
         btnGuardar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         txtCapacidad = new javax.swing.JTextField();
+        jPanel1 = new javax.swing.JPanel();
+        rbEstadoLibre = new javax.swing.JRadioButton();
+        rbEstadoOcupada = new javax.swing.JRadioButton();
+        rbEstadoAtendida = new javax.swing.JRadioButton();
         panelTabla = new javax.swing.JPanel();
         lblTituloTabla = new javax.swing.JLabel();
         btnResetearFiltro = new javax.swing.JButton();
@@ -484,28 +481,10 @@ public class CrudMesas extends javax.swing.JInternalFrame {
         panelCamposMesa.setBackground(new java.awt.Color(153, 153, 255));
         panelCamposMesa.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
 
-        jLabel2.setText("Id Mesa:");
-
         txtIdMesa.setEditable(false);
+        txtIdMesa.setBorder(javax.swing.BorderFactory.createTitledBorder("Id Mesa"));
 
-        jLabel3.setText("Capacidad:");
-
-        jLabel4.setText("Estado:");
-
-        btngrpEstado.add(rbEstadoLibre);
-        rbEstadoLibre.setText("Libre");
-        rbEstadoLibre.setEnabled(false);
-
-        btngrpEstado.add(rbEstadoOcupada);
-        rbEstadoOcupada.setText("Ocupada");
-        rbEstadoOcupada.setEnabled(false);
-
-        btngrpEstado.add(rbEstadoAtendida);
-        rbEstadoAtendida.setText("Atendida");
-        rbEstadoAtendida.setEnabled(false);
-
-        jLabel5.setText("Mesero:");
-
+        cbIdNombreMesero.setBorder(javax.swing.BorderFactory.createTitledBorder("Mesero"));
         cbIdNombreMesero.setEnabled(false);
 
         btnGuardar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -532,6 +511,42 @@ public class CrudMesas extends javax.swing.JInternalFrame {
         jLabel7.setText("Gestión de Mesas");
 
         txtCapacidad.setEditable(false);
+        txtCapacidad.setBorder(javax.swing.BorderFactory.createTitledBorder("Capacidad"));
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Estado"));
+
+        btngrpEstado.add(rbEstadoLibre);
+        rbEstadoLibre.setText("Libre");
+        rbEstadoLibre.setEnabled(false);
+
+        btngrpEstado.add(rbEstadoOcupada);
+        rbEstadoOcupada.setText("Ocupada");
+        rbEstadoOcupada.setEnabled(false);
+
+        btngrpEstado.add(rbEstadoAtendida);
+        rbEstadoAtendida.setText("Atendida");
+        rbEstadoAtendida.setEnabled(false);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(rbEstadoLibre)
+                .addGap(18, 18, 18)
+                .addComponent(rbEstadoOcupada)
+                .addGap(18, 18, 18)
+                .addComponent(rbEstadoAtendida)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(rbEstadoLibre, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(rbEstadoOcupada)
+                .addComponent(rbEstadoAtendida))
+        );
 
         javax.swing.GroupLayout panelCamposMesaLayout = new javax.swing.GroupLayout(panelCamposMesa);
         panelCamposMesa.setLayout(panelCamposMesaLayout);
@@ -540,61 +555,35 @@ public class CrudMesas extends javax.swing.JInternalFrame {
             .addGroup(panelCamposMesaLayout.createSequentialGroup()
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtIdMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtCapacidad, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                                    .addComponent(btnGuardar)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(btnCancelar))
-                                .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                                    .addComponent(jLabel5)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(cbIdNombreMesero, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGroup(panelCamposMesaLayout.createSequentialGroup()
-                                    .addComponent(jLabel4)
-                                    .addGap(12, 12, 12)
-                                    .addComponent(rbEstadoLibre)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(rbEstadoOcupada)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(rbEstadoAtendida)))))
-                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
                         .addGap(77, 77, 77)
-                        .addComponent(jLabel7)))
+                        .addComponent(jLabel7))
+                    .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelCamposMesaLayout.createSequentialGroup()
+                                .addComponent(btnGuardar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                                .addComponent(btnCancelar))
+                            .addGroup(panelCamposMesaLayout.createSequentialGroup()
+                                .addComponent(txtIdMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtCapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cbIdNombreMesero, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(24, Short.MAX_VALUE))
         );
         panelCamposMesaLayout.setVerticalGroup(
             panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCamposMesaLayout.createSequentialGroup()
                 .addComponent(jLabel7)
-                .addGap(12, 12, 12)
+                .addGap(35, 35, 35)
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtIdMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtCapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(rbEstadoLibre, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel4)
-                        .addComponent(rbEstadoOcupada)
-                        .addComponent(rbEstadoAtendida)))
-                .addGap(18, 18, 18)
-                .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(cbIdNombreMesero, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtIdMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtCapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
+                .addComponent(cbIdNombreMesero, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelCamposMesaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnGuardar)
@@ -679,7 +668,7 @@ public class CrudMesas extends javax.swing.JInternalFrame {
                     .addComponent(btnResetearFiltro))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
 
         botonera.setBackground(new java.awt.Color(153, 153, 255));
@@ -974,12 +963,9 @@ public class CrudMesas extends javax.swing.JInternalFrame {
     private javax.swing.ButtonGroup btngrpEstado;
     private javax.swing.JComboBox<Servicio> cbIdNombreMesero;
     private javax.swing.JComboBox<String> cboxOrden;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblTituloTabla;
     private javax.swing.JPanel panelCamposMesa;
