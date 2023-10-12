@@ -373,7 +373,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		if (tablaMesasAsignadas.getRowCount() > 0)
 			tablaMesasAsignadas.removeRowSelectionInterval(0, tablaMesasAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
 		if (tablaMesasNoAsignadas.getRowCount() > 0)
-			tablaMesasNoAsignadas.removeRowSelectionInterval(0, tablaMesasAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
+			tablaMesasNoAsignadas.removeRowSelectionInterval(0, tablaMesasNoAsignadas.getRowCount()-1); //des-selecciono las filas de la tabla
 	} // limpiarCampos
 
 
