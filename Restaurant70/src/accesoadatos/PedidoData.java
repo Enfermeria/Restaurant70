@@ -263,14 +263,17 @@ public class PedidoData {
 	 * @param idMesero si idMesero no es -1 usa idMesero como criterio de búsqueda
 	 * @param fechaDesde si fechaDesde no es null usa fechaDesde como criterio de búsqueda
 	 * @param fechaHasta si fechaHasta no es null usa fechaHasta como criterio de búsqueda
+	 * @param pagado si pagado no es null, usa pagado como criterio de búsqueda
 	 * @param ordenacion es el orden en el que devolverá la lista
 	 * @return lista de pedidos que cumplen con el criterio de búsqueda
 	 */ 
 	public List<Pedido> getListaPedidosXCriterioDeBusqueda(int idPedido, int idMesa, 
-			int idMesero, LocalDateTime fechaDesde, LocalDateTime fechaHasta, OrdenacionPedido ordenacion){ 
+			int idMesero, LocalDateTime fechaDesde, LocalDateTime fechaHasta, 
+			Boolean pagado,  OrdenacionPedido ordenacion){ 
 		ArrayList<Pedido> lista = new ArrayList();
 		String sql = "Select * from pedido";
-		if ( idPedido != -1 || idMesa != -1 || idMesero != -1 || fechaDesde != null || fechaHasta != null ) {
+		if ( idPedido != -1 || idMesa != -1 || idMesero != -1 || 
+			fechaDesde != null || fechaHasta != null || pagado !=null ) {
 			sql = sql + " Where";
 			
 			if ( idPedido != -1 )
@@ -298,6 +301,12 @@ public class PedidoData {
 				if (idPedido != -1 || idMesa != -1 || idMesero != -1 || fechaDesde != null) //Si ya puse el idPedido o idMesa o idMesero agrego and
 					sql = sql+" AND";
 				sql = sql+" fechaHora<='" + localDateTime2DateTimeBD(fechaHasta) + "'";
+			}
+			
+			if ( pagado != null ) {
+				if (idPedido != -1 || idMesa != -1 || idMesero != -1 || fechaDesde != null || fechaHasta != null) //Si ya puse el idPedido o idMesa o idMesero agrego and
+					sql = sql+" AND";
+				sql = sql+" pagado=" + pagado + " ";
 			}
 		}
 		

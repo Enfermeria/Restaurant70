@@ -11,10 +11,15 @@
 package vistas;
 
 import accesoadatos.MesaData;
+import accesoadatos.PedidoData;
 import entidades.Mesa;
+import entidades.Pedido;
 import entidades.Servicio;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -24,19 +29,32 @@ import javax.swing.table.DefaultTableModel;
 public class Meseros extends javax.swing.JFrame {
 	Servicio mesero;
 	LinkedHashMap<Integer, Mesa> mapaMesas;
+	LinkedHashMap<Integer, Pedido> mapaPedidos;
 	DefaultTableModel modeloTablaMesas, modeloTablaPedidos, modeloTablaItems, modeloTablaProductos;
 	
 	
 	public Meseros(Servicio mesero) {
 		this.mesero = mesero;
 		initComponents();
+		
 		modeloTablaMesas   = (DefaultTableModel) tablaMesas.getModel();
 		modeloTablaPedidos = (DefaultTableModel) tablaPedidos.getModel();
 		modeloTablaItems   = (DefaultTableModel) tablaItems.getModel();
 		modeloTablaProductos=(DefaultTableModel) tablaProductos.getModel();
+		
+		//elijo alineacion centro para mesas y pedidos
+		DefaultTableCellRenderer alinear = new DefaultTableCellRenderer();
+		alinear.setHorizontalAlignment(SwingConstants.CENTER);//.LEFT .RIGHT .CENTER
+		tablaMesas.getColumnModel().getColumn(0).setCellRenderer(alinear);
+		tablaPedidos.getColumnModel().getColumn(0).setCellRenderer(alinear);
+
+		cargarMesas();
+		cargarPedidos();
 	}
 
-	
+	/**
+	 * cargo el mapa de mesas y la tabla de mesas que corresponden a ese mesero.
+	 */
 	private void cargarMesas(){
 		MesaData mesaData = new MesaData(); //conecto con la BD
 		//Obtengo la lista de meses que corresponden a este mesero.
@@ -59,19 +77,92 @@ public class Meseros extends javax.swing.JFrame {
 			} );
 		}
 		
-		tablaMesas.setRowSelectionInterval(filaSeleccionada, filaSeleccionada);
-		//como no hay fila seleccionada en la tablaMesas, borro la tabla pedidos
-		if (tablaMesas.getSelectedRow() == -1) // si no hay alguna mesa seleccionada
-			btnDesasignarMesa.setEnabled(false); // deshabilito el botón de Desasignar
-		else //hay una fila seleccionada
-			btnDesasignarMesa.setEnabled(true); // habilito el botón de Desasignar
-        
-		//como no hay fila seleccionada tablaMesasNoAsignadas, deshabilito el botón Asignar
-		if (tablaMesasNoAsignadas.getSelectedRow() == -1) // si no hay alguna fila seleccionada
-			btnAsignarMesa.setEnabled(false); // deshabilito el botón de Asignar Mesa
-		else //hay una fila seleccionada
-			btnAsignarMesa.setEnabled(true); // deshabilito el botón de Asignar mesa
+		//si la fila que tenia seleccionada sigue siendo válida
+		if (filaSeleccionada >= 0 && filaSeleccionada < tablaMesas.getRowCount())
+			tablaMesas.setRowSelectionInterval(filaSeleccionada, filaSeleccionada); //restauro la fila que tenía seleccionada
+		//else
+		//	tablaMesas.removeRowSelectionInterval(0, tablaMesas.getRowCount()-1); // borro todas las selecciones de la tabla de pedidos
 	} //cargar mesas
+	
+	
+	
+	/**
+	 * Me devuelve el idMesa que se seleccionó de la tabla. Si no hay ninguna 
+	 * seleccionada, devuelve 0;
+	 * @return 
+	 */
+	private int getIdMesaSeleccionada(){
+		int filaSeleccionada = tablaMesas.getSelectedRow();
+		if (filaSeleccionada != -1)
+			return (Integer) tablaMesas.getValueAt(filaSeleccionada, 0);
+		else
+			return 0;
+	} //getIdMesaSeleccionada
+	
+	
+	
+	
+	/**
+	 * cargo el mapa de mesas y la tabla de mesas que corresponden a ese mesero
+	 */
+	private void cargarPedidos(){
+		PedidoData pedidoData = new PedidoData(); //conecto con la BD
+		//Obtengo la lista de pedidos que corresponden a esa mesa.
+		List<Pedido> listaPedidos = pedidoData.getListaPedidosXCriterioDeBusqueda(
+		//	idPedido, idMesa,				  idMesero, fechaDesde, fechaHasta, pagado,  OrdenacionPedido ordenacion
+			-1,		 getIdMesaSeleccionada(), -1,		null,		null,		false,	PedidoData.OrdenacionPedido.PORIDPEDIDO);
+		
+		System.out.println("Lista pedidos: " + listaPedidos); //debug
+		//genero un mapa con las mesas de este mesero.
+		mapaPedidos = new LinkedHashMap();
+		if (listaPedidos != null) 
+			for (Pedido pedido:listaPedidos) {
+				Integer idPedido = pedido.getIdPedido();
+				System.out.println("agregando a mapaPedidos el idpedido: " + idPedido + " pedido: " + pedido);
+				mapaPedidos.put(pedido.getIdPedido(), pedido);
+			}
+			//listaPedidos.stream().forEach(pedido -> {
+			//		System.out.println("pedido -> " + pedido); //debug
+			//		mapaPedidos.put(pedido.getIdPedido(), pedido);
+			//	}
+			//);
+		
+		int filaSeleccionada = tablaPedidos.getSelectedRow(); //conservo la anterior mesa seleccionada
+		
+		//borro las filas de la tabla mesas
+		for (int fila = modeloTablaPedidos.getRowCount() -  1; fila >= 0; fila--)
+			modeloTablaPedidos.removeRow(fila);
+		
+		//cargo esos pedidos a la tabla de pedidos
+		if (listaPedidos != null)
+			listaPedidos.stream().forEach(pedido -> modeloTablaPedidos.addRow(new Object[] {
+					pedido.getIdPedido()
+				} ) 
+			);
+		
+		
+		//si la fila que tenia seleccionada sigue siendo válida
+		if (filaSeleccionada >= 0 && filaSeleccionada < tablaPedidos.getRowCount() )
+			tablaPedidos.setRowSelectionInterval(filaSeleccionada, filaSeleccionada); //restauro la fila que tenía seleccionada
+		//else
+		//	tablaPedidos.removeRowSelectionInterval(0, tablaPedidos.getRowCount()-1); // borro todas las selecciones de la tabla de pedidos
+	} //cargarPedidos
+	
+	
+	
+	/**
+	 * Me devuelve el idPedido que se seleccionó de la tabla. Si no hay ninguno 
+	 * seleccionado, devuelve 0;
+	 * @return 
+	 */
+	private int getIdPedidoSeleccionado(){
+		int filaSeleccionada = tablaPedidos.getSelectedRow();
+		if (filaSeleccionada != -1)
+			return (Integer) tablaPedidos.getValueAt(filaSeleccionada, 0);
+		else
+			return 0;
+	} //getIdPedidoSeleccionado
+	
 	
 	
 	
@@ -134,6 +225,11 @@ public class Meseros extends javax.swing.JFrame {
         });
         tablaMesas.setRowHeight(48);
         tablaMesas.getTableHeader().setReorderingAllowed(false);
+        tablaMesas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaMesasMouseClicked(evt);
+            }
+        });
         panelMesas.setViewportView(tablaMesas);
         if (tablaMesas.getColumnModel().getColumnCount() > 0) {
             tablaMesas.getColumnModel().getColumn(0).setResizable(false);
@@ -404,6 +500,10 @@ public class Meseros extends javax.swing.JFrame {
     private void btnDesasignarMesa2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDesasignarMesa2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnDesasignarMesa2ActionPerformed
+
+    private void tablaMesasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMesasMouseClicked
+        cargarPedidos();
+    }//GEN-LAST:event_tablaMesasMouseClicked
 
 	/**
 	 * @param args the command line arguments
