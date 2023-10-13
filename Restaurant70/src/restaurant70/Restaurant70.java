@@ -11,7 +11,7 @@
 package restaurant70;
 
 //import vistas.Administracion;
-import vistas.Administracion2;
+import vistas.Login;
 
 /**
  *
@@ -19,15 +19,12 @@ import vistas.Administracion2;
  */
 public class Restaurant70 {
 
-
-	
-	
 	public static void main(String[] args) {
-		
-		Administracion2 administracion = new Administracion2(); //creo una pantalla de login
-		administracion.setVisible(true); // lo hago visible
-		administracion.setLocationRelativeTo(null); // abrirlo en el centro		
+		Login login = new Login(); //creo una pantalla de login
+		login.setVisible(true); // lo hago visible
+		login.setLocationRelativeTo(null); // abrirlo en el centro		
 	}
+	
 }
 	
 
