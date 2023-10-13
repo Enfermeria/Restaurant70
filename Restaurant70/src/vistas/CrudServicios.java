@@ -51,7 +51,7 @@ public class CrudServicios extends javax.swing.JInternalFrame {
 		cargarMapaServicios(); //carga la base de datos
 		cargarListaMesas();
 		cargarTabla(); // cargo la tabla con las servicios
-		cargarTablaMesas(-1); // cargo la tabla con las mesas asignadas y no asignadas al mesero 0 (nadie)
+		cargarTablaMesas(-1); // cargo la tabla con las mesas asignadas y no asignadas al mesero -1 (nadie)
 	}
 
 	/**

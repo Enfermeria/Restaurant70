@@ -10,7 +10,12 @@
  */
 package vistas;
 
+import accesoadatos.MesaData;
+import entidades.Mesa;
 import entidades.Servicio;
+import java.util.LinkedHashMap;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -18,13 +23,59 @@ import entidades.Servicio;
  */
 public class Meseros extends javax.swing.JFrame {
 	Servicio mesero;
+	LinkedHashMap<Integer, Mesa> mapaMesas;
+	DefaultTableModel modeloTablaMesas, modeloTablaPedidos, modeloTablaItems, modeloTablaProductos;
 	
 	
 	public Meseros(Servicio mesero) {
 		this.mesero = mesero;
 		initComponents();
+		modeloTablaMesas   = (DefaultTableModel) tablaMesas.getModel();
+		modeloTablaPedidos = (DefaultTableModel) tablaPedidos.getModel();
+		modeloTablaItems   = (DefaultTableModel) tablaItems.getModel();
+		modeloTablaProductos=(DefaultTableModel) tablaProductos.getModel();
 	}
 
+	
+	private void cargarMesas(){
+		MesaData mesaData = new MesaData(); //conecto con la BD
+		//Obtengo la lista de meses que corresponden a este mesero.
+		List<Mesa> listaMesas = mesaData.getListaMesasXCriterioDeBusqueda(-1, -1, null, mesero.getIdServicio(), MesaData.OrdenacionMesa.PORIDMESA);
+		
+		//genero un mapa con las mesas de este mesero.
+		mapaMesas = new LinkedHashMap();
+		listaMesas.stream().forEach(mesa -> mapaMesas.put(mesa.getIdMesa(), mesa));
+		
+		int filaSeleccionada = tablaMesas.getSelectedRow(); //conservo la anterior mesa seleccionada
+		
+		//borro las filas de la tabla mesas
+		for (int fila = modeloTablaMesas.getRowCount() -  1; fila >= 0; fila--)
+			modeloTablaMesas.removeRow(fila);
+		
+		//cargo esas mesas a la tabla de mesas
+		for (Mesa mesa : listaMesas) {
+			modeloTablaMesas.addRow(new Object[] {
+				mesa.getIdMesa()
+			} );
+		}
+		
+		tablaMesas.setRowSelectionInterval(filaSeleccionada, filaSeleccionada);
+		//como no hay fila seleccionada en la tablaMesas, borro la tabla pedidos
+		if (tablaMesas.getSelectedRow() == -1) // si no hay alguna mesa seleccionada
+			btnDesasignarMesa.setEnabled(false); // deshabilito el botón de Desasignar
+		else //hay una fila seleccionada
+			btnDesasignarMesa.setEnabled(true); // habilito el botón de Desasignar
+        
+		//como no hay fila seleccionada tablaMesasNoAsignadas, deshabilito el botón Asignar
+		if (tablaMesasNoAsignadas.getSelectedRow() == -1) // si no hay alguna fila seleccionada
+			btnAsignarMesa.setEnabled(false); // deshabilito el botón de Asignar Mesa
+		else //hay una fila seleccionada
+			btnAsignarMesa.setEnabled(true); // deshabilito el botón de Asignar mesa
+	} //cargar mesas
+	
+	
+	
+	
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
