@@ -40,7 +40,7 @@
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="botonera" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="209" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -222,6 +222,7 @@
                 <TitledBorder title="Disponible"/>
               </Border>
             </Property>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JComboBox" name="cbCategoria">
@@ -234,6 +235,7 @@
                 <TitledBorder title="Categor&#xed;a"/>
               </Border>
             </Property>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Categoria&gt;"/>
@@ -249,6 +251,7 @@
                 <TitledBorder title="Despachado por"/>
               </Border>
             </Property>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Servicio&gt;"/>
@@ -329,12 +332,13 @@
             <Component class="javax.swing.JTable" name="tablaProductos">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="7" rowCount="0">
+                  <Table columnCount="8" rowCount="0">
                     <Column editable="false" title="Id" type="java.lang.Integer"/>
                     <Column editable="false" title="Nombre" type="java.lang.String"/>
                     <Column editable="false" title="Descripci&#xf3;n" type="java.lang.String"/>
                     <Column editable="false" title="Stock" type="java.lang.Integer"/>
                     <Column editable="false" title="Precio" type="java.lang.Double"/>
+                    <Column editable="false" title="Disponible" type="java.lang.Boolean"/>
                     <Column editable="false" title="Categor&#xed;a" type="java.lang.Object"/>
                     <Column editable="false" title="Despachado por" type="java.lang.Object"/>
                   </Table>
@@ -356,12 +360,17 @@
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="20" resizable="false">
+                    <Column maxWidth="70" minWidth="-1" prefWidth="20" resizable="true">
                       <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="30" resizable="true">
+                    <Column maxWidth="-1" minWidth="-1" prefWidth="30" resizable="false">
+                      <Title/>
+                      <Editor/>
+                      <Renderer/>
+                    </Column>
+                    <Column maxWidth="70" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title/>
                       <Editor/>
                       <Renderer/>
@@ -416,7 +425,7 @@
                   </Group>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="btnCategorias" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="78" max="32767" attributes="0"/>
+                  <EmptySpace pref="177" max="32767" attributes="0"/>
                   <Component id="btnSalir" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>

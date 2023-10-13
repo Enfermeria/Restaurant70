@@ -27,7 +27,7 @@
           <Group type="102" alignment="0" attributes="0">
               <Component id="botonera" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="escritorio" max="32767" attributes="0"/>
+              <Component id="escritorio" pref="1187" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -95,6 +95,9 @@
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnProductosActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnMesas">
           <Properties>
@@ -205,13 +208,16 @@
           <Dimension value="[1024, 725]"/>
         </Property>
       </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+      </AuxValues>
 
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <Component id="fondo" min="-2" pref="1024" max="-2" attributes="0"/>
-                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="163" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>

@@ -23,6 +23,8 @@ import entidades.Producto;
 import java.awt.Color;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -31,6 +33,7 @@ import javax.swing.table.DefaultTableModel;
  * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
  */
 public class CrudProductos extends javax.swing.JInternalFrame {
+	private javax.swing.JDesktopPane escritorio;
 	DefaultTableModel modeloTabla;
 	private List<Producto> listaProductos;
 	private ProductoData productoData;	
@@ -44,9 +47,9 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 	private FiltroProductos filtro = new FiltroProductos();  //el filtro de búsqueda
 	
 	
-	public CrudProductos() {
+	public CrudProductos(javax.swing.JDesktopPane escritorio) {
 		initComponents();
-		//cargarMapaMeseros();
+		this.escritorio = escritorio;
 		productoData = new ProductoData(); 
 		modeloTabla = (DefaultTableModel) tablaProductos.getModel();
 		cargarListaProductos(); //carga la base de datos
@@ -78,7 +81,12 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 		mapaCategorias = new LinkedHashMap();
 		listaCategorias.stream().forEach(categoria -> mapaCategorias.put(categoria.getIdCategoria(), categoria));
 		
-		//tambien cargo el combo box de categorias
+		//borro el combo box de categorias
+		for (int i = 0; i < cbCategoria.getItemCount(); i++){
+			cbCategoria.removeItemAt(0);
+		}
+		
+		//ahora cargo el combo box de categorias con la nuevas categorias
 		listaCategorias.stream().forEach( categoria -> cbCategoria.addItem(categoria) );
 	}//cargarMapaCategorias
 	
@@ -110,12 +118,14 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 		
 		//cargo los productos de listaProductos a la tabla
 		for (Producto producto : listaProductos) {
+			//System.out.println(producto + " idCategoria: " + producto.getIdCategoria() + " mapaCategorias:" + mapaCategorias.get(producto.getIdCategoria() ));
 			modeloTabla.addRow(new Object[] {
 				producto.getIdProducto(),
 				producto.getNombre(),
 				producto.getDescripcion(),
 				producto.getStock(),
 				producto.getPrecio(),
+				producto.getDisponible(),
 				mapaCategorias.get(producto.getIdCategoria()), // almaceno el objeto categoria
 				mapaServicios.get(producto.getDespachadoPor()) // almaceno el objeto servicio
 			}
@@ -184,6 +194,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 				JOptionPane.showMessageDialog(this, "Debe completar correctamente todos los datos de la producto para modificarla", "No se puede agregar", JOptionPane.ERROR_MESSAGE);			
 		} else {
 			// si producto es null, no pudo transformarlo a producto. Sigo editando
+			//JOptionPane.showMessageDialog(this, "campos2Producto devolvió un null", "no se pudo agregar", JOptionPane.ERROR_MESSAGE);
 		}	
 	} //modificarProducto
       
@@ -255,6 +266,10 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 	private void habilitoParaBuscar(){ 
 		habilitoParaEditar();
 		txtIdProducto.setEditable(true);
+		txtDescripcion.setEditable(false);
+		txtStock.setEditable(false);
+		txtPrecio.setEditable(false);
+		ckbDisponible.setEnabled(false);
 	} //habilitoParaBuscar
 
 	
@@ -267,6 +282,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 		btnModificar.setEnabled(false); //deshabilito botón modificar
 		btnEliminar.setEnabled(false);  //deshabilito botón eliminar
 		btnBuscar.setEnabled(false);
+		btnCategorias.setEnabled(false);
 		cboxOrden.setEnabled(false);
 		
 		//Deshabilito la Tabla para que no pueda hacer click
@@ -278,7 +294,12 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 		
 		//Habilito los campos para poder editar
 		txtNombre.setEditable(true);
-		txtCategoria.setEditable(true);
+		txtDescripcion.setEditable(true);
+		txtStock.setEditable(true);
+		txtPrecio.setEditable(true);
+		ckbDisponible.setEnabled(true);
+		cbCategoria.setEnabled(true);
+		cbDespachadoPor.setEnabled(true);
 	} //habilitoParaEditar
 
 	
@@ -290,6 +311,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 		// habilito todos los botones (menos salir)
 		btnAgregar.setEnabled(true);
 		btnBuscar.setEnabled(true);
+		btnCategorias.setEnabled(true);
 		cboxOrden.setEnabled(true);
 		
 		//sigo deshabilitando los botones modificar y eliminar porque no hay una fila seleccionada.
@@ -309,7 +331,12 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 		//deshabilito los campos para poder que no pueda editar
 		txtIdProducto.setEditable(false);
 		txtNombre.setEditable(false);
-		txtCategoria.setEditable(false);
+		txtDescripcion.setEditable(false);
+		txtStock.setEditable(false);
+		txtPrecio.setEditable(false);
+		ckbDisponible.setEnabled(false);
+		cbCategoria.setEnabled(false);
+		cbDespachadoPor.setEnabled(false);
 	} //deshabilitoParaEditar
 
 	
@@ -321,11 +348,12 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 		//pongo los campos en blanco
 		txtIdProducto.setText("");
 		txtNombre.setText("");
-                txtCategoria.setText("");
-		//rbEstadoLibre.setSelected(false);
-		//rbEstadoOcupada.setSelected(false);
-		//rbEstadoAtendida.setSelected(false);
-		
+        txtDescripcion.setText("");
+		txtStock.setText("");
+		txtPrecio.setText("");
+		ckbDisponible.setSelected(false);
+		cbCategoria.setSelectedIndex(-1);
+		cbDespachadoPor.setSelectedIndex(-1);
 		
 		if (tablaProductos.getRowCount() > 0) 
 			tablaProductos.removeRowSelectionInterval(0, tablaProductos.getRowCount()-1); //des-selecciono las filas de la tabla
@@ -341,15 +369,12 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 	private void filaTabla2Campos(int numfila){
 		txtIdProducto.setText(tablaProductos.getValueAt(numfila, 0)+"");
 		txtNombre.setText(tablaProductos.getValueAt(numfila, 1)+"");
-		
-		if ((Producto.IdCategoriaProducto)tablaProductos.getValueAt(numfila, 2) == Producto.IdCategoriaProducto)
-			rbEstadoLibre.setSelected(true);
-		else if ((Producto.EstadoProducto)tablaProductos.getValueAt(numfila, 2) == Producto.EstadoProducto.OCUPADA)
-			rbEstadoOcupada.setSelected(true);
-		else if ((Producto.EstadoProducto)tablaProductos.getValueAt(numfila, 2) == Producto.EstadoProducto.ATENDIDA)
-			rbEstadoAtendida.setSelected(true);
-		
-		cbIdNombreMesero.setSelectedItem(tablaProductos.getValueAt(numfila, 3));
+		txtDescripcion.setText(tablaProductos.getValueAt(numfila, 2)+"");
+		txtStock.setText(tablaProductos.getValueAt(numfila, 3)+"");
+		txtPrecio.setText(tablaProductos.getValueAt(numfila,4)+"");
+		ckbDisponible.setSelected((Boolean) tablaProductos.getValueAt(numfila,5) );
+		cbCategoria.setSelectedItem((Categoria) tablaProductos.getValueAt(numfila, 6));
+		cbDespachadoPor.setSelectedItem((Servicio) tablaProductos.getValueAt(numfila, 7));
 	} //filaTabla2Campos
 
 
@@ -360,9 +385,13 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 	 * @return El Producto devuelto. Si hay algún error, devuelve null
 	 */
 	private Producto campos2Producto(){ 
-		int idProducto, capacidad;
-		Producto.EstadoProducto estado;
-		int idMesero;
+		int idProducto;
+		String nombre, descripcion;
+		int stock;
+		double precio;
+		boolean disponible;
+		int idCategoria;
+		int idDespachadopor;
 		
 		//idProducto
 		try {
@@ -375,33 +404,44 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 			return null;
 		}
 		
-		//capacidad
+		//nombre y descripcion
+		nombre = txtNombre.getText();
+		descripcion = txtDescripcion.getText();
+		
+		//stock
 		try {
-			capacidad = Integer.valueOf(txtNombre.getText());
+			stock = Integer.valueOf(txtStock.getText());
 				
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "La capacidad debe ser un número válido", "Capacidad no válida", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "El stock debe ser un número válido", "Stock no válido", JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
 		
-		//estado
-		if (rbEstadoLibre.isSelected())
-			estado = Producto.EstadoProducto.LIBRE;
-		else if (rbEstadoOcupada.isSelected())
-			estado = Producto.EstadoProducto.OCUPADA;
-		else if (rbEstadoAtendida.isSelected())
-			estado = Producto.EstadoProducto.ATENDIDA;
-		else 
-			estado = null;
+
+		//precio
+		try {
+			if (txtPrecio.getText().isEmpty()) // en el alta será un string vacío
+				precio = -1.0;
+			else
+				precio = Double.valueOf(txtPrecio.getText());
+				
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "El precio debe ser un número válido", "Precio no válido", JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
 		
-		//idMesero
-		idMesero = (cbIdNombreMesero.getSelectedItem()==null) ? 0 : ((Servicio) cbIdNombreMesero.getSelectedItem()).getIdServicio();
+		//disponible
+		disponible = ckbDisponible.isSelected();
 		
-		return new Producto(idProducto, capacidad, estado, idMesero);
+		//idCategoria y idDespachadoPor
+		idCategoria = (cbCategoria.getSelectedItem()==null) ? 0 : ((Categoria) cbCategoria.getSelectedItem()).getIdCategoria();
+		idDespachadopor = (cbDespachadoPor.getSelectedItem()==null) ? 0 : ((Servicio)cbDespachadoPor.getSelectedItem()).getIdServicio();
+	
+		Producto producto = new Producto(nombre, descripcion, stock, precio, disponible, idCategoria, idDespachadopor);
+		System.out.println("Campos2Producot: " + producto);
+		return producto;
 	} // campos2Producto
         
-        VER TABLA2CAMPOS Y CAMPO2PRODUCTOS
-	
 	
 	
 	/** cambia el icono y texto del btnGuardar a "Guardar" */
@@ -410,6 +450,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 		btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardar2_32x32.png")));
 	}	
 
+	
 	
 	/** cambia el icono y texto del btnGuardar guardar a "Buscar" */
 	private void botonGuardarComoBuscar(){ 
@@ -424,7 +465,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 	*/
 	private void setearFiltro(){
 			//cambio el titulo de la tabla y color panel de tabla para que muestre que está filtrado
-			lblTituloTabla.setText("Listado de productos filtradas por búsqueda");
+			lblTituloTabla.setText("Listado de productos filtrados por búsqueda");
 			panelTabla.setBackground(new Color(255, 51, 51));
 			btnResetearFiltro.setEnabled(true);
 			filtro.estoyFiltrando = true;
@@ -534,10 +575,13 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 
         ckbDisponible.setText("Disponible");
         ckbDisponible.setBorder(javax.swing.BorderFactory.createTitledBorder("Disponible"));
+        ckbDisponible.setEnabled(false);
 
         cbCategoria.setBorder(javax.swing.BorderFactory.createTitledBorder("Categoría"));
+        cbCategoria.setEnabled(false);
 
         cbDespachadoPor.setBorder(javax.swing.BorderFactory.createTitledBorder("Despachado por"));
+        cbDespachadoPor.setEnabled(false);
 
         javax.swing.GroupLayout panelCamposMesaLayout = new javax.swing.GroupLayout(panelCamposMesa);
         panelCamposMesa.setLayout(panelCamposMesaLayout);
@@ -617,14 +661,14 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "Id", "Nombre", "Descripción", "Stock", "Precio", "Categoría", "Despachado por"
+                "Id", "Nombre", "Descripción", "Stock", "Precio", "Disponible", "Categoría", "Despachado por"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -648,12 +692,14 @@ public class CrudProductos extends javax.swing.JInternalFrame {
             tablaProductos.getColumnModel().getColumn(1).setPreferredWidth(70);
             tablaProductos.getColumnModel().getColumn(2).setResizable(false);
             tablaProductos.getColumnModel().getColumn(2).setPreferredWidth(150);
-            tablaProductos.getColumnModel().getColumn(3).setResizable(false);
             tablaProductos.getColumnModel().getColumn(3).setPreferredWidth(20);
+            tablaProductos.getColumnModel().getColumn(3).setMaxWidth(70);
+            tablaProductos.getColumnModel().getColumn(4).setResizable(false);
             tablaProductos.getColumnModel().getColumn(4).setPreferredWidth(30);
-            tablaProductos.getColumnModel().getColumn(5).setResizable(false);
-            tablaProductos.getColumnModel().getColumn(5).setPreferredWidth(80);
+            tablaProductos.getColumnModel().getColumn(5).setMaxWidth(70);
             tablaProductos.getColumnModel().getColumn(6).setResizable(false);
+            tablaProductos.getColumnModel().getColumn(6).setPreferredWidth(80);
+            tablaProductos.getColumnModel().getColumn(7).setResizable(false);
         }
 
         javax.swing.GroupLayout panelTablaLayout = new javax.swing.GroupLayout(panelTabla);
@@ -768,7 +814,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
                     .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnCategorias)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 177, Short.MAX_VALUE)
                 .addComponent(btnSalir)
                 .addContainerGap())
         );
@@ -809,7 +855,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
                     .addComponent(panelTabla, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(botonera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(209, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -885,8 +931,6 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 			ordenacion = OrdenacionProducto.PORIDPRODUCTO;
         else if (cboxOrden.getSelectedIndex() == 1)
         ordenacion = OrdenacionProducto.PORNOMBRE;
-		else if (cboxOrden.getSelectedIndex() == 2)
-			ordenacion = OrdenacionProducto.PORIDCATEGORIA;// VER ORDENACION X IDCATEGORIA
         else // por las dudas que no eligio uno correcto
         ordenacion = OrdenacionProducto.PORIDPRODUCTO;
 
@@ -896,7 +940,6 @@ public class CrudProductos extends javax.swing.JInternalFrame {
         botonGuardarComoGuardar();
         deshabilitoParaEditar();
     }//GEN-LAST:event_cboxOrdenActionPerformed
-// VER ORDENACIÓN X CATEGORÍA
 	
 	
 	
@@ -908,7 +951,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
             agregarProducto();
             resetearFiltro();
         } else if ( tipoEdicion == TipoEdicion.MODIFICAR ) { // modificar el producto
-//            modificarProducto(); SE SOLUCIONARÁ DESPUES DE ARREGLAR MODIFICARPRODUCTO
+            modificarProducto(); 
             resetearFiltro();
         } else { // tipoEdicion = BUSCAR: quiere buscar un producto
             buscarProducto();
@@ -953,23 +996,31 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 	 * @param evt 
 	 */
     private void tablaProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProductosMouseClicked
-       //tabla.addRowSelectionInterval(filaTabla, filaTabla); //selecciono esa fila de la tabla
-        if (tablaProductos.getSelectedRow() != -1){ // si hay alguna fila seleccionada
-		}
 		int numfila = tablaProductos.getSelectedRow();
 		if (numfila != -1) {			
 			btnEliminar.setEnabled(true); // habilito el botón de eliminar
 			btnModificar.setEnabled(true); // habilito el botón de modificar
 			
-//			filaTabla2Campos(numfila); // cargo los campos de texto de la pantalla con datos de la fila seccionada de la tabla
+			filaTabla2Campos(numfila); // cargo los campos de texto de la pantalla con datos de la fila seccionada de la tabla
 		}  
     }//GEN-LAST:event_tablaProductosMouseClicked
 
     private void btnCategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoriasActionPerformed
-        // TODO add your handling code here:
+		CrudCategorias crudCategorias = new CrudCategorias(this); // creo un internal Frame
+		crudCategorias.setVisible(true); // lo pongo visible
+		escritorio.add(crudCategorias); // lo pongo en el escritorio
+		escritorio.moveToFront(crudCategorias); //pongo la ventana al frente
     }//GEN-LAST:event_btnCategoriasActionPerformed
 
-
+	
+	/**
+	 * este método es llamado por el crudCategorias cuando cierra el mismo
+	 */
+	public void retornandoDeCrudCategorias(){
+		cargarMapaCategorias(); //por si se modificaron
+		cargarListaProductos();
+		cargarTabla();
+	}
 //================================================================================
 //================================================================================
 	

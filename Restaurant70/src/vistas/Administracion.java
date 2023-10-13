@@ -1,23 +1,37 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ 	Trabajo práctico final de la Guía 6 del curso Desarrollo de Apps
+	Universidad de La Punta en el marco del proyecto Argentina Programa 4.0
+
+	Integrantes:
+		John David Molina Velarde
+		Leticia Mores
+		Enrique Germán Martínez
+		Carlos Eduardo Beltrán
  */
 package vistas;
 
 /**
  *
- * @author john
+ * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
  */
 public class Administracion extends javax.swing.JFrame {
-
-	/**
-	 * Creates new form Administracion
-	 */
+	
 	public Administracion() {
 		initComponents();
 	}
 
+	
+	
+	/**
+	 * desvuelve el escritorio para que sea manipulado desde afuera
+	 * @return el JDesktopPane
+	 */
+	public javax.swing.JDesktopPane getEscritorio(){
+		return escritorio;
+	} //getEscritorio
+	
+	
+	
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -47,6 +61,11 @@ public class Administracion extends javax.swing.JFrame {
         btnProductos.setBorderPainted(false);
         btnProductos.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnProductos.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnProductos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProductosActionPerformed(evt);
+            }
+        });
 
         btnMesas.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
         btnMesas.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mesa 180x98.jpg"))); // NOI18N
@@ -146,7 +165,7 @@ public class Administracion extends javax.swing.JFrame {
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(escritorioLayout.createSequentialGroup()
                 .addComponent(fondo, javax.swing.GroupLayout.PREFERRED_SIZE, 1024, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 163, Short.MAX_VALUE))
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -160,7 +179,7 @@ public class Administracion extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(botonera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(escritorio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(escritorio, javax.swing.GroupLayout.DEFAULT_SIZE, 1187, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -232,6 +251,18 @@ public class Administracion extends javax.swing.JFrame {
 //		escritorio.moveToFront(crudCategorias); //pongo la ventana al frente:       
     }//GEN-LAST:event_btnFacturacionActionPerformed
 
+    private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
+        escritorio.removeAll(); // cierro todas las ventanas del escritorio
+		mostrarFondo(); // recargo la foto de la ULP
+		escritorio.repaint();
+		
+		CrudProductos crudProductos = new CrudProductos(escritorio); // creo un internal Frame
+		crudProductos.setVisible(true); // lo pongo visible
+		
+		escritorio.add(crudProductos); // lo pongo en el escritorio
+		escritorio.moveToFront(crudProductos); //pongo la ventana al frente:
+    }//GEN-LAST:event_btnProductosActionPerformed
+
 	/**
 	 * @param args the command line arguments
 	 */
@@ -274,7 +305,7 @@ public class Administracion extends javax.swing.JFrame {
     private javax.swing.JButton btnPedidos;
     private javax.swing.JButton btnProductos;
     private javax.swing.JButton btnServicios;
-    private javax.swing.JDesktopPane escritorio;
+    public javax.swing.JDesktopPane escritorio;
     private javax.swing.JLabel fondo;
     // End of variables declaration//GEN-END:variables
 }

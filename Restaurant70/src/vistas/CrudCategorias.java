@@ -24,22 +24,28 @@ import javax.swing.table.DefaultTableModel;
  * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
  */
 public class CrudCategorias extends javax.swing.JInternalFrame {
+	private CrudProductos crudProductos;
 	DefaultTableModel modeloTabla;
 	public static List<Categoria> listaCategorias;
 	private final CategoriaData categoriaData;	
+
+	
 	private enum TipoEdicion {AGREGAR, MODIFICAR, BUSCAR};
 	private TipoEdicion tipoEdicion = TipoEdicion.AGREGAR; //para que el boton guardar sepa que estoy queriendo hacer:
 														   // Si con los campos voy a agregar, modificar o buscar una categoria
 	private OrdenacionCategoria ordenacion = OrdenacionCategoria.PORIDCATEGORIA; // defino el tipo de orden por defecto 
 	
 	
-	public CrudCategorias() {
+	public CrudCategorias(CrudProductos crudProductos) {
+		this.crudProductos = crudProductos;
+		crudProductos.setVisible(false); //oculta la ventana del crud de productos
 		initComponents();
 		categoriaData = new CategoriaData(); 
 		modeloTabla = (DefaultTableModel) tablaCategorias.getModel();
 		cargarListaCategorias(); //carga la base de datos
 		cargarTabla(); // cargo la tabla con las categorias
 	}
+
 
 	
 	/** carga la lista de categorias de la BD */
@@ -580,7 +586,10 @@ public class CrudCategorias extends javax.swing.JInternalFrame {
 	
 	/** Cierra la ventana (termina CrudCategorias */
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
-        dispose();//cierra la ventana
+        crudProductos.retornandoDeCrudCategorias(); //ejecuta refresco de listas y tablas de crud productos
+		crudProductos.setVisible(true); //muestra nuevamente la ventana del crud de Productos
+		
+		dispose();//cierra esta ventana
     }//GEN-LAST:event_btnSalirActionPerformed
 
 	
