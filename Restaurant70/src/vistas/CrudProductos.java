@@ -82,7 +82,8 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 		listaCategorias.stream().forEach(categoria -> mapaCategorias.put(categoria.getIdCategoria(), categoria));
 		
 		//borro el combo box de categorias
-		for (int i = 0; i < cbCategoria.getItemCount(); i++){
+		int cantidad = cbCategoria.getItemCount();
+		for (int i = 0; i < cantidad; i++){
 			cbCategoria.removeItemAt(0);
 		}
 		
@@ -102,6 +103,12 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 		//con esa lista genero el mapa de servicios
 		mapaServicios = new LinkedHashMap();
 		listaServicios.stream().forEach( servicio -> mapaServicios.put(servicio.getIdServicio(), servicio) );
+		
+		//borro el combo box de servicios cbDespachadoPor
+		int cantidad = cbDespachadoPor.getItemCount();
+		for (int i = 0; i < cantidad; i++){
+			cbDespachadoPor.removeItemAt(0);
+		}
 		
 		//tambien cargo el combo box de servicios
 		listaServicios.stream().forEach( servicio -> cbDespachadoPor.addItem(servicio) );
@@ -180,7 +187,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 			// si producto es null, no pudo transformarlo a producto. Sigo editando
 			return false;
 		}
-	} //agregarProducto - UNA VEZ ARREGLADO CAMPOS2PRODUCTO, DEBERIA FUNCIONAR.
+	} //agregarProducto
 
 	
 	/** si no hay errores en los campos, modifica un producto con dichos campos */
@@ -437,8 +444,8 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 		idCategoria = (cbCategoria.getSelectedItem()==null) ? 0 : ((Categoria) cbCategoria.getSelectedItem()).getIdCategoria();
 		idDespachadopor = (cbDespachadoPor.getSelectedItem()==null) ? 0 : ((Servicio)cbDespachadoPor.getSelectedItem()).getIdServicio();
 	
-		Producto producto = new Producto(nombre, descripcion, stock, precio, disponible, idCategoria, idDespachadopor);
-		System.out.println("Campos2Producot: " + producto);
+		Producto producto = new Producto(idProducto, nombre, descripcion, stock, precio, disponible, idCategoria, idDespachadopor);
+		//System.out.println("Campos2Producot: " + producto);
 		return producto;
 	} // campos2Producto
         
@@ -686,20 +693,22 @@ public class CrudProductos extends javax.swing.JInternalFrame {
         });
         jScrollPane1.setViewportView(tablaProductos);
         if (tablaProductos.getColumnModel().getColumnCount() > 0) {
-            tablaProductos.getColumnModel().getColumn(0).setResizable(false);
-            tablaProductos.getColumnModel().getColumn(0).setPreferredWidth(5);
+            tablaProductos.getColumnModel().getColumn(0).setPreferredWidth(20);
+            tablaProductos.getColumnModel().getColumn(0).setMaxWidth(70);
             tablaProductos.getColumnModel().getColumn(1).setResizable(false);
             tablaProductos.getColumnModel().getColumn(1).setPreferredWidth(70);
             tablaProductos.getColumnModel().getColumn(2).setResizable(false);
             tablaProductos.getColumnModel().getColumn(2).setPreferredWidth(150);
-            tablaProductos.getColumnModel().getColumn(3).setPreferredWidth(20);
-            tablaProductos.getColumnModel().getColumn(3).setMaxWidth(70);
-            tablaProductos.getColumnModel().getColumn(4).setResizable(false);
-            tablaProductos.getColumnModel().getColumn(4).setPreferredWidth(30);
+            tablaProductos.getColumnModel().getColumn(3).setPreferredWidth(40);
+            tablaProductos.getColumnModel().getColumn(3).setMaxWidth(100);
+            tablaProductos.getColumnModel().getColumn(4).setPreferredWidth(50);
+            tablaProductos.getColumnModel().getColumn(4).setMaxWidth(100);
+            tablaProductos.getColumnModel().getColumn(5).setPreferredWidth(60);
             tablaProductos.getColumnModel().getColumn(5).setMaxWidth(70);
-            tablaProductos.getColumnModel().getColumn(6).setResizable(false);
-            tablaProductos.getColumnModel().getColumn(6).setPreferredWidth(80);
-            tablaProductos.getColumnModel().getColumn(7).setResizable(false);
+            tablaProductos.getColumnModel().getColumn(6).setPreferredWidth(100);
+            tablaProductos.getColumnModel().getColumn(6).setMaxWidth(120);
+            tablaProductos.getColumnModel().getColumn(7).setPreferredWidth(100);
+            tablaProductos.getColumnModel().getColumn(7).setMaxWidth(120);
         }
 
         javax.swing.GroupLayout panelTablaLayout = new javax.swing.GroupLayout(panelTabla);
@@ -814,7 +823,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
                     .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnCategorias)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 177, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 245, Short.MAX_VALUE)
                 .addComponent(btnSalir)
                 .addContainerGap())
         );
@@ -1005,6 +1014,8 @@ public class CrudProductos extends javax.swing.JInternalFrame {
 		}  
     }//GEN-LAST:event_tablaProductosMouseClicked
 
+	
+	
     private void btnCategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoriasActionPerformed
 		CrudCategorias crudCategorias = new CrudCategorias(this); // creo un internal Frame
 		crudCategorias.setVisible(true); // lo pongo visible
@@ -1013,11 +1024,13 @@ public class CrudProductos extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnCategoriasActionPerformed
 
 	
+	
 	/**
 	 * este método es llamado por el crudCategorias cuando cierra el mismo
 	 */
 	public void retornandoDeCrudCategorias(){
 		cargarMapaCategorias(); //por si se modificaron
+		cargarMapaServicios();
 		cargarListaProductos();
 		cargarTabla();
 	}
