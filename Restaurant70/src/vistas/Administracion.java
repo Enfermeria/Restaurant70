@@ -20,7 +20,7 @@ import javax.swing.JDesktopPane;
  * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
  */
 public class Administracion extends javax.swing.JFrame {
-	private final String fondo = "/imagenes/Resto1280x836.jpeg";
+	private final String fondo = "/imagenes/Resto 1744x1140.jpg";
 	
 	
 	public Administracion() {
