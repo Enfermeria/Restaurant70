@@ -301,7 +301,7 @@ public class CrudCategorias extends javax.swing.JInternalFrame {
         txtIdCategoria.setBorder(javax.swing.BorderFactory.createTitledBorder("Id Categoría"));
 
         btnGuardar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardar-el-archivo sin fondo 32x32.gif"))); // NOI18N
+        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/boton-guardar (1) 32x32.png"))); // NOI18N
         btnGuardar.setText("Guardar");
         btnGuardar.setEnabled(false);
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -311,7 +311,7 @@ public class CrudCategorias extends javax.swing.JInternalFrame {
         });
 
         btnCancelar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/cancelar sin fondo 32x32.gif"))); // NOI18N
+        btnCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/cerrar 32x32.png"))); // NOI18N
         btnCancelar.setText("Cancelar");
         btnCancelar.setEnabled(false);
         btnCancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -428,7 +428,7 @@ public class CrudCategorias extends javax.swing.JInternalFrame {
         botonera.setBackground(new java.awt.Color(153, 153, 255));
 
         btnAgregar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/menu sin fondo 32x32.gif"))); // NOI18N
+        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/lista 32x32.png"))); // NOI18N
         btnAgregar.setText("Agregar");
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -437,7 +437,7 @@ public class CrudCategorias extends javax.swing.JInternalFrame {
         });
 
         btnModificar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnModificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/editar sin fondo 32x32.gif"))); // NOI18N
+        btnModificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/editar 32x32.png"))); // NOI18N
         btnModificar.setText("Modificar");
         btnModificar.setEnabled(false);
         btnModificar.addActionListener(new java.awt.event.ActionListener() {
@@ -447,7 +447,7 @@ public class CrudCategorias extends javax.swing.JInternalFrame {
         });
 
         btnEliminar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/basura 2 sin fondo 32x32.gif"))); // NOI18N
+        btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/basura 2 32x32.png"))); // NOI18N
         btnEliminar.setText("Eliminar");
         btnEliminar.setEnabled(false);
         btnEliminar.addActionListener(new java.awt.event.ActionListener() {
@@ -467,7 +467,7 @@ public class CrudCategorias extends javax.swing.JInternalFrame {
         jLabel6.setText("Ordenado");
 
         btnSalir.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/salida 2 sin fondo 32x32.gif"))); // NOI18N
+        btnSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/salida 32x32.png"))); // NOI18N
         btnSalir.setText("Salir");
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

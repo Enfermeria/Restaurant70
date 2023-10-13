@@ -546,7 +546,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
         txtIdProducto.setBorder(javax.swing.BorderFactory.createTitledBorder("Id Producto"));
 
         btnGuardar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/guardar2_32x32.png"))); // NOI18N
+        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/boton-guardar (1) 32x32.png"))); // NOI18N
         btnGuardar.setText("Guardar");
         btnGuardar.setEnabled(false);
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -556,7 +556,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
         });
 
         btnCancelar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/cancelar32x32.png"))); // NOI18N
+        btnCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/cerrar 32x32.png"))); // NOI18N
         btnCancelar.setText("Cancelar");
         btnCancelar.setEnabled(false);
         btnCancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -739,7 +739,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
         botonera.setBackground(new java.awt.Color(153, 153, 255));
 
         btnAgregar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/pizza sin fondo 32x32.gif"))); // NOI18N
+        btnAgregar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ordenar-comida 32x32.png"))); // NOI18N
         btnAgregar.setText("Agregar");
         btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -748,7 +748,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
         });
 
         btnModificar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnModificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/modificar32x32.png"))); // NOI18N
+        btnModificar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/editar 32x32.png"))); // NOI18N
         btnModificar.setText("Modificar");
         btnModificar.setEnabled(false);
         btnModificar.addActionListener(new java.awt.event.ActionListener() {
@@ -758,7 +758,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
         });
 
         btnEliminar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/borrar1_32x32.png"))); // NOI18N
+        btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/basura 2 32x32.png"))); // NOI18N
         btnEliminar.setText("Eliminar");
         btnEliminar.setEnabled(false);
         btnEliminar.addActionListener(new java.awt.event.ActionListener() {
@@ -768,7 +768,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
         });
 
         btnBuscar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/lupa32x32.png"))); // NOI18N
+        btnBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/buscar 32x32.png"))); // NOI18N
         btnBuscar.setText("Buscar");
         btnBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -796,7 +796,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
         jLabel6.setText("Ordenado");
 
         btnCategorias.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btnCategorias.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/categ color 28x33.png"))); // NOI18N
+        btnCategorias.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/lista 32x32.png"))); // NOI18N
         btnCategorias.setText("Categorías");
         btnCategorias.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -823,7 +823,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
                     .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnCategorias)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 245, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 235, Short.MAX_VALUE)
                 .addComponent(btnSalir)
                 .addContainerGap())
         );
