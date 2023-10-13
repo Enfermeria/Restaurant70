@@ -11,18 +11,20 @@
 package vistas;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
-import javax.swing.JPanel;
 
 /**
  *
  * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
  */
 public class Administracion2 extends javax.swing.JFrame {
+	private final String fondo = "/imagenes/Resto1280x836.jpeg";
+	
 	
 	public Administracion2() {
-		this.setContentPane(new PanelImagenFondo());
+		//this.setContentPane(new PanelImagenFondo());
 		initComponents();
 	}
 
@@ -36,7 +38,42 @@ public class Administracion2 extends javax.swing.JFrame {
 		return escritorio;
 	} //getEscritorio
 	
+	/*
+		//esto es lo que hace el codigo generado con el escritorio en initComponents()
+		escritorio = new javax.swing.JDesktopPane();
 	
+		//luego al final
+		 escritorio.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        escritorio.setPreferredSize(new java.awt.Dimension(1024, 725));
+
+        javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
+        escritorio.setLayout(escritorioLayout);
+        escritorioLayout.setHorizontalGroup(
+            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1187, Short.MAX_VALUE)
+        );
+        escritorioLayout.setVerticalGroup(
+            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(botonera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(escritorio, javax.swing.GroupLayout.DEFAULT_SIZE, 1187, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(botonera, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(escritorio, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+        );
+
+        pack();
+	*/
 	
 	/**
 	 * This method is called from within the constructor to initialize the form.
@@ -53,10 +90,19 @@ public class Administracion2 extends javax.swing.JFrame {
         btnPedidos = new javax.swing.JButton();
         btnServicios = new javax.swing.JButton();
         btnFacturacion = new javax.swing.JButton();
-        escritorio = new javax.swing.JDesktopPane();
+        // =========== esto es código mío previo ===============
+        ImageIcon icono = new ImageIcon(getClass().getResource(fondo));
+        Image imagen = icono.getImage();
+        // =========== fin codigo mio previo  ===============
+        escritorio = new javax.swing.JDesktopPane(){
+            //============ empieza codigo mio interno ================
+            public void paintComponent(Graphics g){
+                g.drawImage(imagen, 0, 0, getWidth(), getHeight(), this);
+            }
+            //============ fin código mio interno =================
+        };
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
 
         btnProductos.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
         btnProductos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/comida 180x98.jpg"))); // NOI18N
@@ -189,20 +235,20 @@ public class Administracion2 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
 	/**
-	 * Carga una imagen de la ULP en el fondo del escritorio.
+	 * Carga una imagen en el fondo del escritorio.
 	 */
 	private void mostrarFondo(){
-		escritorio.setLayer(fondo, javax.swing.JLayeredPane.DEFAULT_LAYER);
-		javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
-        escritorio.setLayout(escritorioLayout);
-        escritorioLayout.setHorizontalGroup(
-            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        escritorioLayout.setVerticalGroup(
-            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
+//		escritorio.setLayer(fondo, javax.swing.JLayeredPane.DEFAULT_LAYER);
+//		javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
+//        escritorio.setLayout(escritorioLayout);
+//        escritorioLayout.setHorizontalGroup(
+//            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//            .addComponent(fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//        );
+//        escritorioLayout.setVerticalGroup(
+//            escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//            .addComponent(fondo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//        );
 	} // mostrarFondo
 	
 	
@@ -278,20 +324,20 @@ public class Administracion2 extends javax.swing.JFrame {
 				}
 			}
 		} catch (ClassNotFoundException ex) {
-			java.util.logging.Logger.getLogger(Administracion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(Administracion2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		} catch (InstantiationException ex) {
-			java.util.logging.Logger.getLogger(Administracion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(Administracion2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		} catch (IllegalAccessException ex) {
-			java.util.logging.Logger.getLogger(Administracion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(Administracion2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-			java.util.logging.Logger.getLogger(Administracion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(Administracion2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		}
 		//</editor-fold>
 
 		/* Create and display the form */
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				new Administracion().setVisible(true);
+				new Administracion2().setVisible(true);
 			}
 		});
 	}
@@ -303,17 +349,19 @@ public class Administracion2 extends javax.swing.JFrame {
     private javax.swing.JButton btnPedidos;
     private javax.swing.JButton btnProductos;
     private javax.swing.JButton btnServicios;
-    public javax.swing.JDesktopPane escritorio;
+    private javax.swing.JDesktopPane escritorio;
     // End of variables declaration//GEN-END:variables
-
-	public class PanelImagenFondo extends JPanel {
+	
+	public PanelImagenFondo escritorio2;
+	
+	public class PanelImagenFondo extends JDesktopPane {
 		public void paint(Graphics g) {
-			ImageIcon imagen = new ImageIcon(getClass().getResource("/imagenes/Resto 1024x725.jpg"));
+			ImageIcon imagen = new ImageIcon(getClass().getResource("/imagenes/Resto1280x836.jpg"));
 			g.drawImage(imagen.getImage(), 100, 0, getWidth(), getHeight(), this);
 			setOpaque(false);
 			super.paint(g);
 		} //paint
 	} //PanelImagenFondo
 
-} //Administracion
+} //Administracion2
 

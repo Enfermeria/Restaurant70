@@ -3,7 +3,6 @@
 <Form version="1.9" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
-    <Property name="resizable" type="boolean" value="false"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -209,7 +208,8 @@
         </Property>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JDesktopPane(){&#xa;    //============ empieza codigo mio interno ================&#xa;    public void paintComponent(Graphics g){&#xa;        g.drawImage(imagen, 0, 0, getWidth(), getHeight(), this);&#xa;    }&#xa;    //============ fin c&#xf3;digo mio interno =================&#xa;}"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="// =========== esto es c&#xf3;digo m&#xed;o previo ===============&#xa;ImageIcon icono = new ImageIcon(getClass().getResource(fondo));&#xa;Image imagen = icono.getImage();&#xa;// =========== fin codigo mio previo  ==============="/>
       </AuxValues>
 
       <Layout>
