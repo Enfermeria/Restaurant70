@@ -785,7 +785,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
             }
         });
 
-        cboxOrden.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "por IdMesa", "por Capacidad", "por Estado" }));
+        cboxOrden.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "por IdProducto", "por Nombre" }));
         cboxOrden.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboxOrdenActionPerformed(evt);
@@ -823,7 +823,7 @@ public class CrudProductos extends javax.swing.JInternalFrame {
                     .addComponent(cboxOrden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnCategorias)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 235, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 232, Short.MAX_VALUE)
                 .addComponent(btnSalir)
                 .addContainerGap())
         );

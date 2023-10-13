@@ -10,11 +10,15 @@
  */
 package vistas;
 
+import accesoadatos.ItemData;
 import accesoadatos.MesaData;
 import accesoadatos.PedidoData;
+import accesoadatos.ProductoData;
+import entidades.Item;
 import entidades.Mesa;
 import entidades.Pedido;
 import entidades.Servicio;
+import entidades.Producto;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +35,11 @@ public class Meseros extends javax.swing.JFrame {
 	LinkedHashMap<Integer, Mesa> mapaMesas;
 	LinkedHashMap<Integer, Pedido> mapaPedidos;
 	DefaultTableModel modeloTablaMesas, modeloTablaPedidos, modeloTablaItems, modeloTablaProductos;
+	ItemData itemData = new ItemData(); //conecto con la BD
+	MesaData mesaData = new MesaData(); //conecto con la BD
+	PedidoData pedidoData = new PedidoData(); //conecto con la BD
+	ProductoData productoData = new ProductoData();
+	
 	
 	
 	public Meseros(Servicio mesero) {
@@ -50,13 +59,13 @@ public class Meseros extends javax.swing.JFrame {
 
 		cargarMesas();
 		cargarPedidos();
+		cargarProductos();
 	}
 
 	/**
 	 * cargo el mapa de mesas y la tabla de mesas que corresponden a ese mesero.
 	 */
 	private void cargarMesas(){
-		MesaData mesaData = new MesaData(); //conecto con la BD
 		//Obtengo la lista de meses que corresponden a este mesero.
 		List<Mesa> listaMesas = mesaData.getListaMesasXCriterioDeBusqueda(-1, -1, null, mesero.getIdServicio(), MesaData.OrdenacionMesa.PORIDMESA);
 		
@@ -82,6 +91,8 @@ public class Meseros extends javax.swing.JFrame {
 			tablaMesas.setRowSelectionInterval(filaSeleccionada, filaSeleccionada); //restauro la fila que tenía seleccionada
 		//else
 		//	tablaMesas.removeRowSelectionInterval(0, tablaMesas.getRowCount()-1); // borro todas las selecciones de la tabla de pedidos
+		
+		cargarPedidos();
 	} //cargar mesas
 	
 	
@@ -106,47 +117,39 @@ public class Meseros extends javax.swing.JFrame {
 	 * cargo el mapa de mesas y la tabla de mesas que corresponden a ese mesero
 	 */
 	private void cargarPedidos(){
-		PedidoData pedidoData = new PedidoData(); //conecto con la BD
 		//Obtengo la lista de pedidos que corresponden a esa mesa.
 		List<Pedido> listaPedidos = pedidoData.getListaPedidosXCriterioDeBusqueda(
 		//	idPedido, idMesa,				  idMesero, fechaDesde, fechaHasta, pagado,  OrdenacionPedido ordenacion
 			-1,		 getIdMesaSeleccionada(), -1,		null,		null,		false,	PedidoData.OrdenacionPedido.PORIDPEDIDO);
 		
-		System.out.println("Lista pedidos: " + listaPedidos); //debug
-		//genero un mapa con las mesas de este mesero.
-		mapaPedidos = new LinkedHashMap();
-		if (listaPedidos != null) 
-			for (Pedido pedido:listaPedidos) {
-				Integer idPedido = pedido.getIdPedido();
-				System.out.println("agregando a mapaPedidos el idpedido: " + idPedido + " pedido: " + pedido);
-				mapaPedidos.put(pedido.getIdPedido(), pedido);
-			}
-			//listaPedidos.stream().forEach(pedido -> {
-			//		System.out.println("pedido -> " + pedido); //debug
-			//		mapaPedidos.put(pedido.getIdPedido(), pedido);
-			//	}
-			//);
+		//System.out.println("Lista pedidos: " + listaPedidos); //debug
 		
-		int filaSeleccionada = tablaPedidos.getSelectedRow(); //conservo la anterior mesa seleccionada
+		//genero un mapa con los pedidos de esa mesa.
+		mapaPedidos = new LinkedHashMap();
+		listaPedidos.stream().forEach( pedido -> mapaPedidos.put(pedido.getIdPedido(), pedido) );
+		
+		//int filaSeleccionada = tablaPedidos.getSelectedRow(); //conservo la anterior mesa seleccionada
 		
 		//borro las filas de la tabla mesas
 		for (int fila = modeloTablaPedidos.getRowCount() -  1; fila >= 0; fila--)
 			modeloTablaPedidos.removeRow(fila);
 		
 		//cargo esos pedidos a la tabla de pedidos
-		if (listaPedidos != null)
-			listaPedidos.stream().forEach(pedido -> modeloTablaPedidos.addRow(new Object[] {
-					pedido.getIdPedido()
-				} ) 
-			);
+		listaPedidos.stream().forEach(pedido -> modeloTablaPedidos.addRow(new Object[] {
+				pedido.getIdPedido()
+			} ) 
+		);
 		
 		
 		//si la fila que tenia seleccionada sigue siendo válida
-		if (filaSeleccionada >= 0 && filaSeleccionada < tablaPedidos.getRowCount() )
-			tablaPedidos.setRowSelectionInterval(filaSeleccionada, filaSeleccionada); //restauro la fila que tenía seleccionada
+		//if (filaSeleccionada >= 0 && filaSeleccionada < tablaPedidos.getRowCount() )
+		//	tablaPedidos.setRowSelectionInterval(filaSeleccionada, filaSeleccionada); //restauro la fila que tenía seleccionada
 		//else
 		//	tablaPedidos.removeRowSelectionInterval(0, tablaPedidos.getRowCount()-1); // borro todas las selecciones de la tabla de pedidos
+		
+		cargarItems();
 	} //cargarPedidos
+	
 	
 	
 	
@@ -163,6 +166,82 @@ public class Meseros extends javax.swing.JFrame {
 			return 0;
 	} //getIdPedidoSeleccionado
 	
+	
+	
+	
+	/**
+	 * cargo el lista de items y la tabla de items que corresponden a ese pedido
+	 */
+	private void cargarItems(){
+		//Obtengo la lista de items que corresponden a ese pedido.
+		List<Item> listaItems = itemData.getListaItemsXCriterioDeBusqueda(
+		// idItem, idProducto, idPedido,				estado,		ordenacion	
+			-1,		 -1,	   getIdPedidoSeleccionado(), null,	ItemData.OrdenacionItem.PORIDITEM);
+		
+		//System.out.println("Lista items: " + listaItems); //debug
+		
+		
+		//borro las filas de la tabla items
+		for (int fila = modeloTablaItems.getRowCount() -  1; fila >= 0; fila--)
+			modeloTablaItems.removeRow(fila);
+		
+		//cargo esos pedidos items a la tabla de items
+		listaItems.stream().forEach(item -> modeloTablaItems.addRow(new Object[] {
+				item.getIdPedido(),
+				productoData.getProducto(item.getIdProducto()),
+				item.getCantidad(),
+				item.getEstado()
+			} ) 
+		);
+		
+		
+		//si la fila que tenia seleccionada sigue siendo válida
+		//if (filaSeleccionada >= 0 && filaSeleccionada < tablaPedidos.getRowCount() )
+		//	tablaPedidos.setRowSelectionInterval(filaSeleccionada, filaSeleccionada); //restauro la fila que tenía seleccionada
+		//else
+		//	tablaPedidos.removeRowSelectionInterval(0, tablaPedidos.getRowCount()-1); // borro todas las selecciones de la tabla de pedidos
+	} //cargarItems
+	
+	
+	
+		
+	/**
+	 * cargo el lista de productos y la tabla de productos
+	 */
+	private void cargarProductos(){
+		//Obtengo la lista de productos activos
+		List<Producto> listaProductos = productoData.getListaProductosXCriterioDeBusqueda(
+			//idProducto, nombre, stock, precio, disponible, idCategoria, despachadoPor, ordenacion){ 
+			-1,				"",	   -1,	 -1.0,	 true,		   -1,			-1,			ProductoData.OrdenacionProducto.PORIDPRODUCTO);
+		
+		
+		//borro las filas de la tabla productos
+		for (int fila = modeloTablaProductos.getRowCount() -  1; fila >= 0; fila--)
+			modeloTablaProductos.removeRow(fila);
+		
+		//cargo esos productos a la tabla de productos
+		listaProductos.stream().forEach(producto -> modeloTablaProductos.addRow(new Object[] {
+				producto,
+				producto.getDescripcion(),
+				producto.getStock(),
+				producto.getPrecio(),
+				producto.getIdCategoria(),
+				producto.getDespachadoPor()
+			} ) 
+		);
+		
+		
+		//si la fila que tenia seleccionada sigue siendo válida
+		//if (filaSeleccionada >= 0 && filaSeleccionada < tablaPedidos.getRowCount() )
+		//	tablaPedidos.setRowSelectionInterval(filaSeleccionada, filaSeleccionada); //restauro la fila que tenía seleccionada
+		//else
+		//	tablaPedidos.removeRowSelectionInterval(0, tablaPedidos.getRowCount()-1); // borro todas las selecciones de la tabla de pedidos
+	} //cargarItems
+	
+	
+	
+	//=======================================================================================
+	//=======================================================================================
 	
 	
 	
@@ -263,6 +342,11 @@ public class Meseros extends javax.swing.JFrame {
         });
         tablaPedidos.setRowHeight(48);
         tablaPedidos.getTableHeader().setReorderingAllowed(false);
+        tablaPedidos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaPedidosMouseClicked(evt);
+            }
+        });
         panelPedidos.setViewportView(tablaPedidos);
         if (tablaPedidos.getColumnModel().getColumnCount() > 0) {
             tablaPedidos.getColumnModel().getColumn(0).setResizable(false);
@@ -277,7 +361,7 @@ public class Meseros extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false
@@ -398,16 +482,39 @@ public class Meseros extends javax.swing.JFrame {
 
         tablaProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Producto", "Descripcion", "Stock", "Precio", "Categoría", "Despachado por"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         panelProductos.setViewportView(tablaProductos);
+        if (tablaProductos.getColumnModel().getColumnCount() > 0) {
+            tablaProductos.getColumnModel().getColumn(0).setPreferredWidth(100);
+            tablaProductos.getColumnModel().getColumn(1).setPreferredWidth(120);
+            tablaProductos.getColumnModel().getColumn(2).setPreferredWidth(15);
+            tablaProductos.getColumnModel().getColumn(3).setPreferredWidth(20);
+            tablaProductos.getColumnModel().getColumn(4).setPreferredWidth(50);
+            tablaProductos.getColumnModel().getColumn(5).setPreferredWidth(50);
+        }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -422,7 +529,7 @@ public class Meseros extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(botonera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(panelProductos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(panelProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 594, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -446,6 +553,12 @@ public class Meseros extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+	
+	
+	//=======================================================================================
+	//=======================================================================================
+	
+	
     private void btnIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirActionPerformed
 //        if (tablaMesasNoAsignadas.getSelectedRow() != -1){ // si hay alguna fila seleccionada
 //            btnIncluir.setEnabled(false); // deshabilito botón Desasignar.
@@ -466,6 +579,9 @@ public class Meseros extends javax.swing.JFrame {
 //        }
     }//GEN-LAST:event_btnIncluirActionPerformed
 
+	
+	
+	
     private void btnSacarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSacarActionPerformed
 //        if (tablaMesasAsignadas.getSelectedRow() != -1){ // si hay alguna fila seleccionada
 //            btnSacar.setEnabled(false); // deshabilito botón Desasignar.
@@ -485,26 +601,53 @@ public class Meseros extends javax.swing.JFrame {
 //        }
     }//GEN-LAST:event_btnSacarActionPerformed
 
+	
+	
+	
     private void btnAumentarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAumentarActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnAumentarActionPerformed
 
+	
+	
+	
     private void btnDisminuirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisminuirActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnDisminuirActionPerformed
 
+	
+	
+	
     private void btnAsignarMesa2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarMesa2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnAsignarMesa2ActionPerformed
 
+	
+	
+	
     private void btnDesasignarMesa2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDesasignarMesa2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnDesasignarMesa2ActionPerformed
 
+	
+	
+	
     private void tablaMesasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMesasMouseClicked
         cargarPedidos();
     }//GEN-LAST:event_tablaMesasMouseClicked
 
+    private void tablaPedidosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaPedidosMouseClicked
+        cargarItems();
+    }//GEN-LAST:event_tablaPedidosMouseClicked
+
+	
+	
+	
+	//=========================================================================================
+	//=========================================================================================
+	
+	
+	
 	/**
 	 * @param args the command line arguments
 	 */
@@ -557,4 +700,7 @@ public class Meseros extends javax.swing.JFrame {
     private javax.swing.JTable tablaPedidos;
     private javax.swing.JTable tablaProductos;
     // End of variables declaration//GEN-END:variables
-}
+
+
+
+} //class Meseros

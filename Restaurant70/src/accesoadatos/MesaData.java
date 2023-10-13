@@ -323,7 +323,7 @@ public class MesaData {
 		else 
 			sql = sql + " Order by estado";		
 	
-		System.out.println(sql);
+		// System.out.println(sql); //debug
 		// ejecuto
 		ResultSet rs = conexion.sqlSelect(sql);
 		
