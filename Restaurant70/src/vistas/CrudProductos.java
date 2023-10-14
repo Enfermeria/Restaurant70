@@ -17,7 +17,7 @@ import accesoadatos.ProductoData.OrdenacionProducto;
 import accesoadatos.ProductoData;
 import entidades.Servicio;
 import accesoadatos.ServicioData;
-import accesoadatos.Utils;
+import utiles.Utils;
 import entidades.Categoria;
 import entidades.Producto;
 import java.awt.Color;

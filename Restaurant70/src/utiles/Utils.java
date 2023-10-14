@@ -10,16 +10,23 @@
 
 	Rutinas utiles
  */
-package accesoadatos;
+package utiles;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Time;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
+
 
 /**
  *
@@ -179,5 +186,43 @@ public class Utils {
 		int ss = Integer.parseInt(hora.toString().substring(6, 8));
 		return LocalDateTime.of(anio, mes, dia, hh, mm, ss);
 	}
+	
+	
+
+/**
+	 * reproduce un sonido ej: sonido1("src/sonidos/agua.wav");
+	 * @param nombreArchivoSonido 
+	 */
+	public static void sonido1(String nombreArchivoSonido){
+		try {
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(nombreArchivoSonido).getAbsoluteFile());
+			Clip clip = AudioSystem.getClip();
+			clip.open(audioInputStream);
+			clip.start();
+		} catch(UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+			 System.out.println("Error al reproducir el sonido. " + ex);
+		}
+	}
+	
+
+	/**
+	 * reproduce un sonido ej: sonido2("/sonidos/agua.wav");
+	 * @param nombreArchivoSonido 
+	 */
+	public void sonido2(String archivo) {
+			try {
+				Clip clip = AudioSystem.getClip();
+				clip.open(AudioSystem.getAudioInputStream(getClass().getResource(archivo)));
+				clip.start();
+			} catch (IOException | LineUnavailableException | UnsupportedAudioFileException ex) {
+				JOptionPane.showMessageDialog(null, "Error en audio:\n" + ex.getMessage());
+			}
+		}	
+	
+	
+
+	
+	
+	
 	
 }

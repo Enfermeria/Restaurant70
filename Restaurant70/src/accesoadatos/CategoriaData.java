@@ -14,7 +14,7 @@
 
 package accesoadatos;
 
-import static accesoadatos.Utils.*;
+import static utiles.Utils.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;

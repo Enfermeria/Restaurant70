@@ -182,6 +182,9 @@
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tablaItemsMouseClicked"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -197,8 +200,8 @@
                       <Component id="btnIncluir" alignment="0" min="-2" pref="149" max="-2" attributes="0"/>
                       <Component id="btnAumentar" alignment="0" min="-2" pref="149" max="-2" attributes="0"/>
                       <Component id="btnDisminuir" alignment="0" max="32767" attributes="0"/>
-                      <Component id="btnAsignarMesa2" alignment="0" min="-2" pref="149" max="-2" attributes="0"/>
-                      <Component id="btnDesasignarMesa2" alignment="0" max="32767" attributes="0"/>
+                      <Component id="btnSolicitarProducto" alignment="0" min="-2" pref="149" max="-2" attributes="0"/>
+                      <Component id="btnServirProducto" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -216,9 +219,9 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="btnDisminuir" min="-2" max="-2" attributes="0"/>
                   <EmptySpace pref="94" max="32767" attributes="0"/>
-                  <Component id="btnAsignarMesa2" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnSolicitarProducto" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="btnDesasignarMesa2" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnServirProducto" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -231,6 +234,7 @@
               <Image iconType="3" name="/imagenes/flecha_izquierda32x32 .png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Incluir Producto"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
@@ -244,6 +248,7 @@
               <Image iconType="3" name="/imagenes/flecha_derecha32x32.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Sacar Producto"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
@@ -257,6 +262,7 @@
               <Image iconType="3" name="/imagenes/mas32x32.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Aumentar Cantidad"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
@@ -270,6 +276,7 @@
               <Image iconType="3" name="/imagenes/menos32x32.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Disminuir Cantidad"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
@@ -277,30 +284,32 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDisminuirActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="btnAsignarMesa2">
+        <Component class="javax.swing.JButton" name="btnSolicitarProducto">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/imagenes/condimento32x32.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Solicitar Producto"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAsignarMesa2ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSolicitarProductoActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="btnDesasignarMesa2">
+        <Component class="javax.swing.JButton" name="btnServirProducto">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/imagenes/mesero32x32.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Servir producto"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDesasignarMesa2ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnServirProductoActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
@@ -315,10 +324,9 @@
         <Component class="javax.swing.JTable" name="tablaProductos">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="6" rowCount="4">
+              <Table columnCount="5" rowCount="4">
                 <Column editable="false" title="Producto" type="java.lang.Object"/>
                 <Column editable="false" title="Descripcion" type="java.lang.String"/>
-                <Column editable="false" title="Stock" type="java.lang.Integer"/>
                 <Column editable="false" title="Precio" type="java.lang.Double"/>
                 <Column editable="false" title="Categor&#xed;a" type="java.lang.String"/>
                 <Column editable="false" title="Despachado por" type="java.lang.String"/>
@@ -332,11 +340,6 @@
                   <Renderer/>
                 </Column>
                 <Column maxWidth="-1" minWidth="-1" prefWidth="120" resizable="true">
-                  <Title/>
-                  <Editor/>
-                  <Renderer/>
-                </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="15" resizable="true">
                   <Title/>
                   <Editor/>
                   <Renderer/>
@@ -362,6 +365,9 @@
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tablaProductosMouseClicked"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

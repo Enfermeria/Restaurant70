@@ -4,9 +4,9 @@ import accesoadatos.MesaData;
 import accesoadatos.PedidoData;
 import accesoadatos.ProductoData;
 import accesoadatos.ServicioData;
-import accesoadatos.Utils;
-import static accesoadatos.Utils.dateTimeBD2LocalDateTime;
-import static accesoadatos.Utils.localDateTime2DateTimeBD;
+import utiles.Utils;
+import static utiles.Utils.dateTimeBD2LocalDateTime;
+import static utiles.Utils.localDateTime2DateTimeBD;
 import entidades.Item;
 import entidades.Mesa;
 import entidades.Pedido;
@@ -157,7 +157,7 @@ public class Testeo {
 		List<Pedido> listaPedidos = pedidoData.getListaPedidosXCriterioDeBusqueda(
 				-1, -1, -1,
 				null, //LocalDateTime.of(2023, 9, 1, 0, 0, 0), 
-				LocalDateTime.of(2023, 9, 5, 0, 0, 0), 
+				LocalDateTime.of(2023, 9, 5, 0, 0, 0), null,
 				PedidoData.OrdenacionPedido.PORFECHAHORA);
 
 		for (Pedido pedido: listaPedidos)

@@ -38,7 +38,7 @@
  */
 package sockets;
 
-import accesoadatos.Utils;
+import utiles.Utils;
 import java.io.*;
 import java.net.Socket;
 

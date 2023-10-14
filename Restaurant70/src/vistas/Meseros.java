@@ -19,6 +19,7 @@ import entidades.Mesa;
 import entidades.Pedido;
 import entidades.Servicio;
 import entidades.Producto;
+
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,14 +27,25 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+//para el RowsRenderer
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import static javax.swing.SwingConstants.CENTER;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+//fin imports para el RowsRenderer
+
 /**
  *
  * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
  */
 public class Meseros extends javax.swing.JFrame {
 	Servicio mesero;
-	LinkedHashMap<Integer, Mesa> mapaMesas;
-	LinkedHashMap<Integer, Pedido> mapaPedidos;
+	public static LinkedHashMap<Integer, Mesa> mapaMesas;
+	public static LinkedHashMap<Integer, Pedido> mapaPedidos;
 	DefaultTableModel modeloTablaMesas, modeloTablaPedidos, modeloTablaItems, modeloTablaProductos;
 	ItemData itemData = new ItemData(); //conecto con la BD
 	MesaData mesaData = new MesaData(); //conecto con la BD
@@ -51,12 +63,15 @@ public class Meseros extends javax.swing.JFrame {
 		modeloTablaItems   = (DefaultTableModel) tablaItems.getModel();
 		modeloTablaProductos=(DefaultTableModel) tablaProductos.getModel();
 		
-		//elijo alineacion centro para mesas y pedidos
+		//elijo alineacion centro para pedidos
 		DefaultTableCellRenderer alinear = new DefaultTableCellRenderer();
 		alinear.setHorizontalAlignment(SwingConstants.CENTER);//.LEFT .RIGHT .CENTER
-		tablaMesas.getColumnModel().getColumn(0).setCellRenderer(alinear);
 		tablaPedidos.getColumnModel().getColumn(0).setCellRenderer(alinear);
 
+		//cambio los renderer para las tablaMesas y tablaItems para así elegir colores diferentes según el estado
+		tablaMesas.getColumnModel().getColumn(0).setCellRenderer(new RendererMesas());
+		tablaItems.getColumnModel().getColumn(3).setCellRenderer(new RendererItems());
+		
 		cargarMesas();
 		cargarPedidos();
 		cargarProductos();
@@ -187,7 +202,7 @@ public class Meseros extends javax.swing.JFrame {
 		
 		//cargo esos pedidos items a la tabla de items
 		listaItems.stream().forEach(item -> modeloTablaItems.addRow(new Object[] {
-				item.getIdPedido(),
+				item.getIdItem(),
 				productoData.getProducto(item.getIdProducto()),
 				item.getCantidad(),
 				item.getEstado()
@@ -223,7 +238,6 @@ public class Meseros extends javax.swing.JFrame {
 		listaProductos.stream().forEach(producto -> modeloTablaProductos.addRow(new Object[] {
 				producto,
 				producto.getDescripcion(),
-				producto.getStock(),
 				producto.getPrecio(),
 				producto.getIdCategoria(),
 				producto.getDespachadoPor()
@@ -237,6 +251,34 @@ public class Meseros extends javax.swing.JFrame {
 		//else
 		//	tablaPedidos.removeRowSelectionInterval(0, tablaPedidos.getRowCount()-1); // borro todas las selecciones de la tabla de pedidos
 	} //cargarItems
+	
+	
+	
+	/**
+	 * Cuando no hay un item seleccionado se deshabilitan los botones relacionados a los items
+	 */
+	private void deshabilitarBotonesItems(){
+		btnAumentar.setEnabled(false);
+		btnDisminuir.setEnabled(false);
+		btnSolicitarProducto.setEnabled(false);
+		btnServirProducto.setEnabled(false);
+		btnSacar.setEnabled(false);
+		btnIncluir.setEnabled(false);
+	}
+	
+	
+	
+	/**
+	 * Cuando se selecciona un item seleccionado se habilitan los botones relacionados a los items
+	 */
+	private void habilitarBotonesItems(){
+		btnAumentar.setEnabled(true);
+		btnDisminuir.setEnabled(true);
+		btnSolicitarProducto.setEnabled(true);
+		btnServirProducto.setEnabled(true);
+		btnSacar.setEnabled(true);
+		//btnIncluir.setEnabled(true);
+	}
 	
 	
 	
@@ -266,8 +308,8 @@ public class Meseros extends javax.swing.JFrame {
         btnSacar = new javax.swing.JButton();
         btnAumentar = new javax.swing.JButton();
         btnDisminuir = new javax.swing.JButton();
-        btnAsignarMesa2 = new javax.swing.JButton();
-        btnDesasignarMesa2 = new javax.swing.JButton();
+        btnSolicitarProducto = new javax.swing.JButton();
+        btnServirProducto = new javax.swing.JButton();
         panelProductos = new javax.swing.JScrollPane();
         tablaProductos = new javax.swing.JTable();
 
@@ -375,6 +417,11 @@ public class Meseros extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tablaItems.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaItemsMouseClicked(evt);
+            }
+        });
         panelItems.setViewportView(tablaItems);
         if (tablaItems.getColumnModel().getColumnCount() > 0) {
             tablaItems.getColumnModel().getColumn(0).setPreferredWidth(20);
@@ -389,6 +436,7 @@ public class Meseros extends javax.swing.JFrame {
 
         btnIncluir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/flecha_izquierda32x32 .png"))); // NOI18N
         btnIncluir.setText("Incluir Producto");
+        btnIncluir.setEnabled(false);
         btnIncluir.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnIncluir.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btnIncluir.addActionListener(new java.awt.event.ActionListener() {
@@ -399,6 +447,7 @@ public class Meseros extends javax.swing.JFrame {
 
         btnSacar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/flecha_derecha32x32.png"))); // NOI18N
         btnSacar.setText("Sacar Producto");
+        btnSacar.setEnabled(false);
         btnSacar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnSacar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btnSacar.addActionListener(new java.awt.event.ActionListener() {
@@ -409,6 +458,7 @@ public class Meseros extends javax.swing.JFrame {
 
         btnAumentar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mas32x32.png"))); // NOI18N
         btnAumentar.setText("Aumentar Cantidad");
+        btnAumentar.setEnabled(false);
         btnAumentar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnAumentar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btnAumentar.addActionListener(new java.awt.event.ActionListener() {
@@ -419,6 +469,7 @@ public class Meseros extends javax.swing.JFrame {
 
         btnDisminuir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/menos32x32.png"))); // NOI18N
         btnDisminuir.setText("Disminuir Cantidad");
+        btnDisminuir.setEnabled(false);
         btnDisminuir.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnDisminuir.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btnDisminuir.addActionListener(new java.awt.event.ActionListener() {
@@ -427,23 +478,25 @@ public class Meseros extends javax.swing.JFrame {
             }
         });
 
-        btnAsignarMesa2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/condimento32x32.png"))); // NOI18N
-        btnAsignarMesa2.setText("Solicitar Producto");
-        btnAsignarMesa2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnAsignarMesa2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnAsignarMesa2.addActionListener(new java.awt.event.ActionListener() {
+        btnSolicitarProducto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/condimento32x32.png"))); // NOI18N
+        btnSolicitarProducto.setText("Solicitar Producto");
+        btnSolicitarProducto.setEnabled(false);
+        btnSolicitarProducto.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnSolicitarProducto.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnSolicitarProducto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAsignarMesa2ActionPerformed(evt);
+                btnSolicitarProductoActionPerformed(evt);
             }
         });
 
-        btnDesasignarMesa2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mesero32x32.png"))); // NOI18N
-        btnDesasignarMesa2.setText("Servir producto");
-        btnDesasignarMesa2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnDesasignarMesa2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnDesasignarMesa2.addActionListener(new java.awt.event.ActionListener() {
+        btnServirProducto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mesero32x32.png"))); // NOI18N
+        btnServirProducto.setText("Servir producto");
+        btnServirProducto.setEnabled(false);
+        btnServirProducto.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnServirProducto.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnServirProducto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDesasignarMesa2ActionPerformed(evt);
+                btnServirProductoActionPerformed(evt);
             }
         });
 
@@ -458,8 +511,8 @@ public class Meseros extends javax.swing.JFrame {
                     .addComponent(btnIncluir, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAumentar, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnDisminuir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnAsignarMesa2, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDesasignarMesa2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnSolicitarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnServirProducto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         botoneraLayout.setVerticalGroup(
@@ -474,28 +527,28 @@ public class Meseros extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnDisminuir)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
-                .addComponent(btnAsignarMesa2)
+                .addComponent(btnSolicitarProducto)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnDesasignarMesa2)
+                .addComponent(btnServirProducto)
                 .addContainerGap())
         );
 
         tablaProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Producto", "Descripcion", "Stock", "Precio", "Categoría", "Despachado por"
+                "Producto", "Descripcion", "Precio", "Categoría", "Despachado por"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.String.class, java.lang.String.class
+                java.lang.Object.class, java.lang.String.class, java.lang.Double.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -506,14 +559,18 @@ public class Meseros extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tablaProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaProductosMouseClicked(evt);
+            }
+        });
         panelProductos.setViewportView(tablaProductos);
         if (tablaProductos.getColumnModel().getColumnCount() > 0) {
             tablaProductos.getColumnModel().getColumn(0).setPreferredWidth(100);
             tablaProductos.getColumnModel().getColumn(1).setPreferredWidth(120);
-            tablaProductos.getColumnModel().getColumn(2).setPreferredWidth(15);
-            tablaProductos.getColumnModel().getColumn(3).setPreferredWidth(20);
+            tablaProductos.getColumnModel().getColumn(2).setPreferredWidth(20);
+            tablaProductos.getColumnModel().getColumn(3).setPreferredWidth(50);
             tablaProductos.getColumnModel().getColumn(4).setPreferredWidth(50);
-            tablaProductos.getColumnModel().getColumn(5).setPreferredWidth(50);
         }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -618,27 +675,46 @@ public class Meseros extends javax.swing.JFrame {
 	
 	
 	
-    private void btnAsignarMesa2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarMesa2ActionPerformed
+    private void btnSolicitarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSolicitarProductoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnAsignarMesa2ActionPerformed
+    }//GEN-LAST:event_btnSolicitarProductoActionPerformed
 
 	
 	
 	
-    private void btnDesasignarMesa2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDesasignarMesa2ActionPerformed
+    private void btnServirProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnServirProductoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnDesasignarMesa2ActionPerformed
+    }//GEN-LAST:event_btnServirProductoActionPerformed
 
 	
 	
 	
     private void tablaMesasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMesasMouseClicked
         cargarPedidos();
+		deshabilitarBotonesItems();
     }//GEN-LAST:event_tablaMesasMouseClicked
 
+	
+	
     private void tablaPedidosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaPedidosMouseClicked
         cargarItems();
+		deshabilitarBotonesItems();
+		if (tablaProductos.getSelectedRow() != -1)
+			btnIncluir.setEnabled(true);
     }//GEN-LAST:event_tablaPedidosMouseClicked
+
+	
+	
+    private void tablaItemsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaItemsMouseClicked
+        habilitarBotonesItems();
+    }//GEN-LAST:event_tablaItemsMouseClicked
+
+	
+	
+    private void tablaProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProductosMouseClicked
+        if (tablaPedidos.getSelectedRow() != -1)
+			btnIncluir.setEnabled(true);
+    }//GEN-LAST:event_tablaProductosMouseClicked
 
 	
 	
@@ -685,12 +761,12 @@ public class Meseros extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel botonera;
-    private javax.swing.JButton btnAsignarMesa2;
     private javax.swing.JButton btnAumentar;
-    private javax.swing.JButton btnDesasignarMesa2;
     private javax.swing.JButton btnDisminuir;
     private javax.swing.JButton btnIncluir;
     private javax.swing.JButton btnSacar;
+    private javax.swing.JButton btnServirProducto;
+    private javax.swing.JButton btnSolicitarProducto;
     private javax.swing.JScrollPane panelItems;
     private javax.swing.JScrollPane panelMesas;
     private javax.swing.JScrollPane panelPedidos;
@@ -702,5 +778,108 @@ public class Meseros extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
 
+	
+	//========================================================================================================
+	//========================================================================================================
+	
+	
+	
+	/**
+	 * Renderer de celdas de la tablaMesas. Pone el color según el estado de la 
+	 * mesa (Libre, Ocupada, Atendida). La info la obtiene de mapaMesas;
+	 *  en la definicion de la tabla se pone
+	 *		tabla.getColumnModel().getColumn(3).setCellRenderer(new generalRenderer());
+	 *	de esa manera aplica el renderer a la columna, los colores son diferentes si la celda esta seleccionada o no.
+	 */
+	class RendererMesas extends JLabel implements TableCellRenderer {    
+		//Font f = new Font( "Helvetica",Font.PLAIN,10 );
+		Color colorSeleccionado = new Color(184,207,229); //new Color(0,120,215); //new Color(117, 204, 169);
+		Color colorGeneral = Color.BLUE; //new Color(255,255,255); //new Color(225, 244, 238);
+		Color colorLibre = Color.WHITE;
+		Color colorOcupada = Color.RED;
+		Color colorAtendida = Color.GREEN;
 
+		public RendererMesas() {
+			setOpaque(true);
+		}
+
+		public Component getTableCellRendererComponent(JTable tabla, Object valor, boolean isSelected, boolean hasFocus, int row, int column) {
+			setHorizontalAlignment(CENTER);
+			if (isSelected) {
+				setBackground(colorSeleccionado);
+			} else if ( mapaMesas.get((Integer)valor).getEstado() == Mesa.EstadoMesa.LIBRE ) {
+				setBackground(colorLibre);
+			} else if ( mapaMesas.get((Integer)valor).getEstado() == Mesa.EstadoMesa.OCUPADA ) {
+				setBackground(colorOcupada);
+			} else if ( mapaMesas.get((Integer)valor).getEstado() == Mesa.EstadoMesa.ATENDIDA ) {
+				setBackground(colorAtendida);
+			} else {
+				setBackground(colorGeneral);
+			}
+			try {
+				//setFont(f);
+				setText(valor.toString());
+			} catch (NullPointerException npe) {
+				System.out.println(valor.toString());
+				setText("0");
+			}
+			return this;
+		}
+	} //class rendererMesas
+	
+	
+	
+	/**
+	 * Renderer de celdas de la tablaMesas. Pone el color según el estado de la 
+	 * mesa (Libre, Ocupada, Atendida). La info la obtiene de mapaMesas;
+	 *  en la definicion de la tabla se pone
+	 *		tabla.getColumnModel().getColumn(3).setCellRenderer(new generalRenderer());
+	 *	de esa manera aplica el renderer a la columna, los colores son diferentes si la celda esta seleccionada o no.
+	 */
+	class RendererItems extends JLabel implements TableCellRenderer {    
+		//Font f = new Font( "Helvetica",Font.PLAIN,10 );
+		Color colorSeleccionado = new Color(184,207,229); //new Color(0,120,215); //new Color(117, 204, 169);
+		Color colorGeneral = Color.WHITE; //new Color(255,255,255); //new Color(225, 244, 238);
+		Color colorAnotado = Color.WHITE;
+		Color colorSolicitado = Color.YELLOW;
+		Color colorDespachado = Color.RED;
+		Color colorEntregado = Color.GREEN;
+
+		public RendererItems() {
+			setOpaque(true);
+		}
+
+		public Component getTableCellRendererComponent(JTable tabla, Object valor, boolean isSelected, boolean hasFocus, int row, int column) {
+			//setHorizontalAlignment(CENTER);
+			if (isSelected)
+				setBackground(colorSeleccionado);
+			else
+				setBackground(colorGeneral);
+			
+			if (column == 3) { //es la columna del estado	
+				if ( (Item.EstadoItem)valor == Item.EstadoItem.ANOTADO ) 
+					setBackground(colorAnotado);
+				else if ( (Item.EstadoItem)valor == Item.EstadoItem.SOLICITADO ) 
+					setBackground(colorSolicitado);
+				else if ( (Item.EstadoItem)valor == Item.EstadoItem.DESPACHADO ) 
+					setBackground(colorDespachado);
+				else if ( (Item.EstadoItem)valor == Item.EstadoItem.ENTREGADO ) 
+					setBackground(colorEntregado);
+				else 
+					setBackground(Color.MAGENTA); //esto nunca debería pasar.
+			}
+			
+			try {
+				//setFont(f);
+				setText(valor.toString());
+			} catch (NullPointerException npe) {
+				System.out.println(valor.toString());
+				setText("0");
+			}
+			return this;
+		}
+	} //class rendererItems
+	
 } //class Meseros
+
+
