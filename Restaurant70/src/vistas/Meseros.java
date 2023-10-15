@@ -617,59 +617,94 @@ public class Meseros extends javax.swing.JFrame {
 	
 	
     private void btnIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirActionPerformed
-//        if (tablaMesasNoAsignadas.getSelectedRow() != -1){ // si hay alguna fila seleccionada
-//            btnIncluir.setEnabled(false); // deshabilito botón Desasignar.
-//        }
-//        int numfilaNoAsignadas = tablaMesasNoAsignadas.getSelectedRow();
-//        if (numfilaNoAsignadas != -1) { //si hay alguna fila seleccionada en la tabla de mesas asignadas
-//            int idMesa = (Integer)tablaMesasNoAsignadas.getValueAt(numfilaNoAsignadas, 0);//averiguamos el idMesa
-//            int idMesero = (Integer) tablaServicios.getValueAt(tablaServicios.getSelectedRow(), 0);
-//
-//            //modifico el mesero de la mesa, poniendolo a 0 (para que almacene null)
-//            Mesa mesa = mesaData.getMesa(idMesa);
-//            mesa.setIdMesero(idMesero);
-//            mesaData.modificarMesa(mesa);
-//
-//            //actualizamos las listas y tablas de mesas
-//            cargarListaMesas();
-//            cargarTablaMesas( idMesero );
-//        }
+        if (tablaProductos.getSelectedRow() == -1 || tablaPedidos.getSelectedRow() == -1){ // si hay alguna fila seleccionada
+            btnIncluir.setEnabled(false); // deshabilito botón incluir
+			return;
+        }
+		
+        int[] arregloFilasProductosSeleccionados = tablaProductos.getSelectedRows();
+		for (int numfilaProductos:arregloFilasProductosSeleccionados){
+			int idProducto = ((Producto)tablaProductos.getValueAt(numfilaProductos, 0)).getIdProducto();//obtengo el producto
+
+			//recorro la tabla de items para ver si está ese producto en la tabla (y que sea anotado)
+			int numfilaItems = 0;
+			while (numfilaItems < tablaItems.getRowCount() && 
+					!(((Producto)tablaItems.getValueAt(numfilaItems, 1)).getIdProducto() == idProducto && 
+					((Item.EstadoItem)tablaItems.getValueAt(numfilaItems, 3)) == Item.EstadoItem.ANOTADO ) )
+				numfilaItems++;
+			
+			//ahora salio porque lo encontro o termino la tabla
+			if ( numfilaItems >= tablaItems.getRowCount() )  //no lo encontro... hay que agregarlo
+				itemData.altaItem( new Item(idProducto, getIdPedidoSeleccionado(), 1, Item.EstadoItem.ANOTADO) ); //agrego el item en la bd
+			else {// lo encontró, hay que aumentar la cantidad
+				Item item = itemData.getItem((Integer)tablaItems.getValueAt(numfilaItems, 0));
+				item.setCantidad(item.getCantidad()+1);
+				itemData.modificarItem(item);
+			}
+			cargarItems(); //actualizo los items y tabla de items
+        } //for 
     }//GEN-LAST:event_btnIncluirActionPerformed
 
 	
 	
 	
     private void btnSacarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSacarActionPerformed
-//        if (tablaMesasAsignadas.getSelectedRow() != -1){ // si hay alguna fila seleccionada
-//            btnSacar.setEnabled(false); // deshabilito botón Desasignar.
-//        }
-//        int numfilaAsignadas = tablaMesasAsignadas.getSelectedRow();
-//        if (numfilaAsignadas != -1) { //si hay alguna fila seleccionada en la tabla de mesas asignadas
-//            int idMesa = (Integer)tablaMesasAsignadas.getValueAt(numfilaAsignadas, 0);//averiguamos el idMesa
-//            int idMesero = (Integer) tablaServicios.getValueAt(tablaServicios.getSelectedRow(), 0);
-//            //modifico el mesero de la mesa, poniendolo a 0 (para que almacene null)
-//            Mesa mesa = mesaData.getMesa(idMesa);
-//            mesa.setIdMesero(0);
-//            mesaData.modificarMesa(mesa);
-//
-//            //actualizamos las listas y tablas de mesas
-//            cargarListaMesas();
-//            cargarTablaMesas( idMesero );
-//        }
+        if (tablaItems.getSelectedRow() == -1){ 
+            deshabilitarBotonesItems(); 
+			return;
+        }
+		
+		int[] arregloFilasItemsSeleccionados = tablaItems.getSelectedRows();
+		boolean bajeAlgunItem=false;
+        for (int numfilaItems:arregloFilasItemsSeleccionados) { //recorro todas las filas seleccionadas de la tablaItems
+            int idItem = (Integer)tablaItems.getValueAt(numfilaItems, 0);//averiguamos el idItem
+			Item item = itemData.getItem(idItem);
+			
+			if (item.getCantidad() > 1) { // si hay varios, disminuyo la cantidad
+				item.setCantidad(item.getCantidad()-1);
+				itemData.modificarItem(item);
+			} else { // solo hay uno, lo elimino
+				itemData.bajaItem(item);
+				bajeAlgunItem = true;
+			}
+		} //for
+		cargarItems();
+		if (bajeAlgunItem)
+			deshabilitarBotonesItems();
+		else { // como no hubo ninguna baja, restauro las filas que tenia seleccionadas
+			for (int fila:arregloFilasItemsSeleccionados)
+				tablaItems.addRowSelectionInterval(fila, fila);
+		}
     }//GEN-LAST:event_btnSacarActionPerformed
 
 	
 	
 	
     private void btnAumentarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAumentarActionPerformed
-        // TODO add your handling code here:
+		if (tablaItems.getSelectedRow() == -1){ 
+			deshabilitarBotonesItems(); 
+			return;
+		}
+			
+		int[] arregloFilasItemsSeleccionados = tablaItems.getSelectedRows();
+		for (int numfilaItems:arregloFilasItemsSeleccionados) { //recorro todas las filas seleccionadas de la tablaItems
+			int idItem = (Integer)tablaItems.getValueAt(numfilaItems, 0);//averiguamos el idItem
+			Item item = itemData.getItem(idItem);
+			
+			item.setCantidad(item.getCantidad()+1);
+			itemData.modificarItem(item);
+		} //for
+		cargarItems();
+		//restauro las filas que tenia seleccionadas
+		for (int fila:arregloFilasItemsSeleccionados)
+			tablaItems.addRowSelectionInterval(fila, fila);
     }//GEN-LAST:event_btnAumentarActionPerformed
 
 	
 	
 	
     private void btnDisminuirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisminuirActionPerformed
-        // TODO add your handling code here:
+        btnSacarActionPerformed(evt);
     }//GEN-LAST:event_btnDisminuirActionPerformed
 
 	
