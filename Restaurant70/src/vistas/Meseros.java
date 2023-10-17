@@ -558,7 +558,6 @@ public class Meseros extends javax.swing.JFrame {
         btnSalir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setIconImage(getIconImage());
 
         panelMesas.setBackground(new java.awt.Color(153, 153, 255));
 
@@ -1081,9 +1080,8 @@ public class Meseros extends javax.swing.JFrame {
 				item.setCantidad(item.getCantidad()+1);
 				itemData.modificarItem(item);
 			}
-			cargarItems(); //actualizo los items y tabla de items
         } //for 
-		
+		cargarItems(); //actualizo los items y tabla de items
 		mostrarLabelsEncabezamientoItems();
     }//GEN-LAST:event_btnIncluirActionPerformed
 
@@ -1231,7 +1229,7 @@ public class Meseros extends javax.swing.JFrame {
 		for (int numfilaItems:arregloFilasItemsSeleccionados) { //recorro todas las filas seleccionadas de la tablaItems
 			int idItem = tablaItemsGetIdItem(numfilaItems);//averiguamos el idItemSeleccionado
 			Item item = itemData.getItem(idItem);
-			if (item.getEstado() == Item.EstadoItem.DESPACHADO) {// si es anotado lo puedo modificar
+			if (item.getEstado() == Item.EstadoItem.DESPACHADO || item.getEstado() == Item.EstadoItem.SOLICITADO) {// si es anotado lo puedo modificar
 				item.setEstado(Item.EstadoItem.ENTREGADO);
 				itemData.modificarItem(item);
 			} else {//si no es despachado, no lo puedo modificar. 
