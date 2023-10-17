@@ -150,18 +150,49 @@ public class Utils {
 	
 	
 	
+	/**
+	 * dado un LocalDateTime lo convierte a formato DateTIme de BD (AAAA-MM-DD hh:mm:ss)
+	 * @param fechaHora
+	 * @return 
+	 */
 	public static String localDateTime2DateTimeBD(LocalDateTime fechaHora) {
 		// formato que devuelve el LocalDateTime.toString(): YYYY-MM-DDTHH:MI:SS.mmm
 		// por ejemplo2023-10-05T15:46:14.817  Cuando los segundos son 00, el toString no los muestra.
 		
 		//formato de la BD DATETIME: YYYY-MM-DD HH:MI:SS
-		return fechaHora.toString().substring(0, 10) + " " + ( (fechaHora.toString().length()<19) ? "00" : fechaHora.toString().substring(11, 19) );
+		return fechaHora.toString().substring(0, 10) + " " + 
+			( (fechaHora.toString().length()<19) ? fechaHora.toString().substring(11, 16) + "00" : fechaHora.toString().substring(11, 19) );
 	} //localDateTime2DateTimeBD
 	
 	
 	
+	/**
+	 * Dado un LocalDateTime devuelve un String con formato DD/MM/AA hh:mm
+	 * @param fechaHora
+	 * @return 
+	 */
+	public static String localDateTime2String(LocalDateTime fechaHora) {
+		// formato que devuelve el LocalDateTime.toString(): YYYY-MM-DDTHH:MM:SS.mmm
+		// por ejemplo 2023-10-05T15:46:14.817  Cuando los segundos son 00, el toString no los muestra.
+		
+		//formato que devolvemos nosotors: DD/MM/AA HH:MI
+		String s = fechaHora.toString(); // fechaHora.toString().substring(0, 10) + fechaHora.toString().)+ ( (fechaHora.toString().length()<19) ? "00" : fechaHora.toString().substring(11, 19) );
+		return  s.substring(8,10) + //DD
+				"/" +
+				s.substring(5, 7) + //MM
+				"/" +
+				s.substring(2,4) + //AA
+				" " +
+				s.substring(11, 16); //hh:mm
+	} //localDateTime2DateTimeBD
 	
-
+	
+	/**
+	 * Dado un string con fecha en formato de BD (YYYY-MM-DD HH:MM:SS) lo 
+	 * convierte al formato LocalDateTime
+	 * @param fechaHoraBD
+	 * @return 
+	 */
 	public static LocalDateTime dateTimeBD2LocalDateTime(String fechaHoraBD) {
 		//formato de la BD DATETIME: YYYY-MM-DD HH:MI:SS  
 		int anio = Integer.parseInt(fechaHoraBD.substring(0, 4));
@@ -176,7 +207,12 @@ public class Utils {
 	
 	
 
-	
+	/**
+	 * Dado una fecha (AAAA-MM-DD) y hora (hh:mm:ss)) lo convierte a un LocalDateTime
+	 * @param fecha
+	 * @param hora
+	 * @return 
+	 */
 	public static LocalDateTime dateYTime2LocalDateTime(Date fecha, Time hora) {
 		int anio = Integer.parseInt(fecha.toString().substring(0, 4));
 		int mes =  Integer.parseInt(fecha.toString().substring(5, 7));

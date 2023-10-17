@@ -22,24 +22,25 @@ import java.util.Calendar;
 public class Pedido {
 	private int idPedido, idMesa, idMesero;
         private  LocalDateTime fechaHora;
-	private boolean pagado;
+	private EstadoPedido estado;
+	public enum EstadoPedido {ACTIVO, PAGADO, CANCELADO};
 
 	public Pedido() {
 	}
 
-	public Pedido(int idMesa, int idMesero, LocalDateTime fechaHora, boolean pagado) {
+	public Pedido(int idMesa, int idMesero, LocalDateTime fechaHora, EstadoPedido estado) {
 		this.idMesa = idMesa;
 		this.idMesero = idMesero;
         this.fechaHora = fechaHora;
-		this.pagado = pagado;
+		this.estado = estado;
 	}
 
-	public Pedido(int idPedido, int idMesa, int idMesero, java.time.LocalDateTime fechaHora, boolean pagado) {
+	public Pedido(int idPedido, int idMesa, int idMesero, java.time.LocalDateTime fechaHora, EstadoPedido estado) {
 		this.idPedido = idPedido;
 		this.idMesa = idMesa;
 		this.idMesero = idMesero;
 		this.fechaHora = fechaHora;
-		this.pagado = pagado;
+		this.estado = estado;
 }
 
     	public int getIdPedido() {
@@ -74,18 +75,18 @@ public class Pedido {
 		this.fechaHora = fechaHora;
 	}
 
-	public boolean getPagado() {
-		return pagado;
+	public EstadoPedido getEstado() {
+		return estado;
 	}
 
-	public void setPagado(boolean pagado) {
-		this.pagado = pagado;
+	public void setEstado(EstadoPedido estado) {
+		this.estado = estado;
 	}
 
 	@Override
 	public String toString() {
             
-		return "Pedido{" + "idPedido=" + idPedido + ", idMesa=" + idMesa + ", idMesero=" + idMesero + ", fechaHora=" + fechaHora + ", pagado=" + pagado + '}';
+		return "Pedido{" + "idPedido=" + idPedido + ", idMesa=" + idMesa + ", idMesero=" + idMesero + ", fechaHora=" + fechaHora + ", estado=" + estado + '}';
 	}
 	
 	

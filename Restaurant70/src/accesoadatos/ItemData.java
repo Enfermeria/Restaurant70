@@ -57,8 +57,13 @@ public class ItemData {
 			return "S";
 		else if (estado == Item.EstadoItem.DESPACHADO)
 			return "D";
-		else //if (estado == Item.EstadoItem.ENTREGADO)
+		else if (estado == Item.EstadoItem.ENTREGADO)
 			return "E";
+		else if (estado == Item.EstadoItem.CANCELADO)
+			return "C";
+		else //if (estado == Item.EstadoItem.CANCELADOVISTO)
+			return "V";
+		
 	} // EstadoItemEnumerado2EstadoItemLetra
 	
 	
@@ -76,8 +81,12 @@ public class ItemData {
 			return Item.EstadoItem.SOLICITADO;
 		else if (letra.equalsIgnoreCase("D"))
 			return Item.EstadoItem.DESPACHADO;
-		else //if (letra.equalsIgnoreCase("E"))
+		else if (letra.equalsIgnoreCase("E"))
 			return Item.EstadoItem.ENTREGADO;
+		else if (letra.equalsIgnoreCase("C"))
+			return Item.EstadoItem.CANCELADO;
+		else //if (letra.equalsIgnoreCase("V"))
+			return Item.EstadoItem.CANCELADOVISTO;
 	} //EstadoItemLetra2EstadoItemEnumerado
 	
 	

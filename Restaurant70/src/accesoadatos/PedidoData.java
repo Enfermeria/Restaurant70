@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import entidades.Pedido;
+import entidades.Pedido.EstadoPedido;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
@@ -48,6 +49,46 @@ public class PedidoData {
 
 	
 	
+	/**
+	 * Dada un enumerado Pedido.EstadoPedido que puede ser ACTIVO, PAGADO, CANCELADO
+	 * devuelve la letra correspondiente A, P, C  para almacenarla en el campo 
+	 * Estado de la tabla Pedido de la BD
+	 * @param EstadoMesa (LIBRE, OCUPADA, ATENDIDA)
+	 * @return letra "A", "P", "C"
+	 */
+	private String estadoPedidoEnumerado2EstadoPedidoLetra(Pedido.EstadoPedido estado){
+		if (estado == Pedido.EstadoPedido.ACTIVO)
+			return "A";
+		else if (estado == Pedido.EstadoPedido.PAGADO)
+			return "P";
+		else if (estado == Pedido.EstadoPedido.CANCELADO)
+			return "C";
+		else // if (estado == Item.EstadoItem.CANCELADO)
+			return "C";
+	} // EstadoPedidoEnumerado2EstadoPedidoLetra
+	
+	
+	
+	/**
+	 * Dada una letra que puede ser A, P, C en el campo Estado de la tabla Pedido
+	 * de la BD, devuelve el correspondiente enumerado según la entidad Pedido.
+	 * @param letra
+	 * @return el enumerado ACTIVO, PAGADO, CANCELADO
+	 */
+	private Pedido.EstadoPedido estadoPedidoLetra2EstadoPedidoEnumerado(String letra){
+		if (letra.equalsIgnoreCase("A"))
+			return Pedido.EstadoPedido.ACTIVO;
+		else if (letra.equalsIgnoreCase("P"))
+			return Pedido.EstadoPedido.PAGADO;
+		else if (letra.equalsIgnoreCase("C"))
+			return Pedido.EstadoPedido.CANCELADO;
+		else //if (letra.equalsIgnoreCase("C"))
+			return Pedido.EstadoPedido.CANCELADO;
+	} //EstadoPedidoLetra2EstadoPedidoEnumerado
+	
+	
+	
+	
 	
 	
 	/**
@@ -57,9 +98,14 @@ public class PedidoData {
 	 */
 	public boolean altaPedido(Pedido pedido){// 
 		// una alternativa es usar ?,?,? y luego insertarlo con preparedStatement.setInt(1, dato) // o setString, setBoolean, setData
-		String sql = "Insert into pedido (idpedido, idMesa, idMesero, fechaHora, pagado) " +
-			"VALUES " + "(null,'" + pedido.getIdMesa() + "','" + pedido.getIdMesero() + "','" + 
-			localDateTime2DateTimeBD( pedido.getFechaHora() ) + "', " + pedido.getPagado() +  " )";
+		String sql = "Insert into pedido (idpedido, idMesa, idMesero, fechaHora, estado) " +
+			"VALUES " + "(null,'" + 
+			pedido.getIdMesa() + "','" + 
+			pedido.getIdMesero() + "','" + 
+			localDateTime2DateTimeBD( pedido.getFechaHora() ) + "','" + 
+			estadoPedidoEnumerado2EstadoPedidoLetra(pedido.getEstado()) + "'" +  
+			" )";
+		
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Alta de pedido exitosa");
 			pedido.setIdPedido(conexion.getKeyGenerado()); //asigno el id generado
@@ -157,10 +203,10 @@ public class PedidoData {
 	public boolean modificarPedido(Pedido pedido){
 		String sql = 
 				"Update pedido set " + 
-				"idMesa='" + pedido.getIdMesa() + "'," + 
-				"idMesero='" + pedido.getIdMesero() + "'," +
+				"idMesa='"    + pedido.getIdMesa() + "'," + 
+				"idMesero='"  + pedido.getIdMesero() + "'," +
 				"fechaHora='" + localDateTime2DateTimeBD( pedido.getFechaHora() ) + "'," +
-				"pagado=" + pedido.getPagado() + " " +
+				"estado='"    + estadoPedidoEnumerado2EstadoPedidoLetra(pedido.getEstado()) + "' " +
 				"where idPedido='" + pedido.getIdPedido() + "'";
 		if (conexion.sqlUpdate(sql)) {
 			mensaje("Modificación de pedido exitosa");
@@ -189,7 +235,7 @@ public class PedidoData {
 			pedido.setIdMesa(rs.getInt("idMesa"));
 			pedido.setIdMesero(rs.getInt("idMesero"));
 			pedido.setFechaHora( dateYTime2LocalDateTime(rs.getDate("fechaHora"), rs.getTime("fechaHora")) );
-			pedido.setPagado(rs.getBoolean("pagado"));
+			pedido.setEstado(estadoPedidoLetra2EstadoPedidoEnumerado(rs.getString("estado")));
 		} catch (SQLException ex) {
 			//Logger.getLogger(PedidoData.class.getName()).log(Level.SEVERE, null, ex);
 			mensajeError("Error al pasar de ResultSet a Pedido"+ex.getMessage());
@@ -263,17 +309,17 @@ public class PedidoData {
 	 * @param idMesero si idMesero no es -1 usa idMesero como criterio de búsqueda
 	 * @param fechaDesde si fechaDesde no es null usa fechaDesde como criterio de búsqueda
 	 * @param fechaHasta si fechaHasta no es null usa fechaHasta como criterio de búsqueda
-	 * @param pagado si pagado no es null, usa pagado como criterio de búsqueda
+	 * @param estado si estado no es null, usa estado como criterio de búsqueda
 	 * @param ordenacion es el orden en el que devolverá la lista
 	 * @return lista de pedidos que cumplen con el criterio de búsqueda
 	 */ 
 	public List<Pedido> getListaPedidosXCriterioDeBusqueda(int idPedido, int idMesa, 
 			int idMesero, LocalDateTime fechaDesde, LocalDateTime fechaHasta, 
-			Boolean pagado,  OrdenacionPedido ordenacion){ 
+			EstadoPedido estado,  OrdenacionPedido ordenacion){ 
 		ArrayList<Pedido> lista = new ArrayList();
 		String sql = "Select * from pedido";
 		if ( idPedido != -1 || idMesa != -1 || idMesero != -1 || 
-			fechaDesde != null || fechaHasta != null || pagado !=null ) {
+			fechaDesde != null || fechaHasta != null || estado !=null ) {
 			sql = sql + " Where";
 			
 			if ( idPedido != -1 )
@@ -303,10 +349,10 @@ public class PedidoData {
 				sql = sql+" fechaHora<='" + localDateTime2DateTimeBD(fechaHasta) + "'";
 			}
 			
-			if ( pagado != null ) {
+			if ( estado != null ) {
 				if (idPedido != -1 || idMesa != -1 || idMesero != -1 || fechaDesde != null || fechaHasta != null) //Si ya puse el idPedido o idMesa o idMesero agrego and
 					sql = sql+" AND";
-				sql = sql+" pagado=" + pagado + " ";
+				sql = sql+" estado='" + estadoPedidoEnumerado2EstadoPedidoLetra(estado) + "' ";
 			}
 		}
 		

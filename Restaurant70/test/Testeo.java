@@ -133,7 +133,7 @@ public class Testeo {
 
 		// prueba de alta producto
 		//						int idMesa, int idMesero, LocalDateTime fechaHora, boolean pagado
-		Pedido p = new Pedido(1, 2, LocalDateTime.now(), true);
+		Pedido p = new Pedido(1, 2, LocalDateTime.now(), Pedido.EstadoPedido.ACTIVO);
 		//System.out.println("Pedido: " + p);
 		//pedidoData.altaPedido(p);
 		//Pedido p2 = pedidoData.getPedido(1);

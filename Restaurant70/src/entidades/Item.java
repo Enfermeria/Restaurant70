@@ -17,7 +17,7 @@ package entidades;
 public class Item {
 	private int idItem, idProducto, idPedido, cantidad;
 	EstadoItem estado;
-	public enum EstadoItem {ANOTADO, SOLICITADO, DESPACHADO, ENTREGADO};
+	public enum EstadoItem {ANOTADO, SOLICITADO, DESPACHADO, ENTREGADO, CANCELADO, CANCELADOVISTO};
 
 	public Item() {
 	}

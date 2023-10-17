@@ -19,6 +19,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.util.List;
 import javax.swing.JOptionPane;
+import utiles.Utils;
 
 /**
  *
@@ -31,6 +32,7 @@ public class Login extends javax.swing.JFrame {
 	 */
     public Login() {
         initComponents();
+		Utils.sonido1("src/sonidos/Inicio.wav"); // sonido al iniciar
 		cargarServicios();
     } //constructor
 
@@ -44,13 +46,13 @@ public class Login extends javax.swing.JFrame {
 	}
 	
 	/**
-	 * Para poder poner el ícono de la ULP en la ventana
+	 * Para poder poner el ícono de la aplicación en la ventana
 	 * @return 
 	 */	
 	@Override
 	public Image getIconImage() { // defino el icono del jFrame
 		Image retValue = Toolkit.getDefaultToolkit().
-				getImage(ClassLoader.getSystemResource("imagenes/ulp_32x32.png")); //icono de la ULP
+				getImage(ClassLoader.getSystemResource("imagenes/iconoComida.png")); //icono de la aplicación
 		return retValue;
 	} // getIconImage
 	

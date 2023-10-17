@@ -31,7 +31,7 @@ import entidades.Pedido;
  */
 public class ProductoData {
 	ConexionMySQL conexion; //gestiona la conexión con la bd
-	public enum OrdenacionProducto {PORIDPRODUCTO, PORNOMBRE}; //tipo de ordenamiento
+	public enum OrdenacionProducto {PORIDPRODUCTO, PORNOMBRE, PORIDCATEGORIAYNOMBRE}; //tipo de ordenamiento
 	
 	
 	/**
@@ -233,8 +233,8 @@ public class ProductoData {
 			sql = sql + " Order by idproducto";
 		else if (ordenacion == OrdenacionProducto.PORNOMBRE)
 			sql = sql + " Order by nombre";
-		else 
-			sql = sql + " Order by idproducto";
+		else if (ordenacion == OrdenacionProducto.PORIDCATEGORIAYNOMBRE)
+			sql = sql + " Order by idcategoria, nombre";
 		
 		//ejecuto
 		ResultSet rs = conexion.sqlSelect(sql);
@@ -324,8 +324,8 @@ public class ProductoData {
 			sql = sql + " Order by idproducto";
 		else if (ordenacion == OrdenacionProducto.PORNOMBRE)
 			sql = sql + " Order by nombre";
-		else 
-			sql = sql + " Order by idproducto";		
+		else if (ordenacion == OrdenacionProducto.PORIDCATEGORIAYNOMBRE)
+			sql = sql + " Order by idcategoria, nombre";		
 	
 		// ejecuto
 		ResultSet rs = conexion.sqlSelect(sql);

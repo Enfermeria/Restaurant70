@@ -416,3 +416,30 @@ ADD CONSTRAINT `producto_ibfk`
   REFERENCES `restaurante`.`categoria` (`idcategoria`)
   ON DELETE SET NULL
   ON UPDATE CASCADE;
+
+
+
+
+-- Cambios desde el 15/10/23
+-- este cambio es solo para mi, que mis idProducto empiezan en 43:
+ALTER TABLE `restaurante`.`item` 
+DROP FOREIGN KEY `item_ibfk_2`;
+
+UPDATE restaurante.item SET idProducto=(idProducto-42);
+UPDATE restaurante.producto SET idproducto=(idProducto-42);
+
+ALTER TABLE `restaurante`.`item` 
+ADD CONSTRAINT `item_ibfk_2`
+  FOREIGN KEY (`idProducto`)
+  REFERENCES `restaurante`.`producto` (`idproducto`)
+  ON UPDATE CASCADE;
+-- fin cambios olo para mi
+
+INSERT INTO `producto` (`idProducto`, `nombre`, `descripcion`, `stock`, `precio`) 
+VALUES (NULL, 'Prueba', 'Producto de prueba', '40', '0');
+
+ALTER TABLE `restaurante`.`item` 
+CHANGE COLUMN `estado` `estado` VARCHAR(1) NULL DEFAULT NULL COMMENT 'Estado del item: A anotado, S solicitado, D despachado, E entregado, C cancelado, V cancelado y visto.\nCuando el mozo toma nota del pedido del cliente, que como Anotado, luego el mozo solicita ese producto a la cocina o bar quedando como Solicitado, cuando la cocina o bar lo despacha queda Despachado, y cuando el mozo lo sirve queda como Entregado. Si en algún momento se cancela el pedido, el item queda como Cancelado.' ;
+
+ALTER TABLE `restaurante`.`pedido` 
+CHANGE COLUMN `pagado` `estado` VARCHAR(1) NOT NULL DEFAULT 'A' COMMENT 'Estado del pedido: A activo, P pagado, C canceado' ;
