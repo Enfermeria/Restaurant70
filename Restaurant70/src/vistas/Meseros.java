@@ -44,6 +44,7 @@ import javax.swing.JTable;
 import static javax.swing.SwingConstants.CENTER;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import sockets.ClienteSocket;
 import utiles.Utils;
 //fin imports para el RowsRenderer
 
@@ -1184,6 +1185,22 @@ public class Meseros extends javax.swing.JFrame {
 
 
 	
+	/**
+	 * Este método crea un thread, un hilo paralelo de ejecución concurrente para
+	 * enviar un mensaje al servicio de despacho del producto para avisarle de
+	 * un cambio en el estado del item
+	 * @param queServicio 
+	 */
+	private void comunicarConServicio(Servicio queServicio) {
+		// esta es la parte de comunicación con la cocina
+		ClienteSocket cliente = new ClienteSocket( //creo un cliente que pueda mandar a ese host en ese puerto
+			queServicio.getHost(), queServicio.getPuerto(), 
+			"mensaje desde el mesero " + mesero.getIdServicio() + " " + mesero.getNombreServicio()); 
+        Thread hilo = new Thread(cliente);	//creo un hilo para el clienteSocket
+        hilo.start();						//ejecuto ese hilo para el cliente	
+	}
+	
+	
 	
 	/**
 	 * Solicita los productos seleccionados de la tabla Items, siempre que esten en estado Anotados
@@ -1202,6 +1219,8 @@ public class Meseros extends javax.swing.JFrame {
 			if (item.getEstado() == Item.EstadoItem.ANOTADO) {// si es anotado lo puedo modificar
 				item.setEstado(Item.EstadoItem.SOLICITADO);
 				itemData.modificarItem(item);
+				// me comunico con el servicio que despacha el producto de este item.
+				comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()));
 			} else {//si no es anotado, no lo puedo modificar. 
 				Utils.sonido1("src/sonidos/chord.wav");
 			}//else
@@ -1351,9 +1370,14 @@ public class Meseros extends javax.swing.JFrame {
 			itemData.bajaItem(item);
 		} else if (item.getEstado() == Item.EstadoItem.CANCELADOVISTO) { //si ya esta cancelado y visto no se puede volver a cancelar
 			// no hago nada Utils.sonido1("src/sonidos/chord.wav");
-		} else {// SOLICITADO, DESPACHADO, ENTREGADO, CANCELADO: es decir, en cualquier otro caso, lo cancelo
-				item.setEstado(Item.EstadoItem.CANCELADO);
-				itemData.modificarItem(item);
+		} else if (item.getEstado() == Item.EstadoItem.SOLICITADO ){// SOLICITADO, lo cancelo y aviso al servicio de despacho (cocina)
+			item.setEstado(Item.EstadoItem.CANCELADO);
+			itemData.modificarItem(item);
+			// me comunico con el servicio que despacha el producto de este item.
+			comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()));
+		} else {
+			item.setEstado(Item.EstadoItem.CANCELADO);
+			itemData.modificarItem(item);
 		}
 	} // cancelarTodosLosItem
 	
@@ -1409,8 +1433,16 @@ public class Meseros extends javax.swing.JFrame {
 					item2.setCantidad(item2.getCantidad()+1); // le incremento la cantidad
 					itemData.modificarItem(item2);			  // modifico el item en la bd
 				}
-
+				
+				//ya se modificó el producto. Si ese producto era SOLICITADO, comunico su cancelación al servicio de despacho (cocina)
+				if (item.getEstado() == Item.EstadoItem.SOLICITADO) {
+					comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor())); // me comunico con el servicio que despacha el producto de este item.
+				}
+				
 			} else { // solo hay uno, lo marco como cancelado
+				if (item.getEstado() == Item.EstadoItem.SOLICITADO) {
+					comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor())); // me comunico con el servicio que despacha el producto de este item.
+				}
 				item.setEstado(Item.EstadoItem.CANCELADO);
 				itemData.modificarItem(item);
 			}

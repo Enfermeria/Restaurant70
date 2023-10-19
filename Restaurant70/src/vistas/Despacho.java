@@ -31,10 +31,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.util.Observable;
+import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import static javax.swing.SwingConstants.CENTER;
 import javax.swing.table.TableCellRenderer;
+import sockets.ServidorSocket;
 import utiles.Utils;
 //fin imports para el RowsRenderer
 
@@ -42,7 +45,7 @@ import utiles.Utils;
  *
  * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
  */
-public class Despacho extends javax.swing.JFrame {
+public class Despacho extends javax.swing.JFrame implements Observer {
 	private Servicio servicio;
 	private static LinkedHashMap<Integer, Pedido> mapaPedidos;
 	private static LinkedHashMap<Integer, Servicio> mapaServicios;
@@ -63,17 +66,45 @@ public class Despacho extends javax.swing.JFrame {
 		modeloTablaItems   = (DefaultTableModel) tablaItems.getModel();
 		
 		//defino el renderer de la tabla de items para poder cambiar las características de la tabla
-		for (int columna = 0; columna <=3; columna++)
+		for (int columna = 0; columna <=6; columna++)
 			tablaItems.getColumnModel().getColumn(columna).setCellRenderer(new RendererItems());
-		
-		// cargo los datos
+
+		//cargo los datos y actualizo la pantalla
 		cargarServicios();
 		cargarPedidos();
-		cargarItems();
-		mostrarLabelsEncabezamientoItems();
+		cargarProductos();
+		actualizarPantalla();
+		
+		//Inicialización de la parte de comunicación via sockets y sus threads respectivos.
+		ServidorSocket servidor = new ServidorSocket(servicio.getPuerto()); // el puerto donde escuchará
+        servidor.addObserver(this);		// lo registramos como observador del servidor para que nos notifique mensajes
+        Thread hilo = new Thread(servidor); // creamos un hilo paralelo para el servidor
+        hilo.start();					// ejecutamos ese hilo del servidor
 	} // constructor de Meseros
 	
 	
+	
+	
+	private void actualizarPantalla(){
+		cargarItems();
+		deshabilitarBotonesItems();
+		mostrarLabelsEncabezamientoItems();
+	}
+	
+	
+	/**
+	 * Este método es invocado por el ServidorSocket cuando recibe un mensaje de
+	 * un mesero. Este método se encargará de llamar a los métodos para actualizar
+	 * los datos en pantalla
+	 * @param o
+	 * @param mensaje 
+	 */
+	@Override
+	public void update(Observable o, Object mensaje){
+		System.out.println("me llego el mensaje " + (String)mensaje);
+		actualizarPantalla();
+		// y acá toma las acciones correspondientes para actualizar pantalla
+	};
 	
 	
 	/** cargo el mapa de Servicios (cocina, bar, etc) */
@@ -81,10 +112,10 @@ public class Despacho extends javax.swing.JFrame {
 		//Obtengo la lista de servicios que despachan productos (cocina, bar, etc.)
 		List<Servicio> listaServicios = servicioData.getListaServiciosXCriterioDeBusqueda(
 				-1, "", "", -1, Servicio.TipoServicio.MESERO, ServicioData.OrdenacionServicio.PORIDSERVICIO);
-		
+
 		//genero un mapa con las categorias
 		mapaServicios = new LinkedHashMap();
-		listaServicios.stream().forEach(servicio -> mapaServicios.put(servicio.getIdServicio(), servicio));
+		listaServicios.stream().forEach(mesero -> mapaServicios.put(mesero.getIdServicio(), mesero));
 	} //cargarServicios
 	
 	
@@ -123,44 +154,36 @@ public class Despacho extends javax.swing.JFrame {
 	 * cargo la lista de items
 	 */
 	private void cargarItems(){
+		
 		//Obtengo la lista de items cancelados.
-		List<Item> listaItems = itemData.getListaItemsXCriterioDeBusqueda(
-		// idItem, idProducto, idPedido, estado,						ordenacion	
-			-1,		 -1,	    -1,		  Item.EstadoItem.CANCELADO,	ItemData.OrdenacionItem.PORIDITEM);
-		
-		//obtengo la lista de items solicitados
-		List<Item> listaItemsSolicitados = itemData.getListaItemsXCriterioDeBusqueda(
-		// idItem, idProducto, idPedido, estado,						ordenacion	
-			-1,		 -1,	    -1,		  Item.EstadoItem.SOLICITADO,	ItemData.OrdenacionItem.PORIDITEM);
-		
-		//al final de la lista de cancelados pongo los solicitados para que queden en al misma lista.
-		listaItems.addAll(listaItemsSolicitados); // concateno cancelados y solicitados en la misma lista.
+		List<Item> listaItems = itemData.getListaItemsSCXIdServicio(
+				servicio.getIdServicio(), ItemData.OrdenacionItem.PORIDPEDIDO);
 		
 		//cargo la lista de items al mapaItems
-		listaItems.stream().filter(item -> 
-				mapaProductos.get(item.getIdProducto()).getDespachadoPor()->servicio.getIdServicio()).forEach(itemFiltrado -> mapaItems.put(itemFiltrado., value));
-		)
-				forEach(item -> mapaItems.put(item.getIdItem(), item));
-		
-		lista.stream().filter(elemento->elemento.getImporte()->300)
-			.findFirst()
-			.get();
-		
+		mapaItems = new LinkedHashMap();
+		listaItems.stream().forEach(item -> mapaItems.put(item.getIdItem(), item));
+				
 		//borro las filas de la tabla items
 		for (int fila = modeloTablaItems.getRowCount() -  1; fila >= 0; fila--)
 			modeloTablaItems.removeRow(fila);
 		
-		//cargo esos pedidos items a la tabla de items
+		//cargo esos items a la tabla de items
 		listaItems.stream().forEach(item -> {
-			Pedido pedido = mapaPedidos.get(item.getIdPedido());
+			Pedido pedido = mapaPedidos.get(item.getIdPedido());         // averiguo el pedido
+			if (pedido == null) // si el pedido no está en el mapa (es un pedido cancelado), lo buscamo en la BD.
+				pedido = pedidoData.getPedido(item.getIdPedido());
+			Producto producto = mapaProductos.get(item.getIdProducto()); // averiguo el producto
+			Servicio mesero = mapaServicios.get(pedido.getIdMesero());	 // averiguo el mesero
+			
+			//lo agrego a la tablaItems
 			modeloTablaItems.addRow(new Object[] {
-				item.getIdItem(),									//idItem
-				mapaProductos.get(item.getIdProducto()).toString(),//producto
-				item.getCantidad(),									//cantidad
-				item.getEstado(),									//estado
-				pedido,												//pedido
-				mapaServicios.get(pedido.getIdMesero()).toString(), //Mesero
-				pedido.getIdMesa()									//idMesa
+				item.getIdItem(),	//idItem
+				producto.toString(),//producto
+				item.getCantidad(),	//cantidad
+				item.getEstado(),	//estado
+				item.getIdPedido(),	//idpedido
+				mesero.toString(),	//Mesero
+				pedido.getIdMesa()	//idMesa
 			} ); 
 		} );
 	} //cargarItems
@@ -207,12 +230,8 @@ public class Despacho extends javax.swing.JFrame {
 	 * Cuando no hay un itemSeleccionado seleccionado se deshabilitan los botones relacionados a los items
 	 */
 	private void deshabilitarBotonesItems(){
-		btnAumentar.setEnabled(false);
-		btnDisminuir.setEnabled(false);
-		btnSolicitarItem.setEnabled(false);
-		btnServirItem.setEnabled(false);
-		btnIncluir.setEnabled(false);
-		btnCancelarItem.setEnabled(false);
+		btnEliminarCancelados.setEnabled(false);
+		btnDespachar.setEnabled(false);
 	} //deshabilitarBotonesItems
 	
 	
@@ -221,71 +240,18 @@ public class Despacho extends javax.swing.JFrame {
 	 * Cuando se selecciona un item se habilitan los botones relacionados a los items
 	 */
 	private void habilitarBotonesItems(){
-		btnAumentar.setEnabled(true);
-		btnDisminuir.setEnabled(true);
-		btnSolicitarItem.setEnabled(true);
-		btnServirItem.setEnabled(true);
-		//btnIncluir.setEnabled(true);
-		btnCancelarItem.setEnabled(true);
+		btnEliminarCancelados.setEnabled(true);
+		btnDespachar.setEnabled(true);
 	} //habilitarBotonesItems
 	
+
 	
 	
 	/**
-	 * Cuando no hay un pedido seleccionado se deshabilitan los botones de pedidos
-	 * (excepto el de alta pedidos)
-	 */
-	private void deshabilitarBotonesPedidos(){
-		btnCancelarPedido.setEnabled(false);
-		btnPagarPedido.setEnabled(false);
-		//btnAltaPedido.setEnabled(false);
-	} //deshabilitarBotonesPedidos
-	
-	
-	
-	/**
-	 * Cuando se selecciona un item se habilitan los botones relacionados a los items
-	 */
-	private void habilitarBotonesPedidos(){
-		btnCancelarPedido.setEnabled(true);
-		btnPagarPedido.setEnabled(true);
-		//btnAltaPedido.setEnabled(true);
-	} //habilitarBotonesPedidos
-	
-	
-	
-	/**
-	 * Muestra los datos del encabezamiento con el mesero, la mesa seleccionada
-	 * y su estado, el pedido seleccionado y su fecha/hora, así como el total 
-	 * del importe de los items de dicho pedido.
+	 * Muestra los datos del encabezamiento con el servicio correspondiente
 	 */
 	private void mostrarLabelsEncabezamientoItems(){
-		//mesero
-		lblMesero.setText(mesero.getIdServicio() + ": " + mesero.getNombreServicio());
-		
-		//mesa
-		if (tablaMesas.getSelectedRow() != -1) { // hay mesa seleccionada
-			int idMesa = tablaMesasGetIdMesaSeleccionada();
-			Mesa mesa = tablaMesasGetMesaSeleccionada();
-			lblMesa.setText( idMesa + ": " + mesa.getEstado() );
-		} else
-			lblMesa.setText(" ");
-		
-		//pedido
-		if (tablaPedidos.getSelectedRow() != -1) { // hay pedido seleccionada
-			int idPedido = tablaPedidosGetIdPedidoSeleccionado();
-			Pedido pedido = tablaPedidosGetPedidoSeleccionado();
-			lblPedido.setText( idPedido + ": " + Utils.localDateTime2String(pedido.getFechaHora()) );
-		} else
-			lblPedido.setText("                  ");
-		
-		//importe
-		//pedido
-		if (tablaPedidos.getSelectedRow() != -1) { // hay pedido seleccionada
-			lblImporte.setText("$" + calcularImportePedido());
-		} else
-			lblImporte.setText("           ");
-
+		lblServicio.setText(servicio.getIdServicio() + ": " + servicio.getNombreServicio());
 	} // mostrarLabelsEncabezamiento
 	
 	
@@ -322,12 +288,12 @@ public class Despacho extends javax.swing.JFrame {
         panelItems = new javax.swing.JScrollPane();
         tablaItems = new javax.swing.JTable();
         botoneraVertical = new javax.swing.JPanel();
-        btnIncluir = new javax.swing.JButton();
-        btnAumentar = new javax.swing.JButton();
-        btnDisminuir = new javax.swing.JButton();
-        btnSolicitarItem = new javax.swing.JButton();
-        btnServirItem = new javax.swing.JButton();
-        btnCancelarItem = new javax.swing.JButton();
+        btnDespachar = new javax.swing.JButton();
+        btnEliminarCancelados = new javax.swing.JButton();
+        btnSalir = new javax.swing.JButton();
+        panelEncabezamientoItems = new javax.swing.JPanel();
+        lblServicio = new javax.swing.JLabel();
+        lblItemsDelPedido = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -379,69 +345,35 @@ public class Despacho extends javax.swing.JFrame {
 
         botoneraVertical.setBackground(new java.awt.Color(153, 153, 255));
 
-        btnIncluir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/flecha_izquierda1_32x32 .png"))); // NOI18N
-        btnIncluir.setText("Incluir Producto");
-        btnIncluir.setEnabled(false);
-        btnIncluir.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnIncluir.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnIncluir.addActionListener(new java.awt.event.ActionListener() {
+        btnDespachar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mesero1_32x32.png"))); // NOI18N
+        btnDespachar.setText("Despachar Producto");
+        btnDespachar.setEnabled(false);
+        btnDespachar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnDespachar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnDespachar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnIncluirActionPerformed(evt);
+                btnDespacharActionPerformed(evt);
             }
         });
 
-        btnAumentar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mas32x32.png"))); // NOI18N
-        btnAumentar.setText("Aumentar Cantidad");
-        btnAumentar.setEnabled(false);
-        btnAumentar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnAumentar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnAumentar.addActionListener(new java.awt.event.ActionListener() {
+        btnEliminarCancelados.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/borrar2_32x32.png"))); // NOI18N
+        btnEliminarCancelados.setText("Eliminar Cancelado");
+        btnEliminarCancelados.setEnabled(false);
+        btnEliminarCancelados.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnEliminarCancelados.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnEliminarCancelados.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAumentarActionPerformed(evt);
+                btnEliminarCanceladosActionPerformed(evt);
             }
         });
 
-        btnDisminuir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/menos32x32.png"))); // NOI18N
-        btnDisminuir.setText("Disminuir Cantidad");
-        btnDisminuir.setEnabled(false);
-        btnDisminuir.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnDisminuir.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnDisminuir.addActionListener(new java.awt.event.ActionListener() {
+        btnSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/salida1_32x32.png"))); // NOI18N
+        btnSalir.setText("Salir");
+        btnSalir.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnSalir.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDisminuirActionPerformed(evt);
-            }
-        });
-
-        btnSolicitarItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/itemSolicitar1_32x32.png"))); // NOI18N
-        btnSolicitarItem.setText("Solicitar Item");
-        btnSolicitarItem.setEnabled(false);
-        btnSolicitarItem.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnSolicitarItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnSolicitarItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSolicitarItemActionPerformed(evt);
-            }
-        });
-
-        btnServirItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/mesero1_32x32.png"))); // NOI18N
-        btnServirItem.setText("Servir Item");
-        btnServirItem.setEnabled(false);
-        btnServirItem.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnServirItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnServirItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnServirItemActionPerformed(evt);
-            }
-        });
-
-        btnCancelarItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/cancelar3_32x32.png"))); // NOI18N
-        btnCancelarItem.setText("Cancelar Item");
-        btnCancelarItem.setEnabled(false);
-        btnCancelarItem.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnCancelarItem.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnCancelarItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelarItemActionPerformed(evt);
+                btnSalirActionPerformed(evt);
             }
         });
 
@@ -452,29 +384,52 @@ public class Despacho extends javax.swing.JFrame {
             .addGroup(botoneraVerticalLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(botoneraVerticalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnServirItem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnSolicitarItem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnDisminuir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnAumentar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnIncluir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnCancelarItem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnEliminarCancelados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnDespachar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnSalir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         botoneraVerticalLayout.setVerticalGroup(
             botoneraVerticalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(botoneraVerticalLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnIncluir)
+                .addComponent(btnDespachar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnAumentar)
+                .addComponent(btnEliminarCancelados)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 260, Short.MAX_VALUE)
+                .addComponent(btnSalir)
+                .addContainerGap())
+        );
+
+        panelEncabezamientoItems.setBackground(new java.awt.Color(153, 153, 255));
+
+        lblServicio.setText("9 Cocina");
+        lblServicio.setBorder(javax.swing.BorderFactory.createTitledBorder("Servicio"));
+
+        lblItemsDelPedido.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblItemsDelPedido.setText("Items a Despachar");
+
+        javax.swing.GroupLayout panelEncabezamientoItemsLayout = new javax.swing.GroupLayout(panelEncabezamientoItems);
+        panelEncabezamientoItems.setLayout(panelEncabezamientoItemsLayout);
+        panelEncabezamientoItemsLayout.setHorizontalGroup(
+            panelEncabezamientoItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelEncabezamientoItemsLayout.createSequentialGroup()
+                .addGroup(panelEncabezamientoItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelEncabezamientoItemsLayout.createSequentialGroup()
+                        .addGap(289, 289, 289)
+                        .addComponent(lblItemsDelPedido))
+                    .addGroup(panelEncabezamientoItemsLayout.createSequentialGroup()
+                        .addGap(2, 2, 2)
+                        .addComponent(lblServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        panelEncabezamientoItemsLayout.setVerticalGroup(
+            panelEncabezamientoItemsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelEncabezamientoItemsLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblServicio)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnDisminuir)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
-                .addComponent(btnSolicitarItem)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnServirItem)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnCancelarItem)
+                .addComponent(lblItemsDelPedido)
                 .addContainerGap())
         );
 
@@ -484,19 +439,23 @@ public class Despacho extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panelItems, javax.swing.GroupLayout.PREFERRED_SIZE, 714, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(42, 42, 42)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(panelEncabezamientoItems, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelItems, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(botoneraVertical, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(432, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(80, 80, 80)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(botoneraVertical, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(panelItems, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(89, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(panelEncabezamientoItems, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelItems, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botoneraVertical, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(76, Short.MAX_VALUE))
         );
 
         pack();
@@ -510,203 +469,62 @@ public class Despacho extends javax.swing.JFrame {
 	
 	
 	/**
-	 * Incorpora todos los productos de las filas seleccionadas de la tabla de productos.
-	 * Para cada uno de ellos, si el producto no está entre los items, lo incorpora al final
- Si el producto ya está en un itemSeleccionado anotado, incrementa la cantidad.
- Si el producto ya está en un itemSeleccionado no anotado, no puede modificar ese itemSeleccionado, 
- así que lo agrega al final como un nuevo itemSeleccionado con el mismo producto.
+	 * Cambia el estado de los Items seleccinados que sean SOLICITADO a DESPACHADO.
 	 * @param evt 
 	 */
-    private void btnIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncluirActionPerformed
-        if (tablaProductos.getSelectedRow() == -1 || tablaPedidos.getSelectedRow() == -1){ // si hay alguna fila seleccionada en ambas tablas
-            btnIncluir.setEnabled(false); // deshabilito botón incluir
-			return;
-        }
-		
-        int[] arregloFilasProductosSeleccionados = tablaProductos.getSelectedRows();
-		for (int numfilaProductos:arregloFilasProductosSeleccionados){
-			int idProducto = tablaProductosGetProducto(numfilaProductos).getIdProducto();//obtengo el producto
-
-			//recorro la tabla de items para ver si está ese producto en la tabla (y que sea anotado)
-			int numfilaItems = 0;
-			while	(numfilaItems < tablaItems.getRowCount() && 
-					  !(tablaItemsGetProducto(numfilaItems).getIdProducto() == idProducto && 
-					    tablaItemsGetEstado(numfilaItems) == Item.EstadoItem.ANOTADO) 
-					)
-				numfilaItems++;
-			
-			//ahora salio porque lo encontro o termino la tabla
-			if ( numfilaItems >= tablaItems.getRowCount() )  //no lo encontro... hay que agregarlo
-				itemData.altaItem(new Item(idProducto, tablaPedidosGetIdPedidoSeleccionado(), 1, Item.EstadoItem.ANOTADO) ); //agrego el itemSeleccionado en la bd
-			else {// lo encontró, hay que aumentar la cantidad
-				Item item = itemData.getItem(tablaItemsGetIdItem(numfilaItems));
-				item.setCantidad(item.getCantidad()+1);
-				itemData.modificarItem(item);
-			}
-        } //for 
-		cargarItems(); //actualizo los items y tabla de items
-		mostrarLabelsEncabezamientoItems();
-    }//GEN-LAST:event_btnIncluirActionPerformed
-
-	
-	
-	
-	
-	/**
-	 * Recorre las filas seleccionadas de la tabla de items incrementando las cantidades.
-	 * Para ello debe asegurarse que sea un itemSeleccionado anotado: lo incrementa directamente
- Si no es un itemSeleccionado anotado, busca otro itemSeleccionado con el mismo producto (que sea anotado):
-    - si lo encuentra incrementa a este itemSeleccionado con el mismo producto
-    - si no lo encuentra, agrega un itemSeleccionado nuevo al final con el mismo producto.
-	 * @param evt 
-	 */
-    private void btnAumentarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAumentarActionPerformed
-		if (tablaItems.getSelectedRow() == -1){ 
-			deshabilitarBotonesItems(); 
-			return;
-		}
-			
-		int[] arregloFilasItemsSeleccionados = tablaItems.getSelectedRows();
-		for (int numfilaItemSeleccionado:arregloFilasItemsSeleccionados) { //recorro todas las filas seleccionadas de la tablaItems
-			int idItemSeleccionado = tablaItemsGetIdItem(numfilaItemSeleccionado);//averiguamos el idItemSeleccionado de esa fila seleccionada
-			Item itemSeleccionado = itemData.getItem(idItemSeleccionado); //averiguamos el itemSeleccionado de esa fila seleccionada
-			
-			if (itemSeleccionado.getEstado() == Item.EstadoItem.ANOTADO) {// si es anotado lo puedo modificar
-				itemSeleccionado.setCantidad(itemSeleccionado.getCantidad()+1); //le incremento la cantidad
-				itemData.modificarItem(itemSeleccionado);						// modifico el item en la bd
-			} else {//si no es anotado, no lo puedo modificar. Busco otro itemSeleccionado con el mismo producto para subir cantidad, sino agrego uno al final
-				//recorro la tabla de items para ver si está ese producto en la tabla (y que sea anotado)
-				int numfila = 0;
-				while	(numfila < tablaItems.getRowCount() && 
-						  !(tablaItemsGetProducto(numfila).getIdProducto() == itemSeleccionado.getIdProducto() && 
-						    tablaItemsGetEstado(numfila) == Item.EstadoItem.ANOTADO ) 
-						)
-					numfila++;
-
-				//ahora salio porque lo encontro (en numfila) o termino la tabla
-				if ( numfila >= tablaItems.getRowCount() )  //no lo encontro... hay que agregarlo
-					itemData.altaItem(new Item(itemSeleccionado.getIdProducto(), tablaPedidosGetIdPedidoSeleccionado(), 1, Item.EstadoItem.ANOTADO) ); //agrego el itemSeleccionado en la bd
-				else {// lo encontró, hay que aumentar la cantidad
-					Item item2 = itemData.getItem(tablaItemsGetIdItem(numfila)); //averiguo los datos del item encontrado
-					item2.setCantidad(item2.getCantidad()+1); // le incremento la cantidad
-					itemData.modificarItem(item2);			  // modifico el item en la bd
-				}
-			}//else
-		} //for
-		cargarItems();
-		//restauro las filas que tenia seleccionadas
-		for (int fila:arregloFilasItemsSeleccionados)
-			tablaItems.addRowSelectionInterval(fila, fila);
-		
-		mostrarLabelsEncabezamientoItems();
-    }//GEN-LAST:event_btnAumentarActionPerformed
-
-	
-	
-	/**
-	 * Disminuye las cantidades de las filas seleccionadas de la tabla items (si el itemSeleccionado es Anotado)
-     - Si es > 0 lo decrementa
-     - si es 0 lo elimina
- Si el itemSeleccionado no es anotado, no lo puede modificar... hace un ruido de error.
-	 * @param evt 
-	 */
-    private void btnDisminuirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisminuirActionPerformed
-		if (tablaItems.getSelectedRow() == -1){ 
-			deshabilitarBotonesItems(); 
-			return;
-		}
-		
-		int[] arregloFilasItemsSeleccionados = tablaItems.getSelectedRows();
-		boolean bajeAlgunItem=false; //si di de baja algun itemSeleccionado
-		for (int numfilaItems:arregloFilasItemsSeleccionados) { //recorro todas las filas seleccionadas de la tablaItems
-			int idItem = tablaItemsGetIdItem(numfilaItems);//averiguamos el idItemSeleccionado
-			Item item = itemData.getItem(idItem);
-			if (item.getEstado() == Item.EstadoItem.ANOTADO) { //si es anotado lo puedo modificar
-				if (item.getCantidad() > 1) { // si hay varios, disminuyo la cantidad
-					item.setCantidad(item.getCantidad()-1);
-					itemData.modificarItem(item);
-				} else { // solo hay uno, lo elimino
-					itemData.bajaItem(item);
-					bajeAlgunItem = true;
-				}
-			} else { //si no es anotado NO lo puedo modificar
-				Utils.sonido1("src/sonidos/chord.wav");
-			}
-		} //for
-		
-		cargarItems();
-		if (bajeAlgunItem) // si di de baja algun itemSeleccionado las filas seleccionadas en los items pueden no ser válidas, no selecciono nada, deshabilito botones
-			deshabilitarBotonesItems();
-		else { // como no hubo ninguna baja, restauro las filas que tenia seleccionadas
-			for (int fila:arregloFilasItemsSeleccionados)
-				tablaItems.addRowSelectionInterval(fila, fila);
-		}
-		
-		mostrarLabelsEncabezamientoItems();
-    }//GEN-LAST:event_btnDisminuirActionPerformed
-
-
-	
-	
-	/**
-	 * Solicita los productos seleccionados de la tabla Items, siempre que esten en estado Anotados
-	 * @param evt 
-	 */
-    private void btnSolicitarItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSolicitarItemActionPerformed
+    private void btnDespacharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDespacharActionPerformed
         if (tablaItems.getSelectedRow() == -1){ 
 			deshabilitarBotonesItems(); 
+			Utils.sonido1("src/sonidos/chord.wav");
 			return;
 		}
 			
 		int[] arregloFilasItemsSeleccionados = tablaItems.getSelectedRows();
-		for (int numfilaItems:arregloFilasItemsSeleccionados) { //recorro todas las filas seleccionadas de la tablaItems
-			int idItem = tablaItemsGetIdItem(numfilaItems);//averiguamos el idItemSeleccionado
-			Item item = itemData.getItem(idItem);
-			if (item.getEstado() == Item.EstadoItem.ANOTADO) {// si es anotado lo puedo modificar
-				item.setEstado(Item.EstadoItem.SOLICITADO);
-				itemData.modificarItem(item);
-			} else {//si no es anotado, no lo puedo modificar. 
+		for (int numfilaItemSeleccionado:arregloFilasItemsSeleccionados) {		  //recorro todas las filas seleccionadas de la tablaItems
+			int idItemSeleccionado = tablaItemsGetIdItem(numfilaItemSeleccionado);//averiguamos el idItemSeleccionado de esa fila seleccionada
+			Item itemSeleccionado = mapaItems.get(idItemSeleccionado);			  //averiguamos el itemSeleccionado de esa fila seleccionada
+			
+			if (itemSeleccionado.getEstado() == Item.EstadoItem.SOLICITADO) { // si es SOLICITADO lo puedo modificar
+				itemSeleccionado.setEstado(Item.EstadoItem.DESPACHADO);		  //le pongo como DESPACHADO
+				itemData.modificarItem(itemSeleccionado);					  // modifico el item en la bd
+			} else {//si no es solicitado, no lo puedo modificar. 
 				Utils.sonido1("src/sonidos/chord.wav");
 			}//else
 		} //for
-		cargarItems();
-		//restauro las filas que tenia seleccionadas
-		for (int fila:arregloFilasItemsSeleccionados)
-			tablaItems.addRowSelectionInterval(fila, fila);
-    }//GEN-LAST:event_btnSolicitarItemActionPerformed
+		actualizarPantalla();
+    }//GEN-LAST:event_btnDespacharActionPerformed
+
 	
 	
 	
 	
 	/**
-	 * Entrega los items seleccionados de la tabla items siempre que esten en estado despachado
+	 * Cambia el estado de los Items seleccinados que sean CANCELADO a CANCELADOVISTO.
 	 * @param evt 
 	 */
-    private void btnServirItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnServirItemActionPerformed
-          if (tablaItems.getSelectedRow() == -1){ 
+    private void btnEliminarCanceladosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarCanceladosActionPerformed
+        if (tablaItems.getSelectedRow() == -1){ 
 			deshabilitarBotonesItems(); 
+			Utils.sonido1("src/sonidos/chord.wav");
 			return;
 		}
 			
 		int[] arregloFilasItemsSeleccionados = tablaItems.getSelectedRows();
-		for (int numfilaItems:arregloFilasItemsSeleccionados) { //recorro todas las filas seleccionadas de la tablaItems
-			int idItem = tablaItemsGetIdItem(numfilaItems);//averiguamos el idItemSeleccionado
-			Item item = itemData.getItem(idItem);
-			if (item.getEstado() == Item.EstadoItem.DESPACHADO || item.getEstado() == Item.EstadoItem.SOLICITADO) {// si es anotado lo puedo modificar
-				item.setEstado(Item.EstadoItem.ENTREGADO);
-				itemData.modificarItem(item);
-			} else {//si no es despachado, no lo puedo modificar. 
+		for (int numfilaItemSeleccionado:arregloFilasItemsSeleccionados) {		  //recorro todas las filas seleccionadas de la tablaItems
+			int idItemSeleccionado = tablaItemsGetIdItem(numfilaItemSeleccionado);//averiguamos el idItemSeleccionado de esa fila seleccionada
+			Item itemSeleccionado = mapaItems.get(idItemSeleccionado);			  //averiguamos el itemSeleccionado de esa fila seleccionada
+			
+			if (itemSeleccionado.getEstado() == Item.EstadoItem.CANCELADO) { // si es CANCELADO lo puedo modificar
+				itemSeleccionado.setEstado(Item.EstadoItem.CANCELADOVISTO);  //le pongo como CANCELADOVISTO
+				itemData.modificarItem(itemSeleccionado);					 // modifico el item en la bd
+			} else {//si no es cancelado, no lo puedo modificar. 
 				Utils.sonido1("src/sonidos/chord.wav");
 			}//else
 		} //for
-		cargarItems();
-		//restauro las filas que tenia seleccionadas
-		for (int fila:arregloFilasItemsSeleccionados)
-			tablaItems.addRowSelectionInterval(fila, fila);
-    }//GEN-LAST:event_btnServirItemActionPerformed
+		
+		actualizarPantalla();
+    }//GEN-LAST:event_btnEliminarCanceladosActionPerformed
 
-	
-	
 	
 	
 	
@@ -724,137 +542,15 @@ public class Despacho extends javax.swing.JFrame {
 	
 	
 	
-	
-	
-	
-	
-	
 	/**
-	 * Dado un numero de fila de la tablaItems, cancela todas las cantidades del item correspondiente:
-	 * Si el item era anotado, solo disminuye en 1 su cantidad (o lo borra si solo quedaba 1)
-	 * Si el item era cancelado, no lo puede eliminar (si conSonido es true, hace un ruido por el error)
-	 * Si el item era de otro tipo, disminuye en 1 su cantidad (o lo borra si
-	 *    solo quedaba 1) y lo agrega al final de la tabla como Cancelado ( o si
-	 *    ya había un item cancelado con el mismo idProducto, lo incrementa en 1)
-	 * @param numfilaItems fila de tablaItems con el item a cancelar
-	 * @param conSonido True si hara sonido cuando intente cancelar un item ya cancelado.
-	 * @return true si tuvo que borrar un item de la lista (cuando la cantidad era 1)
-	 */
-	private void cancelarTodosLosItem(int numfilaItems){
-		boolean bajeAlgunItem = false;
-		int idItem = tablaItemsGetIdItem(numfilaItems);//averiguamos el idItemSeleccionado
-		Item item = itemData.getItem(idItem);
-		if (item.getEstado() == Item.EstadoItem.ANOTADO) { //si es anotado lo puedo decrementar directamente
-			itemData.bajaItem(item);
-		} else if (item.getEstado() == Item.EstadoItem.CANCELADOVISTO) { //si ya esta cancelado y visto no se puede volver a cancelar
-			// no hago nada Utils.sonido1("src/sonidos/chord.wav");
-		} else {// SOLICITADO, DESPACHADO, ENTREGADO, CANCELADO: es decir, en cualquier otro caso, lo cancelo
-				item.setEstado(Item.EstadoItem.CANCELADO);
-				itemData.modificarItem(item);
-		}
-	} // cancelarTodosLosItem
-	
-	
-	
-	
-	/**
-	 * Dado un numero de fila de la tablaItems, cancela 1 item desminuyendo su cantidad en 1:
-	 * Si el item era anotado, solo disminuye en 1 su cantidad (o lo borra si solo quedaba 1)
-	 * Si el item era cancelado, no lo puede eliminar (si conSonido es true, hace un ruido por el error)
-	 * Si el item era de otro tipo, disminuye en 1 su cantidad (o lo borra si
-	 *    solo quedaba 1) y lo agrega al final de la tabla como Cancelado ( o si
-	 *    ya había un item cancelado con el mismo idProducto, lo incrementa en 1)
-	 * @param numfilaItems fila de tablaItems con el item a cancelar
-	 * @param conSonido True si hara sonido cuando intente cancelar un item ya cancelado.
-	 * @return true si tuvo que borrar un item de la lista (cuando la cantidad era 1)
-	 */
-	private boolean cancelar1Item(int numfilaItems){
-		boolean bajeAlgunItem = false;
-		int idItem = tablaItemsGetIdItem(numfilaItems);//averiguamos el idItemSeleccionado
-		Item item = itemData.getItem(idItem);
-		if (item.getEstado() == Item.EstadoItem.ANOTADO) { //si es anotado lo puedo decrementar directamente
-			if (item.getCantidad() > 1) { // si hay varios, disminuyo la cantidad
-				item.setCantidad(item.getCantidad()-1);
-				itemData.modificarItem(item);
-			} else { // solo hay uno, lo elimino
-				itemData.bajaItem(item);
-				bajeAlgunItem = true;
-			}
-		} else if (item.getEstado() == Item.EstadoItem.CANCELADO) { //si ya esta cancelado no se puede volver a cancelar
-			Utils.sonido1("src/sonidos/chord.wav");
-		} else {//if (item.getEstado()==Item.EstadoItem.SOLICITADO || 
-				// item.getEstado()==Item.EstadoItem.DESPACHADO) || 
-				// item.getEstado()==Item.EstadoItem.ENTREGADO      // es decir, en cualquier otro caso, lo cancelo
-			if (item.getCantidad() > 1) { // si hay varios, disminuyo la cantidad y lo pongo al final como cancelado
-				item.setCantidad(item.getCantidad()-1);
-				itemData.modificarItem(item);
-
-				//Busco otro item cancelado con el mismo producto para subir cantidad, sino agrego uno al final uno cancelado
-				//recorro la tabla de items para ver si está ese producto en la tabla (y que sea cancelado)
-				int numfila = 0;
-				while	(numfila < tablaItems.getRowCount() && 
-						  !(tablaItemsGetProducto(numfila).getIdProducto() == item.getIdProducto() && 
-							tablaItemsGetEstado(numfila) == Item.EstadoItem.CANCELADO ) 
-						)
-					numfila++;
-
-				//ahora salio porque lo encontro (en numfila) o termino la tabla
-				if ( numfila >= tablaItems.getRowCount() )  //no lo encontro... hay que agregarlo al final
-					itemData.altaItem(new Item(item.getIdProducto(), tablaPedidosGetIdPedidoSeleccionado(), 1, Item.EstadoItem.CANCELADO) ); //agrego el item en la bd
-				else {// encontro otro cancelado con el mismo idProducto, hay que aumentar la cantidad
-					Item item2 = itemData.getItem(tablaItemsGetIdItem(numfila)); //averiguo los datos del item encontrado
-					item2.setCantidad(item2.getCantidad()+1); // le incremento la cantidad
-					itemData.modificarItem(item2);			  // modifico el item en la bd
-				}
-
-			} else { // solo hay uno, lo marco como cancelado
-				item.setEstado(Item.EstadoItem.CANCELADO);
-				itemData.modificarItem(item);
-			}
-		}
-		return bajeAlgunItem;
-	} // cancelar1Item
-	
-	
-	
-	/**
-	 * Cancela un item seleccionado de tablaItems. 
-	 * Si el item es anotado, lo disminuye (o lo borra si solo quedaba cantidad 1)
-	 * Si el item es cancelado, no lo puede volver a cancelar, hace sonido
-	 * Cualquier otro estado, lo disminuye (o borra si solo queda cantidad 1) y lo agrega
-	 * al final como item cancelado (o si ya había otro item cancelado con el 
-	 * mismo idProducto, incrementa en 1 la cantidad de ese item cancelado).
+	 * Cierra la ventana
 	 * @param evt 
 	 */
-    private void btnCancelarItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarItemActionPerformed
-		if (tablaItems.getSelectedRow() == -1){ 
-			deshabilitarBotonesItems(); 
-			return;
-		}
-		
-		int[] arregloFilasItemsSeleccionados = tablaItems.getSelectedRows();
-		boolean bajeAlgunItem=false; //si di de baja algun itemSeleccionado
-		for (int numfilaItems:arregloFilasItemsSeleccionados) { //recorro todas las filas seleccionadas de la tablaItems
-			bajeAlgunItem = bajeAlgunItem || cancelar1Item(numfilaItems); //cancelo el item de la fila especificada. Si no puede cancelarse, hace sonido	
-		} //for
-		
-		cargarItems();
-		if (bajeAlgunItem) // si di de baja algun itemSeleccionado las filas seleccionadas en los items pueden no ser válidas, no selecciono nada, deshabilito botones
-			deshabilitarBotonesItems();
-		else { // como no hubo ninguna baja, restauro las filas que tenia seleccionadas
-			for (int fila:arregloFilasItemsSeleccionados)
-				tablaItems.addRowSelectionInterval(fila, fila);
-		}
-		
-		mostrarLabelsEncabezamientoItems();
-    }//GEN-LAST:event_btnCancelarItemActionPerformed
+    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+		dispose(); // cierra la ventana
+    }//GEN-LAST:event_btnSalirActionPerformed
 
-	
-	
-	
-	
-	
-	
+
 	
 	
 	//=========================================================================================
@@ -899,12 +595,12 @@ public class Despacho extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel botoneraVertical;
-    private javax.swing.JButton btnAumentar;
-    private javax.swing.JButton btnCancelarItem;
-    private javax.swing.JButton btnDisminuir;
-    private javax.swing.JButton btnIncluir;
-    private javax.swing.JButton btnServirItem;
-    private javax.swing.JButton btnSolicitarItem;
+    private javax.swing.JButton btnDespachar;
+    private javax.swing.JButton btnEliminarCancelados;
+    private javax.swing.JButton btnSalir;
+    private javax.swing.JLabel lblItemsDelPedido;
+    private javax.swing.JLabel lblServicio;
+    private javax.swing.JPanel panelEncabezamientoItems;
     private javax.swing.JScrollPane panelItems;
     private javax.swing.JTable tablaItems;
     // End of variables declaration//GEN-END:variables
@@ -916,54 +612,10 @@ public class Despacho extends javax.swing.JFrame {
 	
 	
 	
-	/**
-	 * Renderer de celdas de la tablaMesas. Pone el color según el estado de la 
-	 * mesa (Libre, Ocupada, Atendida). La info la obtiene de mapaMesas;
-	 *  en la definicion de la tabla se pone
-	 *		tabla.getColumnModel().getColumn(3).setCellRenderer(new generalRenderer());
-	 *	de esa manera aplica el renderer a la columna, los colores son diferentes si la celda esta seleccionada o no.
-	 */
-	class RendererMesas extends JLabel implements TableCellRenderer {    
-		//Font f = new Font( "Helvetica",Font.PLAIN,10 );
-		Color colorSeleccionado = new Color(184,207,229); //new Color(0,120,215); //new Color(117, 204, 169);
-		Color colorGeneral = Color.BLUE; //new Color(255,255,255); //new Color(225, 244, 238);
-		Color colorLibre = Color.WHITE;
-		Color colorOcupada = Color.RED;
-		Color colorAtendida = Color.GREEN;
-
-		public RendererMesas() {
-			setOpaque(true);
-		}
-
-		public Component getTableCellRendererComponent(JTable tabla, Object valor, boolean isSelected, boolean hasFocus, int row, int column) {
-			setHorizontalAlignment(CENTER);
-			if (isSelected) {
-				setBackground(colorSeleccionado);
-			} else if ( mapaMesas.get((Integer)valor).getEstado() == Mesa.EstadoMesa.LIBRE ) {
-				setBackground(colorLibre);
-			} else if ( mapaMesas.get((Integer)valor).getEstado() == Mesa.EstadoMesa.OCUPADA ) {
-				setBackground(colorOcupada);
-			} else if ( mapaMesas.get((Integer)valor).getEstado() == Mesa.EstadoMesa.ATENDIDA ) {
-				setBackground(colorAtendida);
-			} else {
-				setBackground(colorGeneral);
-			}
-			try {
-				//setFont(f);
-				setText(valor.toString());
-			} catch (NullPointerException npe) {
-				System.out.println(valor.toString());
-				setText("0");
-			}
-			return this;
-		}
-	} //class rendererMesas
-	
-	
 	
 	/**
-	 * Renderer de celdas de la tablaMesas. Pone el color según el estado de la 
-	 * mesa (Libre, Ocupada, Atendida). La info la obtiene de mapaMesas.
+	 * Renderer de celdas de la tablaItems pone el color según el estado del 
+	 * Item (Solicitado, Cancelado). La info la obtiene de mapaItems.
 	 * También permite gestionar los eventos realizados sobre la tabla.
 	 * 
 	 * Para usarla, en la definicion de la tabla se pone:
@@ -1002,7 +654,7 @@ public class Despacho extends javax.swing.JFrame {
 				//Defino un borde alrededor de la fila seleccionada
 				if (column==0) //columna izquierda, con borde izquierdo
 					setBorder(javax.swing.BorderFactory.createMatteBorder(6, 4, 6, 0, colorSeleccionado)); //top, left, bottom, right, colorGeneral
-				else if (column==3) //columna derecha, con borde derecho
+				else if (column==6) //columna derecha, con borde derecho
 					setBorder(javax.swing.BorderFactory.createMatteBorder(6, 0, 6, 4, colorSeleccionado));
 				else //columnas del medio, sin borde izquierdo ni derecho, solo arriba y abajo
 					setBorder(javax.swing.BorderFactory.createMatteBorder(6, 0, 6, 0, colorSeleccionado));
@@ -1043,6 +695,6 @@ public class Despacho extends javax.swing.JFrame {
 		}
 	} //class rendererItems
 	
-} //class Meseros
+} //class Despacho
 
 

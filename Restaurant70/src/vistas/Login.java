@@ -168,7 +168,10 @@ public class Login extends javax.swing.JFrame {
 						JOptionPane.showMessageDialog(null, "Aún no implementado", "Falta implementar", JOptionPane.ERROR_MESSAGE);
 						break;
 					case SERVICIO:
-						JOptionPane.showMessageDialog(null, "Aún no implementado", "Falta implementar", JOptionPane.ERROR_MESSAGE);
+						Despacho despacho = new Despacho(servicio);
+						despacho.setVisible(true); //lo hago visible
+						despacho.setLocationRelativeTo(null); //lo abro en el centro
+						dispose(); // cierro la ventana de login
 						break;
 					default: 
 						JOptionPane.showMessageDialog(null, "Tipo de usuario no válido. Llame al Servicio técnico", "Tipo de usuario inválido", JOptionPane.ERROR_MESSAGE);

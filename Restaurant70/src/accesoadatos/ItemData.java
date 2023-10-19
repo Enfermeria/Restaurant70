@@ -366,6 +366,51 @@ public class ItemData {
 	
 	
 	/**
+	 * devuelve una lista con los items SOLICITADO o CANCELADO de la base de 
+	 * datos que pertenezcan al idServicio indicado (que son los items que verán
+	 * en los servicios que despachan productos tales como  cocina, bar, cafetería, etc.
+	 * @param idServicio es el idServicio de cuyos items traeremos la lista
+	 * @return lista de items que cumplen con el criterio de búsqueda
+	 */
+	public List<Item> getListaItemsSCXIdServicio(int idServicio, OrdenacionItem ordenacion){ 
+		ArrayList<Item> lista = new ArrayList();
+		// traigo todos los items (de estado S o C) cuyos idProductos sean los que son despachadosPor este idServicio
+		String sql = 
+			"Select * from item where estado in ('S', 'C') and idProducto in " + 
+			"(select producto.idproducto from producto where despachadoPor = '" + idServicio + "') "; //lista de idProductos que son despachadosPor idServicio
+		
+		//defino orden
+		if (ordenacion == OrdenacionItem.PORIDITEM) 
+			sql = sql + " Order by iditem";
+		else if (ordenacion == OrdenacionItem.PORIDPRODUCTO)
+			sql = sql + " Order by idProducto";
+		else // (ordenacion == OrdenacionItem.PORIDPEDIDO)
+			sql = sql + " Order by idPedido";		
+	
+		// ejecuto
+		ResultSet rs = conexion.sqlSelect(sql);
+		
+		// cargo la lista con los resultados
+		try {
+			while (rs.next()) {
+				Item item = resultSet2Item(rs);
+				lista.add(item);
+			}
+			conexion.cerrarSentencia(); // cierra el PreparedStatement y tambien cierra automaticamente el ResultSet
+		} catch (SQLException ex) {
+			mensajeError("Error al obtener lista de items" + ex.getMessage());
+		}
+		return lista;
+	} // getListaItemsSCXIdServicio
+	
+	
+	
+
+	
+	
+	
+	
+	/**
 	 * Devuelve el item con ese iditem
 	 * @param id es el iditem para identificarlo
 	 * @return  el item retornado

@@ -8,7 +8,7 @@
 		Enrique Germán Martínez
 		Carlos Eduardo Beltrán
 
-	Esta clase se encarga de escuchar en un puerto para recibir los mensaje que
+	Esta clase se encarga de escuchar en un puerto para recibir los mensajes que
 	le envía otra máquina a través de ClienteSocket. 
 	
 	El proceso se hace Runnable para que corra en un hilo paralelo, dado que
