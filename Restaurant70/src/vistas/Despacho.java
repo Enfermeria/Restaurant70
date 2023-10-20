@@ -37,6 +37,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import static javax.swing.SwingConstants.CENTER;
 import javax.swing.table.TableCellRenderer;
+import sockets.ClienteSocket;
 import sockets.ServidorSocket;
 import utiles.Utils;
 //fin imports para el RowsRenderer
@@ -56,6 +57,7 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 	private PedidoData pedidoData = new PedidoData();
 	private ProductoData productoData = new ProductoData();
 	private ServicioData servicioData = new ServicioData();
+	private ServidorSocket servidor;
 	
 	
 	
@@ -76,7 +78,7 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 		actualizarPantalla();
 		
 		//Inicialización de la parte de comunicación via sockets y sus threads respectivos.
-		ServidorSocket servidor = new ServidorSocket(servicio.getPuerto()); // el puerto donde escuchará
+		servidor = new ServidorSocket(servicio.getPuerto()); // el puerto donde escuchará
         servidor.addObserver(this);		// lo registramos como observador del servidor para que nos notifique mensajes
         Thread hilo = new Thread(servidor); // creamos un hilo paralelo para el servidor
         hilo.start();					// ejecutamos ese hilo del servidor
@@ -101,7 +103,7 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 	 */
 	@Override
 	public void update(Observable o, Object mensaje){
-		System.out.println("me llego el mensaje " + (String)mensaje);
+		System.out.println("Me llego el mensaje: " + (String)mensaje);
 		actualizarPantalla();
 		// y acá toma las acciones correspondientes para actualizar pantalla
 	};
@@ -547,9 +549,27 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 	 * @param evt 
 	 */
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+		servidor.pararEjecucion(); // detiene el servidor que escucha mensajes en la red.
+		comunicarConServicio(servicio, "Desconectando el servidor..."); //mando este mensaje para que el servidor deje de esperar y vea que hay que parar la ejecución
 		dispose(); // cierra la ventana
     }//GEN-LAST:event_btnSalirActionPerformed
 
+
+
+
+/**
+	 * Este método crea un thread, un hilo paralelo de ejecución concurrente para
+	 * enviar un mensaje al servicio de despacho del producto para avisarle de
+	 * un cambio en el estado del item
+	 * @param queServicio 
+	 */
+	private void comunicarConServicio(Servicio queServicio, String mensaje) {
+		// esta es la parte de comunicación con la cocina
+		ClienteSocket cliente = new ClienteSocket( //creo un cliente que pueda mandar a ese host en ese puerto
+			queServicio.getHost(), queServicio.getPuerto(), mensaje);
+        Thread hilo = new Thread(cliente);	//creo un hilo para el clienteSocket
+        hilo.start();						//ejecuto ese hilo para el cliente	
+	}
 
 	
 	

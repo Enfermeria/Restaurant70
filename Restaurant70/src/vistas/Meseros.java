@@ -1191,11 +1191,11 @@ public class Meseros extends javax.swing.JFrame {
 	 * un cambio en el estado del item
 	 * @param queServicio 
 	 */
-	private void comunicarConServicio(Servicio queServicio) {
+	private void comunicarConServicio(Servicio queServicio, String mensaje) {
 		// esta es la parte de comunicación con la cocina
 		ClienteSocket cliente = new ClienteSocket( //creo un cliente que pueda mandar a ese host en ese puerto
 			queServicio.getHost(), queServicio.getPuerto(), 
-			"mensaje desde el mesero " + mesero.getIdServicio() + " " + mesero.getNombreServicio()); 
+			"Desde mesero " + mesero.getIdServicio() + " " + mesero.getNombreServicio() + ": " + mensaje); 
         Thread hilo = new Thread(cliente);	//creo un hilo para el clienteSocket
         hilo.start();						//ejecuto ese hilo para el cliente	
 	}
@@ -1220,7 +1220,7 @@ public class Meseros extends javax.swing.JFrame {
 				item.setEstado(Item.EstadoItem.SOLICITADO);
 				itemData.modificarItem(item);
 				// me comunico con el servicio que despacha el producto de este item.
-				comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()));
+				comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()), "Solicitando " + item.getIdItem());
 			} else {//si no es anotado, no lo puedo modificar. 
 				Utils.sonido1("src/sonidos/chord.wav");
 			}//else
@@ -1374,7 +1374,7 @@ public class Meseros extends javax.swing.JFrame {
 			item.setEstado(Item.EstadoItem.CANCELADO);
 			itemData.modificarItem(item);
 			// me comunico con el servicio que despacha el producto de este item.
-			comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()));
+			comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()), "Cancelando " + item.getIdItem());
 		} else {
 			item.setEstado(Item.EstadoItem.CANCELADO);
 			itemData.modificarItem(item);
@@ -1436,15 +1436,22 @@ public class Meseros extends javax.swing.JFrame {
 				
 				//ya se modificó el producto. Si ese producto era SOLICITADO, comunico su cancelación al servicio de despacho (cocina)
 				if (item.getEstado() == Item.EstadoItem.SOLICITADO) {
-					comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor())); // me comunico con el servicio que despacha el producto de este item.
+					System.out.println("ESTOY AVISANDO A LA COCINA POR UN CANCELADO1");
+					comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()), 
+							"Cancelando1: " + item.getIdItem()); // me comunico con el servicio que despacha el producto de este item.
 				}
 				
 			} else { // solo hay uno, lo marco como cancelado
 				if (item.getEstado() == Item.EstadoItem.SOLICITADO) {
-					comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor())); // me comunico con el servicio que despacha el producto de este item.
+					item.setEstado(Item.EstadoItem.CANCELADO);
+					itemData.modificarItem(item);
+					System.out.println("ESTOY AVISANDO A LA COCINA POR UN CANCELADO2");
+					comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()),
+							"Cancelando2: " + item.getIdItem()); // me comunico con el servicio que despacha el producto de este item.
+				} else {
+					item.setEstado(Item.EstadoItem.CANCELADO);
+					itemData.modificarItem(item);
 				}
-				item.setEstado(Item.EstadoItem.CANCELADO);
-				itemData.modificarItem(item);
 			}
 		}
 		return bajeAlgunItem;

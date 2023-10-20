@@ -55,6 +55,8 @@
 		public void update(Observable o, Object mensaje) {
 			sout("me llego el mensaje " + (String)mensaje);
 			// y acá toma las acciones correspondientes para actualizar pantalla
+
+	Si en algún momento se desea detener el servidor, ejecutar: pararEjecucion();
 		}
  */
 package sockets;
@@ -72,6 +74,7 @@ import java.util.Observable;
 public class ServidorSocket extends Observable implements Runnable {
 
     private int puerto;
+	private boolean seguirEjecutando = true;
 
     public ServidorSocket(int puerto) {
         this.puerto = puerto;
@@ -89,7 +92,7 @@ public class ServidorSocket extends Observable implements Runnable {
             System.out.println("Servidor iniciado"); //solo para debug
 
             //Siempre estara escuchando peticiones
-            while (true) {
+            while (seguirEjecutando) {
                 //Espero que el cliente se contecte
                 socket = servidor.accept();
                 System.out.println("Cliente conectado"); //solo para debug
@@ -109,6 +112,9 @@ public class ServidorSocket extends Observable implements Runnable {
         } catch (IOException error) {
             System.out.println(error);
         }
-    }
+    } //run
 	
+	public void pararEjecucion(){
+		seguirEjecutando = false;
+	}
 }
