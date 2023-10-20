@@ -37,6 +37,8 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.time.LocalDateTime;
+import java.util.Observable;
+import java.util.Observer;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -45,6 +47,7 @@ import static javax.swing.SwingConstants.CENTER;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import sockets.ClienteSocket;
+import sockets.ServidorSocket;
 import utiles.Utils;
 //fin imports para el RowsRenderer
 
@@ -52,7 +55,7 @@ import utiles.Utils;
  *
  * @author John David Molina Velarde, Leticia Mores, Enrique Germán Martínez, Carlos Eduardo Beltrán
  */
-public class Meseros extends javax.swing.JFrame {
+public class Meseros extends javax.swing.JFrame implements Observer {
 	private Servicio mesero;
 	private static LinkedHashMap<Integer, Mesa> mapaMesas;
 	private static LinkedHashMap<Integer, Pedido> mapaPedidos;
@@ -64,6 +67,7 @@ public class Meseros extends javax.swing.JFrame {
 	private PedidoData pedidoData = new PedidoData(); //conecto con la BD
 	private ProductoData productoData = new ProductoData();
 	private ProductoData.OrdenacionProducto ordenacion = ProductoData.OrdenacionProducto.PORIDPRODUCTO; // defino el tipo de orden por defecto 
+	private ServidorSocket servidor;
 	
 	
 	
@@ -94,7 +98,69 @@ public class Meseros extends javax.swing.JFrame {
 		cargarPedidos();
 		cargarProductos();
 		mostrarLabelsEncabezamientoItems();
+		
+		lanzarServidor();	// ejecuta un servidor un thread concurrente que escucha mensajes 
 	} // constructor de Meseros
+	
+	
+	
+	
+	
+	//--------------------------- PARTE DE COMUNICACION VIA SOCKETS ----------------------------------------------------
+	private void lanzarServidor(){
+		//Inicialización de la parte de comunicación via sockets y sus threads respectivos.
+		servidor = new ServidorSocket(mesero.getPuerto()); // el puerto donde escuchará
+        servidor.addObserver(this);		// lo registramos como observador del servidor para que nos notifique mensajes
+        Thread hilo = new Thread(servidor); // creamos un hilo paralelo para el servidor
+        hilo.start();		
+	}
+	
+	
+	/**
+	 * Este método es invocado por el ServidorSocket cuando recibe un mensaje de
+	 * un servicio de despacho. Este método se encargará de llamar a los métodos para actualizar
+	 * los datos en pantalla
+	 * @param o
+	 * @param mensaje 
+	 */
+	@Override
+	public void update(Observable o, Object mensaje){ 
+		//System.out.println("Me llego el mensaje: " + (String)mensaje);
+		Utils.sonido1("src/sonidos/Campanilla.wav");
+		actualizarPantalla(); // y acá toma las acciones correspondientes para actualizar pantalla
+	};
+	
+	
+	
+	
+	private void actualizarPantalla(){
+		if ( tablaPedidos.getSelectedRow() != -1 ) { //si tengo un pedido seleccionado
+			cargarItems();
+			//deshabilitarBotonesItems();
+			mostrarLabelsEncabezamientoItems();
+		}
+	}
+	
+	
+	
+	/**
+	 * Este método crea un thread, un hilo paralelo de ejecución concurrente para
+	 * enviar un mensaje al servicio de despacho del producto para avisarle de
+	 * un cambio en el estado del item
+	 * @param queServicio 
+	 */
+	private void comunicarConServicio(Servicio queServicio, String mensaje) {
+		// esta es la parte de comunicación con la cocina
+		ClienteSocket cliente = new ClienteSocket( //creo un cliente que pueda mandar a ese host en ese puerto
+			queServicio.getHost(), queServicio.getPuerto(), 
+			"Desde mesero " + mesero.getIdServicio() + " " + mesero.getNombreServicio() + ": " + mensaje); 
+        Thread hilo = new Thread(cliente);	//creo un hilo para el clienteSocket
+        hilo.start();						//ejecuto ese hilo para el cliente	
+	}
+	//--------------------------- FIN PARTE DE COMUNICACION VIA SOCKETS ----------------------------------------------------
+	
+	
+	
 	
 	
 	
@@ -227,13 +293,7 @@ public class Meseros extends javax.swing.JFrame {
 			} ) 
 		);
 		
-		//si la fila que tenia seleccionada sigue siendo válida
-		//if (filaSeleccionada >= 0 && filaSeleccionada < tablaPedidos.getRowCount() )
-		//	tablaPedidos.setRowSelectionInterval(filaSeleccionada, filaSeleccionada); //restauro la fila que tenía seleccionada
-		//else
-		//	tablaPedidos.removeRowSelectionInterval(0, tablaPedidos.getRowCount()-1); // borro todas las selecciones de la tabla de pedidos
-		
-		cargarItems();
+		actualizarPantalla();
 	} //cargarPedidos
 	
 	
@@ -303,12 +363,6 @@ public class Meseros extends javax.swing.JFrame {
 				item.getEstado()
 			} ) 
 		);
-		
-		//si la fila que tenia seleccionada sigue siendo válida
-		//if (filaSeleccionada >= 0 && filaSeleccionada < tablaPedidos.getRowCount() )
-		//	tablaPedidos.setRowSelectionInterval(filaSeleccionada, filaSeleccionada); //restauro la fila que tenía seleccionada
-		//else
-		//	tablaPedidos.removeRowSelectionInterval(0, tablaPedidos.getRowCount()-1); // borro todas las selecciones de la tabla de pedidos
 	} //cargarItems
 	
 	
@@ -367,12 +421,6 @@ public class Meseros extends javax.swing.JFrame {
 				mapaServicios.get(producto.getDespachadoPor())
 			} ) 
 		);
-		
-		//si la fila que tenia seleccionada sigue siendo válida
-		//if (filaSeleccionada >= 0 && filaSeleccionada < tablaPedidos.getRowCount() )
-		//	tablaPedidos.setRowSelectionInterval(filaSeleccionada, filaSeleccionada); //restauro la fila que tenía seleccionada
-		//else
-		//	tablaPedidos.removeRowSelectionInterval(0, tablaPedidos.getRowCount()-1); // borro todas las selecciones de la tabla de pedidos
 	} //cargarProductos
 	
 	
@@ -1082,8 +1130,7 @@ public class Meseros extends javax.swing.JFrame {
 				itemData.modificarItem(item);
 			}
         } //for 
-		cargarItems(); //actualizo los items y tabla de items
-		mostrarLabelsEncabezamientoItems();
+		actualizarPantalla();
     }//GEN-LAST:event_btnIncluirActionPerformed
 
 	
@@ -1131,12 +1178,11 @@ public class Meseros extends javax.swing.JFrame {
 				}
 			}//else
 		} //for
-		cargarItems();
+		actualizarPantalla();
+		
 		//restauro las filas que tenia seleccionadas
 		for (int fila:arregloFilasItemsSeleccionados)
 			tablaItems.addRowSelectionInterval(fila, fila);
-		
-		mostrarLabelsEncabezamientoItems();
     }//GEN-LAST:event_btnAumentarActionPerformed
 
 	
@@ -1172,33 +1218,18 @@ public class Meseros extends javax.swing.JFrame {
 			}
 		} //for
 		
-		cargarItems();
+		actualizarPantalla();
+		
 		if (bajeAlgunItem) // si di de baja algun itemSeleccionado las filas seleccionadas en los items pueden no ser válidas, no selecciono nada, deshabilito botones
 			deshabilitarBotonesItems();
 		else { // como no hubo ninguna baja, restauro las filas que tenia seleccionadas
 			for (int fila:arregloFilasItemsSeleccionados)
 				tablaItems.addRowSelectionInterval(fila, fila);
 		}
-		
-		mostrarLabelsEncabezamientoItems();
     }//GEN-LAST:event_btnDisminuirActionPerformed
 
 
 	
-	/**
-	 * Este método crea un thread, un hilo paralelo de ejecución concurrente para
-	 * enviar un mensaje al servicio de despacho del producto para avisarle de
-	 * un cambio en el estado del item
-	 * @param queServicio 
-	 */
-	private void comunicarConServicio(Servicio queServicio, String mensaje) {
-		// esta es la parte de comunicación con la cocina
-		ClienteSocket cliente = new ClienteSocket( //creo un cliente que pueda mandar a ese host en ese puerto
-			queServicio.getHost(), queServicio.getPuerto(), 
-			"Desde mesero " + mesero.getIdServicio() + " " + mesero.getNombreServicio() + ": " + mensaje); 
-        Thread hilo = new Thread(cliente);	//creo un hilo para el clienteSocket
-        hilo.start();						//ejecuto ese hilo para el cliente	
-	}
 	
 	
 	
@@ -1225,7 +1256,9 @@ public class Meseros extends javax.swing.JFrame {
 				Utils.sonido1("src/sonidos/chord.wav");
 			}//else
 		} //for
-		cargarItems();
+		
+		actualizarPantalla();
+		
 		//restauro las filas que tenia seleccionadas
 		for (int fila:arregloFilasItemsSeleccionados)
 			tablaItems.addRowSelectionInterval(fila, fila);
@@ -1255,7 +1288,9 @@ public class Meseros extends javax.swing.JFrame {
 				Utils.sonido1("src/sonidos/chord.wav");
 			}//else
 		} //for
-		cargarItems();
+		
+		actualizarPantalla();
+		
 		//restauro las filas que tenia seleccionadas
 		for (int fila:arregloFilasItemsSeleccionados)
 			tablaItems.addRowSelectionInterval(fila, fila);
@@ -1272,10 +1307,9 @@ public class Meseros extends javax.swing.JFrame {
     private void tablaMesasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMesasMouseClicked
         cargarPedidos();
 		deshabilitarBotonesItems();
-		mostrarLabelsEncabezamientoItems();
 		deshabilitarBotonesPedidos();
 		btnAltaPedido.setEnabled(true);
-		mostrarLabelsEncabezamientoItems();
+		// mostrarLabelsEncabezamientoItems();
     }//GEN-LAST:event_tablaMesasMouseClicked
 
 	
@@ -1286,13 +1320,12 @@ public class Meseros extends javax.swing.JFrame {
 	 * @param evt 
 	 */
     private void tablaPedidosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaPedidosMouseClicked
-        cargarItems();
+        actualizarPantalla();
 		deshabilitarBotonesItems();
 		btnCancelarPedido.setEnabled(true);
 		if (tablaProductos.getSelectedRow() != -1)
 			btnIncluir.setEnabled(true);
 		habilitarBotonesPedidos();
-		mostrarLabelsEncabezamientoItems();
     }//GEN-LAST:event_tablaPedidosMouseClicked
 
 	
@@ -1368,7 +1401,8 @@ public class Meseros extends javax.swing.JFrame {
 		Item item = itemData.getItem(idItem);
 		if (item.getEstado() == Item.EstadoItem.ANOTADO) { //si es anotado lo puedo decrementar directamente
 			itemData.bajaItem(item);
-		} else if (item.getEstado() == Item.EstadoItem.CANCELADOVISTO) { //si ya esta cancelado y visto no se puede volver a cancelar
+		} else if (item.getEstado() == Item.EstadoItem.CANCELADOVISTO ||
+				item.getEstado() == Item.EstadoItem.CANCELADOVISTO) { //si ya esta cancelado y visto no se puede volver a cancelar
 			// no hago nada Utils.sonido1("src/sonidos/chord.wav");
 		} else if (item.getEstado() == Item.EstadoItem.SOLICITADO ){// SOLICITADO, lo cancelo y aviso al servicio de despacho (cocina)
 			item.setEstado(Item.EstadoItem.CANCELADO);
@@ -1407,7 +1441,8 @@ public class Meseros extends javax.swing.JFrame {
 				itemData.bajaItem(item);
 				bajeAlgunItem = true;
 			}
-		} else if (item.getEstado() == Item.EstadoItem.CANCELADO) { //si ya esta cancelado no se puede volver a cancelar
+		} else if (item.getEstado() == Item.EstadoItem.CANCELADO ||
+				item.getEstado() == Item.EstadoItem.CANCELADOVISTO) { //si ya esta cancelado no se puede volver a cancelar
 			Utils.sonido1("src/sonidos/chord.wav");
 		} else {//if (item.getEstado()==Item.EstadoItem.SOLICITADO || 
 				// item.getEstado()==Item.EstadoItem.DESPACHADO) || 
@@ -1436,7 +1471,6 @@ public class Meseros extends javax.swing.JFrame {
 				
 				//ya se modificó el producto. Si ese producto era SOLICITADO, comunico su cancelación al servicio de despacho (cocina)
 				if (item.getEstado() == Item.EstadoItem.SOLICITADO) {
-					System.out.println("ESTOY AVISANDO A LA COCINA POR UN CANCELADO1");
 					comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()), 
 							"Cancelando1: " + item.getIdItem()); // me comunico con el servicio que despacha el producto de este item.
 				}
@@ -1445,7 +1479,6 @@ public class Meseros extends javax.swing.JFrame {
 				if (item.getEstado() == Item.EstadoItem.SOLICITADO) {
 					item.setEstado(Item.EstadoItem.CANCELADO);
 					itemData.modificarItem(item);
-					System.out.println("ESTOY AVISANDO A LA COCINA POR UN CANCELADO2");
 					comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()),
 							"Cancelando2: " + item.getIdItem()); // me comunico con el servicio que despacha el producto de este item.
 				} else {
@@ -1480,15 +1513,13 @@ public class Meseros extends javax.swing.JFrame {
 			bajeAlgunItem = bajeAlgunItem || cancelar1Item(numfilaItems); //cancelo el item de la fila especificada. Si no puede cancelarse, hace sonido	
 		} //for
 		
-		cargarItems();
+		actualizarPantalla();
 		if (bajeAlgunItem) // si di de baja algun itemSeleccionado las filas seleccionadas en los items pueden no ser válidas, no selecciono nada, deshabilito botones
 			deshabilitarBotonesItems();
 		else { // como no hubo ninguna baja, restauro las filas que tenia seleccionadas
 			for (int fila:arregloFilasItemsSeleccionados)
 				tablaItems.addRowSelectionInterval(fila, fila);
 		}
-		
-		mostrarLabelsEncabezamientoItems();
     }//GEN-LAST:event_btnCancelarItemActionPerformed
 
 	
@@ -1516,9 +1547,6 @@ public class Meseros extends javax.swing.JFrame {
 		//deshabilito boton de cancelarPedido (no quedó ningun pedido seleccionado) y botonesItems
 		deshabilitarBotonesItems();
 		deshabilitarBotonesPedidos();
-		
-		//actualizo el encabezamiento de los intems
-		mostrarLabelsEncabezamientoItems();
     }//GEN-LAST:event_btnAltaPedidoActionPerformed
 
 	
@@ -1567,7 +1595,10 @@ public class Meseros extends javax.swing.JFrame {
 	
 	/** Cierra la aplicación */
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
-        dispose();//cierra la ventana
+        
+		servidor.pararEjecucion(); // detiene el servidor que escucha mensajes en la red.
+		comunicarConServicio(mesero, "Desconectando el servidor..."); //mando este mensaje para que el servidor deje de esperar y vea que hay que parar la ejecución
+		dispose(); // cierra la ventana
     }//GEN-LAST:event_btnSalirActionPerformed
 
 	
@@ -1764,7 +1795,7 @@ public class Meseros extends javax.swing.JFrame {
 		Color colorDespachado = Color.RED;
 		Color colorEntregado = Color.GREEN;
 		Color colorCancelado = Color.LIGHT_GRAY;
-		Color colorCanceladoVisto = Color.LIGHT_GRAY;
+		Color colorCanceladoVisto = new Color(100, 100, 100); //gris clarito
 
 		public RendererItems() {
 			setOpaque(true);

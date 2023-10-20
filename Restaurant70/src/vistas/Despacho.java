@@ -77,21 +77,21 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 		cargarProductos();
 		actualizarPantalla();
 		
+		lanzarServidor(); // ejecuta un servidor un thread concurrente que escucha mensajes 
+	} // constructor de Meseros
+	
+	
+	
+	//--------------------------- PARTE DE COMUNICACION VIA SOCKETS ----------------------------------------------------
+	private void lanzarServidor() {
 		//Inicialización de la parte de comunicación via sockets y sus threads respectivos.
 		servidor = new ServidorSocket(servicio.getPuerto()); // el puerto donde escuchará
         servidor.addObserver(this);		// lo registramos como observador del servidor para que nos notifique mensajes
         Thread hilo = new Thread(servidor); // creamos un hilo paralelo para el servidor
         hilo.start();					// ejecutamos ese hilo del servidor
-	} // constructor de Meseros
-	
-	
-	
-	
-	private void actualizarPantalla(){
-		cargarItems();
-		deshabilitarBotonesItems();
-		mostrarLabelsEncabezamientoItems();
 	}
+	
+	
 	
 	
 	/**
@@ -102,11 +102,38 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 	 * @param mensaje 
 	 */
 	@Override
-	public void update(Observable o, Object mensaje){
-		System.out.println("Me llego el mensaje: " + (String)mensaje);
-		actualizarPantalla();
-		// y acá toma las acciones correspondientes para actualizar pantalla
+	public void update(Observable o, Object mensaje){ 
+		//System.out.println("Me llego el mensaje: " + (String)mensaje);
+		Utils.sonido1("src/sonidos/Campanilla.wav");
+		actualizarPantalla(); // y acá toma las acciones correspondientes para actualizar pantalla
 	};
+
+
+
+	
+	private void actualizarPantalla(){
+		cargarItems();
+		deshabilitarBotonesItems();
+		mostrarLabelsEncabezamientoItems();
+	}
+	
+	
+/**
+	 * Este método crea un thread, un hilo paralelo de ejecución concurrente para
+	 * enviar un mensaje al servicio de despacho del producto para avisarle de
+	 * un cambio en el estado del item
+	 * @param queServicio 
+	 */
+	private void comunicarConServicio(Servicio queServicio, String mensaje) {
+		// esta es la parte de comunicación con la cocina
+		ClienteSocket cliente = new ClienteSocket( //creo un cliente que pueda mandar a ese host en ese puerto
+			queServicio.getHost(), queServicio.getPuerto(), 
+			"Desde servicio de despacho " + servicio.getIdServicio() + " " + servicio.getNombreServicio() + ": " + mensaje);
+        Thread hilo = new Thread(cliente);	//creo un hilo para el clienteSocket
+        hilo.start();						//ejecuto ese hilo para el cliente	
+	}
+	//--------------------------- FIN PARTE DE COMUNICACION VIA SOCKETS ----------------------------------------------------
+		
 	
 	
 	/** cargo el mapa de Servicios (cocina, bar, etc) */
@@ -332,17 +359,20 @@ public class Despacho extends javax.swing.JFrame implements Observer {
         });
         panelItems.setViewportView(tablaItems);
         if (tablaItems.getColumnModel().getColumnCount() > 0) {
-            tablaItems.getColumnModel().getColumn(0).setPreferredWidth(30);
-            tablaItems.getColumnModel().getColumn(0).setMaxWidth(20);
+            tablaItems.getColumnModel().getColumn(0).setResizable(false);
+            tablaItems.getColumnModel().getColumn(0).setPreferredWidth(20);
             tablaItems.getColumnModel().getColumn(1).setPreferredWidth(200);
             tablaItems.getColumnModel().getColumn(1).setMaxWidth(250);
             tablaItems.getColumnModel().getColumn(2).setPreferredWidth(50);
             tablaItems.getColumnModel().getColumn(2).setMaxWidth(50);
             tablaItems.getColumnModel().getColumn(3).setPreferredWidth(80);
             tablaItems.getColumnModel().getColumn(3).setMaxWidth(140);
+            tablaItems.getColumnModel().getColumn(4).setResizable(false);
             tablaItems.getColumnModel().getColumn(4).setPreferredWidth(30);
+            tablaItems.getColumnModel().getColumn(5).setResizable(false);
             tablaItems.getColumnModel().getColumn(5).setPreferredWidth(200);
-            tablaItems.getColumnModel().getColumn(6).setPreferredWidth(50);
+            tablaItems.getColumnModel().getColumn(6).setResizable(false);
+            tablaItems.getColumnModel().getColumn(6).setPreferredWidth(20);
         }
 
         botoneraVertical.setBackground(new java.awt.Color(153, 153, 255));
@@ -385,22 +415,22 @@ public class Despacho extends javax.swing.JFrame implements Observer {
             botoneraVerticalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(botoneraVerticalLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(botoneraVerticalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnEliminarCancelados, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnDespachar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnSalir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(btnDespachar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnEliminarCancelados, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         botoneraVerticalLayout.setVerticalGroup(
             botoneraVerticalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(botoneraVerticalLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnDespachar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnEliminarCancelados)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 260, Short.MAX_VALUE)
-                .addComponent(btnSalir)
-                .addContainerGap())
+                .addGroup(botoneraVerticalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnSalir)
+                    .addComponent(btnDespachar)
+                    .addComponent(btnEliminarCancelados))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panelEncabezamientoItems.setBackground(new java.awt.Color(153, 153, 255));
@@ -441,12 +471,14 @@ public class Despacho extends javax.swing.JFrame implements Observer {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(panelEncabezamientoItems, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelItems, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(botoneraVertical, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(panelEncabezamientoItems, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(panelItems, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(botoneraVertical, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -454,10 +486,10 @@ public class Despacho extends javax.swing.JFrame implements Observer {
                 .addContainerGap()
                 .addComponent(panelEncabezamientoItems, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelItems, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botoneraVertical, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(76, Short.MAX_VALUE))
+                .addComponent(panelItems, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(botoneraVertical, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -489,6 +521,8 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 			if (itemSeleccionado.getEstado() == Item.EstadoItem.SOLICITADO) { // si es SOLICITADO lo puedo modificar
 				itemSeleccionado.setEstado(Item.EstadoItem.DESPACHADO);		  //le pongo como DESPACHADO
 				itemData.modificarItem(itemSeleccionado);					  // modifico el item en la bd
+				comunicarConServicio(mapaServicios.get( mapaPedidos.get(itemSeleccionado.getIdPedido()).getIdMesero() ),
+						"Cancelado->CanceladoVisto: " + itemSeleccionado.getIdItem());
 			} else {//si no es solicitado, no lo puedo modificar. 
 				Utils.sonido1("src/sonidos/chord.wav");
 			}//else
@@ -519,6 +553,8 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 			if (itemSeleccionado.getEstado() == Item.EstadoItem.CANCELADO) { // si es CANCELADO lo puedo modificar
 				itemSeleccionado.setEstado(Item.EstadoItem.CANCELADOVISTO);  //le pongo como CANCELADOVISTO
 				itemData.modificarItem(itemSeleccionado);					 // modifico el item en la bd
+				comunicarConServicio(mapaServicios.get( mapaPedidos.get(itemSeleccionado.getIdPedido()).getIdMesero() ),
+						"Cancelado->CanceladoVisto: " + itemSeleccionado.getIdItem());
 			} else {//si no es cancelado, no lo puedo modificar. 
 				Utils.sonido1("src/sonidos/chord.wav");
 			}//else
@@ -556,22 +592,6 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 
 
 
-
-/**
-	 * Este método crea un thread, un hilo paralelo de ejecución concurrente para
-	 * enviar un mensaje al servicio de despacho del producto para avisarle de
-	 * un cambio en el estado del item
-	 * @param queServicio 
-	 */
-	private void comunicarConServicio(Servicio queServicio, String mensaje) {
-		// esta es la parte de comunicación con la cocina
-		ClienteSocket cliente = new ClienteSocket( //creo un cliente que pueda mandar a ese host en ese puerto
-			queServicio.getHost(), queServicio.getPuerto(), mensaje);
-        Thread hilo = new Thread(cliente);	//creo un hilo para el clienteSocket
-        hilo.start();						//ejecuto ese hilo para el cliente	
-	}
-
-	
 	
 	//=========================================================================================
 	//=========================================================================================
@@ -651,7 +671,7 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 		Color colorDespachado = Color.RED;
 		Color colorEntregado = Color.GREEN;
 		Color colorCancelado = Color.LIGHT_GRAY;
-		Color colorCanceladoVisto = Color.LIGHT_GRAY;
+		Color colorCanceladoVisto = Color.CYAN;
 
 		public RendererItems() {
 			setOpaque(true);
@@ -698,7 +718,7 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 				setBackground(Color.MAGENTA); //esto nunca debería pasar.
 			
 			//defino la alineación horizontal
-			if (column == 0 || column==2)
+			if (column == 0 || column==2 || column==4 || column==6)
 				setHorizontalAlignment( JLabel.CENTER );
 			else
 				setHorizontalAlignment( JLabel.LEFT );

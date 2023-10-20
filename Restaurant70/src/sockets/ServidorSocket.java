@@ -89,13 +89,13 @@ public class ServidorSocket extends Observable implements Runnable {
         try {
             //Creamos el servidor del socket
             servidor = new ServerSocket(puerto);
-            System.out.println("Servidor iniciado"); //solo para debug
+            // System.out.println("Servidor iniciado"); //solo para debug
 
             //Siempre estara escuchando peticiones
             while (seguirEjecutando) {
                 //Espero que el cliente se contecte
                 socket = servidor.accept();
-                System.out.println("Cliente conectado"); //solo para debug
+                // System.out.println("Cliente conectado"); //solo para debug
                 entrada = new DataInputStream(socket.getInputStream()); //genero un stream para entrada
 
                 //Leemos el mensaje
@@ -107,7 +107,7 @@ public class ServidorSocket extends Observable implements Runnable {
                 this.clearChanged();			//como ya notificarmos, ponemos que el estado de este no cambió.
 
                 socket.close();
-                System.out.println("Cliente desconectado"); //solo para debug
+                // System.out.println("Cliente desconectado"); //solo para debug
             }
         } catch (IOException error) {
             System.out.println(error);
