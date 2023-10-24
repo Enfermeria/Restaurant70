@@ -1778,8 +1778,8 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 	
 	
 	/**
-	 * Renderer de celdas de la tablaMesas. Pone el color según el estado de la 
-	 * mesa (Libre, Ocupada, Atendida). La info la obtiene de mapaMesas.
+	 * Renderer de celdas de la tablaItemss. Pone el color según el estado del 
+	 * item (Anotado, Solicitado, Despachado, Cancelado, CanceladoVisto). 
 	 * También permite gestionar los eventos realizados sobre la tabla.
 	 * 
 	 * Para usarla, en la definicion de la tabla se pone:
