@@ -407,7 +407,7 @@ public class GestionPedidos extends javax.swing.JInternalFrame {
         }
 
         lblPedidos.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        lblPedidos.setText("Pedidos");
+        lblPedidos.setText("Pedidos segun filtro búsqueda");
 
         lblPedidos1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblPedidos1.setText("Items del Pedido");
@@ -427,37 +427,31 @@ public class GestionPedidos extends javax.swing.JInternalFrame {
         panelTablasLayout.setHorizontalGroup(
             panelTablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelTablasLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(panelTablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelPedidos)
                     .addGroup(panelTablasLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(panelPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE))
-                    .addGroup(panelTablasLayout.createSequentialGroup()
-                        .addGap(53, 53, 53)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(lblPedidos)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblCantPedidos, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(lblImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGroup(panelTablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelTablasLayout.createSequentialGroup()
-                        .addGap(307, 307, 307)
-                        .addComponent(lblPedidos1)
-                        .addGap(69, 69, 69))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTablasLayout.createSequentialGroup()
+                        .addComponent(lblCantPedidos, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panelItems, javax.swing.GroupLayout.PREFERRED_SIZE, 524, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addComponent(lblImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelTablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelItems, javax.swing.GroupLayout.PREFERRED_SIZE, 524, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblPedidos1, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
         );
         panelTablasLayout.setVerticalGroup(
             panelTablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelTablasLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(panelTablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblImporte, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblCantPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(lblPedidos1, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lblPedidos, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGroup(panelTablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblImporte, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblCantPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblPedidos)
+                    .addComponent(lblPedidos1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelTablasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(panelItems, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE)
@@ -530,6 +524,7 @@ public class GestionPedidos extends javax.swing.JInternalFrame {
 
         panelBotonera.setBackground(new java.awt.Color(153, 153, 255));
 
+        btnFiltrar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/buscar1_32x32.png"))); // NOI18N
         btnFiltrar.setText("Filtrar por criterio de búsqueda");
         btnFiltrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -537,6 +532,7 @@ public class GestionPedidos extends javax.swing.JInternalFrame {
             }
         });
 
+        btnResetarFiltro.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/restart3_32x32.png"))); // NOI18N
         btnResetarFiltro.setText("Resetear filtro");
         btnResetarFiltro.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -544,6 +540,7 @@ public class GestionPedidos extends javax.swing.JInternalFrame {
             }
         });
 
+        btnSalir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/salida1_32x32.png"))); // NOI18N
         btnSalir.setText("Salir");
         btnSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -572,7 +569,7 @@ public class GestionPedidos extends javax.swing.JInternalFrame {
                     .addComponent(btnFiltrar)
                     .addComponent(btnResetarFiltro)
                     .addComponent(btnSalir))
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
