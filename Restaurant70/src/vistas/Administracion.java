@@ -156,6 +156,11 @@ public class Administracion extends javax.swing.JFrame {
         btnPedidos.setBorderPainted(false);
         btnPedidos.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnPedidos.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnPedidos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPedidosActionPerformed(evt);
+            }
+        });
 
         btnServicios.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
         btnServicios.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/adm_mozo_180x98.jpg"))); // NOI18N
@@ -280,6 +285,9 @@ public class Administracion extends javax.swing.JFrame {
 		escritorio.moveToFront(crudMesas); //pongo la ventana al frente:
     }//GEN-LAST:event_btnMesasActionPerformed
 
+	
+	
+	
     private void btnServiciosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnServiciosActionPerformed
 		escritorio.removeAll(); // cierro todas las ventanas del escritorio
 		mostrarFondo(); // recargo la foto del fondo
@@ -292,6 +300,9 @@ public class Administracion extends javax.swing.JFrame {
 		escritorio.moveToFront(crudServicios); //pongo la ventana al frente:
     }//GEN-LAST:event_btnServiciosActionPerformed
 
+	
+	
+	
     private void btnFacturacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFacturacionActionPerformed
         escritorio.removeAll(); // cierro todas las ventanas del escritorio
 		mostrarFondo(); // recargo la foto del fondo
@@ -310,6 +321,9 @@ public class Administracion extends javax.swing.JFrame {
 //		escritorio.moveToFront(crudCategorias); //pongo la ventana al frente:       
     }//GEN-LAST:event_btnFacturacionActionPerformed
 
+	
+	
+	
     private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
         escritorio.removeAll(); // cierro todas las ventanas del escritorio
 		mostrarFondo(); // recargo la foto del fondo
@@ -322,6 +336,24 @@ public class Administracion extends javax.swing.JFrame {
 		escritorio.moveToFront(crudProductos); //pongo la ventana al frente:
     }//GEN-LAST:event_btnProductosActionPerformed
 
+	
+	
+	
+    private void btnPedidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPedidosActionPerformed
+        escritorio.removeAll(); // cierro todas las ventanas del escritorio
+		mostrarFondo(); // recargo la foto del fondo
+		escritorio.repaint();
+		
+		GestionPedidos gestionPedidos = new GestionPedidos(); // creo un internal Frame
+		gestionPedidos.setVisible(true); // lo pongo visible
+		
+		escritorio.add(gestionPedidos); // lo pongo en el escritorio
+		escritorio.moveToFront(gestionPedidos); //pongo la ventana al frente:
+    }//GEN-LAST:event_btnPedidosActionPerformed
+
+	
+	
+	
 	/**
 	 * @param args the command line arguments
 	 */
