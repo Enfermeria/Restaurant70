@@ -165,7 +165,10 @@ public class Login extends javax.swing.JFrame {
 						dispose(); // cierro la ventana de login
 						break;
 					case RECEPCION:
-						JOptionPane.showMessageDialog(null, "Aún no implementado", "Falta implementar", JOptionPane.ERROR_MESSAGE);
+						Recepcion recepcion = new Recepcion(servicio);
+						recepcion.setVisible(true); //lo hago visible
+						recepcion.setLocationRelativeTo(null); //lo abro en el centro
+						dispose(); // cierro la ventana de login
 						break;
 					case SERVICIO:
 						Despacho despacho = new Despacho(servicio);

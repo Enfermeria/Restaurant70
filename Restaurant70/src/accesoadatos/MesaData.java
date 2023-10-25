@@ -31,7 +31,7 @@ import entidades.Pedido;
  */
 public class MesaData {
 	ConexionMySQL conexion; //gestiona la conexión con la bd
-	public enum OrdenacionMesa {PORIDMESA, PORCAPACIDAD, PORESTADO}; //tipo de ordenamiento
+	public enum OrdenacionMesa {PORIDMESA, PORCAPACIDAD, PORESTADO, PORMESERO}; //tipo de ordenamiento
 	
 	
 	/**
@@ -251,8 +251,12 @@ public class MesaData {
 			sql = sql + " Order by idmesa";
 		else if (ordenacion == OrdenacionMesa.PORCAPACIDAD)
 			sql = sql + " Order by capacidad";
-		else //if (ordenacion == OrdenacionMesa.PORESTADO)
+		else if (ordenacion == OrdenacionMesa.PORESTADO)
 			sql = sql + " Order by estado";
+		else if (ordenacion == OrdenacionMesa.PORMESERO)
+			sql = sql + " Order by idMesero";
+		else //si no es ninguno anterior
+			sql = sql + " Order by idmesa";
 		
 		//ejecuto
 		ResultSet rs = conexion.sqlSelect(sql);
@@ -320,8 +324,12 @@ public class MesaData {
 			sql = sql + " Order by idmesa";
 		else if (ordenacion == OrdenacionMesa.PORCAPACIDAD)
 			sql = sql + " Order by capacidad";
-		else 
-			sql = sql + " Order by estado";		
+		else if (ordenacion == OrdenacionMesa.PORESTADO)
+			sql = sql + " Order by estado";
+		else if (ordenacion == OrdenacionMesa.PORMESERO)
+			sql = sql + " Order by idMesero";
+		else //si no es ninguno anterior
+			sql = sql + " Order by idmesa";
 	
 		// System.out.println(sql); //debug
 		// ejecuto

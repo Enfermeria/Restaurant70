@@ -720,7 +720,7 @@ public class CrudMesas extends javax.swing.JInternalFrame {
             }
         });
 
-        cboxOrden.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "por IdMesa", "por Capacidad", "por Estado" }));
+        cboxOrden.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "por IdMesa", "por Capacidad", "por Estado", "por Mesero" }));
         cboxOrden.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboxOrdenActionPerformed(evt);
@@ -865,6 +865,8 @@ public class CrudMesas extends javax.swing.JInternalFrame {
         ordenacion = OrdenacionMesa.PORCAPACIDAD;
 		else if (cboxOrden.getSelectedIndex() == 2)
 			ordenacion = OrdenacionMesa.PORESTADO;
+		else if (cboxOrden.getSelectedIndex() == 3)
+			ordenacion = OrdenacionMesa.PORMESERO;
         else // por las dudas que no eligio uno correcto
         ordenacion = OrdenacionMesa.PORIDMESA;
 

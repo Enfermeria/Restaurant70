@@ -494,10 +494,11 @@
         <Component class="javax.swing.JComboBox" name="cboxOrden">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="3">
+              <StringArray count="4">
                 <StringItem index="0" value="por IdMesa"/>
                 <StringItem index="1" value="por Capacidad"/>
                 <StringItem index="2" value="por Estado"/>
+                <StringItem index="3" value="por Mesero"/>
               </StringArray>
             </Property>
           </Properties>
