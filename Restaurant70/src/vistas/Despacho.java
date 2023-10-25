@@ -104,7 +104,10 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 	@Override
 	public void update(Observable o, Object mensaje){ 
 		//System.out.println("Me llego el mensaje: " + (String)mensaje);
-		Utils.sonido1("src/sonidos/Campanilla.wav");
+		String s = (String) mensaje;
+		System.out.println("En despacho mensaje recibido: " + s);
+		if (s.startsWith("M"))
+			Utils.sonido1("src/sonidos/Campanilla.wav");
 		actualizarPantalla(); // y acá toma las acciones correspondientes para actualizar pantalla
 	};
 
@@ -128,7 +131,7 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 		// esta es la parte de comunicación con la cocina
 		ClienteSocket cliente = new ClienteSocket( //creo un cliente que pueda mandar a ese host en ese puerto
 			queServicio.getHost(), queServicio.getPuerto(), 
-			"Desde servicio de despacho " + servicio.getIdServicio() + " " + servicio.getNombreServicio() + ": " + mensaje);
+			"S " + servicio.getIdServicio() + " " + mensaje);
         Thread hilo = new Thread(cliente);	//creo un hilo para el clienteSocket
         hilo.start();						//ejecuto ese hilo para el cliente	
 	}
@@ -286,7 +289,10 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 	
 	
 	/**
-	 * Para poder poner el ícono de la aplicación en la ventana
+	 * Para poder poner el ícono de la aplicación en la ventana.
+	 * Para usar el ícono, ir a: JFrame -> Property -> iconImage -> click en [...]
+	 * SetForm iconImage property using: [Value from existing component v]
+	 * -> O property [...] -> component properties: iconImage
 	 * @return 
 	 */	
 	@Override
@@ -325,6 +331,7 @@ public class Despacho extends javax.swing.JFrame implements Observer {
         lblItemsDelPedido = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setIconImage(getIconImage());
 
         panelItems.setBackground(new java.awt.Color(153, 153, 255));
 
@@ -522,7 +529,7 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 				itemSeleccionado.setEstado(Item.EstadoItem.DESPACHADO);		  //le pongo como DESPACHADO
 				itemData.modificarItem(itemSeleccionado);					  // modifico el item en la bd
 				comunicarConServicio(mapaServicios.get( mapaPedidos.get(itemSeleccionado.getIdPedido()).getIdMesero() ),
-						"Cancelado->CanceladoVisto: " + itemSeleccionado.getIdItem());
+						"C " + itemSeleccionado.getIdItem());
 			} else {//si no es solicitado, no lo puedo modificar. 
 				Utils.sonido1("src/sonidos/chord.wav");
 			}//else
@@ -554,7 +561,7 @@ public class Despacho extends javax.swing.JFrame implements Observer {
 				itemSeleccionado.setEstado(Item.EstadoItem.CANCELADOVISTO);  //le pongo como CANCELADOVISTO
 				itemData.modificarItem(itemSeleccionado);					 // modifico el item en la bd
 				comunicarConServicio(mapaServicios.get( mapaPedidos.get(itemSeleccionado.getIdPedido()).getIdMesero() ),
-						"Cancelado->CanceladoVisto: " + itemSeleccionado.getIdItem());
+						"C " + itemSeleccionado.getIdItem());
 			} else {//si no es cancelado, no lo puedo modificar. 
 				Utils.sonido1("src/sonidos/chord.wav");
 			}//else

@@ -126,19 +126,28 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 	@Override
 	public void update(Observable o, Object mensaje){ 
 		//System.out.println("Me llego el mensaje: " + (String)mensaje);
-		Utils.sonido1("src/sonidos/Campanilla.wav");
-		actualizarPantalla(); // y acá toma las acciones correspondientes para actualizar pantalla
+		String s = (String) mensaje;
+		System.out.println("En meseros mensaje recibido: " + s);
+		if (s.startsWith("S")) {
+			Utils.sonido1("src/sonidos/Campanilla.wav");
+			cargarItems();
+		}else if (s.startsWith("R")) {
+			Utils.sonido1("src/sonidos/Silbido3.wav");
+			cargarMesas();
+		}
+		
+		//actualizarPantalla(); // y acá toma las acciones correspondientes para actualizar pantalla
 	};
 	
 	
 	
 	
 	private void actualizarPantalla(){
-		if ( tablaPedidos.getSelectedRow() != -1 ) { //si tengo un pedido seleccionado
-			cargarItems();
-			//deshabilitarBotonesItems();
-			mostrarLabelsEncabezamientoItems();
-		}
+		cargarMesas();
+		cargarPedidos();
+		cargarItems();
+
+		mostrarLabelsEncabezamientoItems();
 	}
 	
 	
@@ -153,7 +162,7 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 		// esta es la parte de comunicación con la cocina
 		ClienteSocket cliente = new ClienteSocket( //creo un cliente que pueda mandar a ese host en ese puerto
 			queServicio.getHost(), queServicio.getPuerto(), 
-			"Desde mesero " + mesero.getIdServicio() + " " + mesero.getNombreServicio() + ": " + mensaje); 
+			"M " + mesero.getIdServicio() + " " + mensaje); 
         Thread hilo = new Thread(cliente);	//creo un hilo para el clienteSocket
         hilo.start();						//ejecuto ese hilo para el cliente	
 	}
@@ -240,7 +249,7 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 		//else
 		//	tablaMesas.removeRowSelectionInterval(0, tablaMesas.getRowCount()-1); // borro todas las selecciones de la tabla de pedidos
 		
-		cargarPedidos();
+		//cargarPedidos();
 	} //cargar mesas
 	
 	
@@ -283,6 +292,8 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 		mapaPedidos = new LinkedHashMap();
 		listaPedidos.stream().forEach( pedido -> mapaPedidos.put(pedido.getIdPedido(), pedido) );
 		
+		int filaSeleccionada = tablaMesas.getSelectedRow(); //conservo el anterior pedido seleccionada
+		
 		//borro las filas de la tabla mesas
 		for (int fila = modeloTablaPedidos.getRowCount() -  1; fila >= 0; fila--)
 			modeloTablaPedidos.removeRow(fila);
@@ -293,7 +304,10 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 			} ) 
 		);
 		
-		actualizarPantalla();
+		//si la fila que tenia seleccionada sigue siendo válida y no cambio el pedido
+		if (filaSeleccionada >= 0 && filaSeleccionada < tablaPedidos.getRowCount())
+			tablaPedidos.setRowSelectionInterval(filaSeleccionada, filaSeleccionada); //restauro la fila que tenía seleccionada
+		//actualizarPantalla();
 	} //cargarPedidos
 	
 	
@@ -548,6 +562,9 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 	
 	/**
 	 * Para poder poner el ícono de la aplicación en la ventana
+	 * Para usar el ícono, ir a: JFrame -> Property -> iconImage -> click en [...]
+	 * SetForm iconImage property using: [Value from existing component v]
+	 * -> O property [...] -> component properties: iconImage
 	 * @return 
 	 */	
 	@Override
@@ -607,6 +624,7 @@ public class Meseros extends javax.swing.JFrame implements Observer {
         btnSalir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setIconImage(getIconImage());
 
         panelMesas.setBackground(new java.awt.Color(153, 153, 255));
 
@@ -1130,7 +1148,9 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 				itemData.modificarItem(item);
 			}
         } //for 
-		actualizarPantalla();
+		
+		cargarItems();
+		mostrarLabelsEncabezamientoItems();
     }//GEN-LAST:event_btnIncluirActionPerformed
 
 	
@@ -1178,7 +1198,9 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 				}
 			}//else
 		} //for
-		actualizarPantalla();
+		
+		cargarItems();
+		mostrarLabelsEncabezamientoItems();
 		
 		//restauro las filas que tenia seleccionadas
 		for (int fila:arregloFilasItemsSeleccionados)
@@ -1218,7 +1240,8 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 			}
 		} //for
 		
-		actualizarPantalla();
+		cargarItems();
+		mostrarLabelsEncabezamientoItems();
 		
 		if (bajeAlgunItem) // si di de baja algun itemSeleccionado las filas seleccionadas en los items pueden no ser válidas, no selecciono nada, deshabilito botones
 			deshabilitarBotonesItems();
@@ -1251,13 +1274,14 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 				item.setEstado(Item.EstadoItem.SOLICITADO);
 				itemData.modificarItem(item);
 				// me comunico con el servicio que despacha el producto de este item.
-				comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()), "Solicitando " + item.getIdItem());
+				comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()), "S " + item.getIdItem());
 			} else {//si no es anotado, no lo puedo modificar. 
 				Utils.sonido1("src/sonidos/chord.wav");
 			}//else
 		} //for
 		
-		actualizarPantalla();
+		cargarItems();
+		mostrarLabelsEncabezamientoItems();
 		
 		//restauro las filas que tenia seleccionadas
 		for (int fila:arregloFilasItemsSeleccionados)
@@ -1289,7 +1313,8 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 			}//else
 		} //for
 		
-		actualizarPantalla();
+		cargarItems();
+		mostrarLabelsEncabezamientoItems();
 		
 		//restauro las filas que tenia seleccionadas
 		for (int fila:arregloFilasItemsSeleccionados)
@@ -1306,6 +1331,8 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 	 */
     private void tablaMesasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMesasMouseClicked
         cargarPedidos();
+		cargarItems();
+		mostrarLabelsEncabezamientoItems();
 		deshabilitarBotonesItems();
 		deshabilitarBotonesPedidos();
 		btnAltaPedido.setEnabled(true);
@@ -1320,7 +1347,8 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 	 * @param evt 
 	 */
     private void tablaPedidosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaPedidosMouseClicked
-        actualizarPantalla();
+        cargarItems();
+		mostrarLabelsEncabezamientoItems();
 		deshabilitarBotonesItems();
 		btnCancelarPedido.setEnabled(true);
 		if (tablaProductos.getSelectedRow() != -1)
@@ -1408,7 +1436,7 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 			item.setEstado(Item.EstadoItem.CANCELADO);
 			itemData.modificarItem(item);
 			// me comunico con el servicio que despacha el producto de este item.
-			comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()), "Cancelando " + item.getIdItem());
+			comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()), "C " + item.getIdItem());
 		} else {
 			item.setEstado(Item.EstadoItem.CANCELADO);
 			itemData.modificarItem(item);
@@ -1472,7 +1500,7 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 				//ya se modificó el producto. Si ese producto era SOLICITADO, comunico su cancelación al servicio de despacho (cocina)
 				if (item.getEstado() == Item.EstadoItem.SOLICITADO) {
 					comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()), 
-							"Cancelando1: " + item.getIdItem()); // me comunico con el servicio que despacha el producto de este item.
+							"C " + item.getIdItem()); // me comunico con el servicio que despacha el producto de este item.
 				}
 				
 			} else { // solo hay uno, lo marco como cancelado
@@ -1480,7 +1508,7 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 					item.setEstado(Item.EstadoItem.CANCELADO);
 					itemData.modificarItem(item);
 					comunicarConServicio(mapaServicios.get(tablaItemsGetProducto(numfilaItems).getDespachadoPor()),
-							"Cancelando2: " + item.getIdItem()); // me comunico con el servicio que despacha el producto de este item.
+							"C " + item.getIdItem()); // me comunico con el servicio que despacha el producto de este item.
 				} else {
 					item.setEstado(Item.EstadoItem.CANCELADO);
 					itemData.modificarItem(item);

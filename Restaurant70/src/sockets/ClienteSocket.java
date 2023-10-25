@@ -80,7 +80,8 @@ public class ClienteSocket implements Runnable { // lo hacemos Runnable para que
             //enviamos el mensaje
             salida.writeUTF(mensaje); // puede ser salida.writeInt(mensaje); si vamos a escribir un int
         }catch(IOException ex){
-            Utils.mensajeError("Error conexión de Red: " + ex + " No se pudo realizar la conexión . ");
+            //Utils.mensajeError("Error conexión de Red: " + ex + " No se pudo realizar la conexión . ");
+			Utils.mensaje("No se pudo realizar la conexión...");
         }
     } //run
     
