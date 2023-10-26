@@ -1541,7 +1541,9 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 			bajeAlgunItem = bajeAlgunItem || cancelar1Item(numfilaItems); //cancelo el item de la fila especificada. Si no puede cancelarse, hace sonido	
 		} //for
 		
-		actualizarPantalla();
+		cargarItems();
+		mostrarLabelsEncabezamientoItems();
+		
 		if (bajeAlgunItem) // si di de baja algun itemSeleccionado las filas seleccionadas en los items pueden no ser válidas, no selecciono nada, deshabilito botones
 			deshabilitarBotonesItems();
 		else { // como no hubo ninguna baja, restauro las filas que tenia seleccionadas
