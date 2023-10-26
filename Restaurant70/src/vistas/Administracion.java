@@ -104,7 +104,7 @@ public class Administracion extends javax.swing.JFrame {
         btnMesas = new javax.swing.JButton();
         btnPedidos = new javax.swing.JButton();
         btnServicios = new javax.swing.JButton();
-        btnFacturacion = new javax.swing.JButton();
+        btnAcercaDe = new javax.swing.JButton();
         // =========== esto es código mío previo ===============
         ImageIcon icono = new ImageIcon(getClass().getResource(fondo));
         Image imagen = icono.getImage();
@@ -179,17 +179,18 @@ public class Administracion extends javax.swing.JFrame {
             }
         });
 
-        btnFacturacion.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
-        btnFacturacion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/adm_facturacion_180x98.jpg"))); // NOI18N
-        btnFacturacion.setText("Facturación");
-        btnFacturacion.setToolTipText("");
-        btnFacturacion.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        btnFacturacion.setBorderPainted(false);
-        btnFacturacion.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnFacturacion.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnFacturacion.addActionListener(new java.awt.event.ActionListener() {
+        btnAcercaDe.setFont(new java.awt.Font("Georgia", 1, 18)); // NOI18N
+        btnAcercaDe.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Programadores 180x116.jpg"))); // NOI18N
+        btnAcercaDe.setText("Acerca de");
+        btnAcercaDe.setToolTipText("");
+        btnAcercaDe.setActionCommand("Acerca de");
+        btnAcercaDe.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnAcercaDe.setBorderPainted(false);
+        btnAcercaDe.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnAcercaDe.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnAcercaDe.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFacturacionActionPerformed(evt);
+                btnAcercaDeActionPerformed(evt);
             }
         });
 
@@ -204,7 +205,7 @@ public class Administracion extends javax.swing.JFrame {
                     .addComponent(btnPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnProductos, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnMesas, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnFacturacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnAcercaDe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         botoneraLayout.setVerticalGroup(
@@ -219,7 +220,7 @@ public class Administracion extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(btnServicios, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnFacturacion, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(btnAcercaDe, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         escritorio.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -333,26 +334,19 @@ public class Administracion extends javax.swing.JFrame {
 		escritorio.moveToFront(gestionPedidos); //pongo la ventana al frente:
     }//GEN-LAST:event_btnPedidosActionPerformed
 
-    private void btnFacturacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFacturacionActionPerformed
+    private void btnAcercaDeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcercaDeActionPerformed
         escritorio.removeAll(); // cierro todas las ventanas del escritorio
         mostrarFondo(); // recargo la foto del fondo
         escritorio.repaint();
 
-        //Prueba prueba = new Prueba(); // creo un internal Frame
-        //prueba.setVisible(true); // lo pongo visible
+       AcercaDe acercaDe = new AcercaDe(); // creo un internal Frame
+       acercaDe.setVisible(true); // lo pongo visible
+		
+       escritorio.add(acercaDe); // lo pongo en el escritorio
+       escritorio.moveToFront(acercaDe); //pongo la ventana al frente:
+    }//GEN-LAST:event_btnAcercaDeActionPerformed
 
-        //escritorio.add(prueba); // lo pongo en el escritorio
-        //escritorio.moveToFront(prueba); //pongo la ventana al frente:
-
-        //		CrudCategorias crudCategorias = new CrudCategorias(); // creo un internal Frame
-        //		crudCategorias.setVisible(true); // lo pongo visible
-        //
-        //		escritorio.add(crudCategorias); // lo pongo en el escritorio
-        //		escritorio.moveToFront(crudCategorias); //pongo la ventana al frente:
-    }//GEN-LAST:event_btnFacturacionActionPerformed
-
-	
-	
+		
 	
 	/**
 	 * @param args the command line arguments
@@ -391,7 +385,7 @@ public class Administracion extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel botonera;
-    private javax.swing.JButton btnFacturacion;
+    private javax.swing.JButton btnAcercaDe;
     private javax.swing.JButton btnMesas;
     private javax.swing.JButton btnPedidos;
     private javax.swing.JButton btnProductos;
