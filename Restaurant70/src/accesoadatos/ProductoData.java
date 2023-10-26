@@ -274,6 +274,8 @@ public class ProductoData {
 			int idCategoria, int despachadoPor, OrdenacionProducto ordenacion){ 
 		ArrayList<Producto> lista = new ArrayList();
 		String sql = "Select * from producto";
+		if (nombre == null)
+			nombre = "";
 		if ( idProducto != -1 || ! nombre.isEmpty() || stock != -1 ||  
 			precio != -1.0 || disponible != null || idCategoria != -1 || despachadoPor != -1 ) {
 			sql = sql + " Where";
