@@ -303,24 +303,6 @@ public class Administracion extends javax.swing.JFrame {
 	
 	
 	
-    private void btnFacturacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFacturacionActionPerformed
-        escritorio.removeAll(); // cierro todas las ventanas del escritorio
-		mostrarFondo(); // recargo la foto del fondo
-		escritorio.repaint();
-		
-		//Prueba prueba = new Prueba(); // creo un internal Frame
-		//prueba.setVisible(true); // lo pongo visible
-		
-		//escritorio.add(prueba); // lo pongo en el escritorio
-		//escritorio.moveToFront(prueba); //pongo la ventana al frente:     
-		
-//		CrudCategorias crudCategorias = new CrudCategorias(); // creo un internal Frame
-//		crudCategorias.setVisible(true); // lo pongo visible
-//		
-//		escritorio.add(crudCategorias); // lo pongo en el escritorio
-//		escritorio.moveToFront(crudCategorias); //pongo la ventana al frente:       
-    }//GEN-LAST:event_btnFacturacionActionPerformed
-
 	
 	
 	
@@ -350,6 +332,24 @@ public class Administracion extends javax.swing.JFrame {
 		escritorio.add(gestionPedidos); // lo pongo en el escritorio
 		escritorio.moveToFront(gestionPedidos); //pongo la ventana al frente:
     }//GEN-LAST:event_btnPedidosActionPerformed
+
+    private void btnFacturacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFacturacionActionPerformed
+        escritorio.removeAll(); // cierro todas las ventanas del escritorio
+        mostrarFondo(); // recargo la foto del fondo
+        escritorio.repaint();
+
+        //Prueba prueba = new Prueba(); // creo un internal Frame
+        //prueba.setVisible(true); // lo pongo visible
+
+        //escritorio.add(prueba); // lo pongo en el escritorio
+        //escritorio.moveToFront(prueba); //pongo la ventana al frente:
+
+        //		CrudCategorias crudCategorias = new CrudCategorias(); // creo un internal Frame
+        //		crudCategorias.setVisible(true); // lo pongo visible
+        //
+        //		escritorio.add(crudCategorias); // lo pongo en el escritorio
+        //		escritorio.moveToFront(crudCategorias); //pongo la ventana al frente:
+    }//GEN-LAST:event_btnFacturacionActionPerformed
 
 	
 	

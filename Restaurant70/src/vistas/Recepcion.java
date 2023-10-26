@@ -108,7 +108,7 @@ public class Recepcion extends javax.swing.JFrame implements Observer {
 		//System.out.println("Me llego el mensaje: " + (String)mensaje);
 		String s = (String) mensaje;
 		if (s.startsWith("M"))
-			Utils.sonido1("src/sonidos/Campanilla.wav");
+			Utils.sonido1("src/sonidos/tada.wav");
 		actualizarPantalla(); // y acá toma las acciones correspondientes para actualizar pantalla
 	};
 	

@@ -60,6 +60,7 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 	private static LinkedHashMap<Integer, Mesa> mapaMesas;
 	private static LinkedHashMap<Integer, Pedido> mapaPedidos;
 	private static LinkedHashMap<Integer, Servicio> mapaServicios;
+	private static List<Servicio> listaRecepcionistas;
 	private static LinkedHashMap<Integer, Categoria> mapaCategorias;
 	private DefaultTableModel modeloTablaMesas, modeloTablaPedidos, modeloTablaItems, modeloTablaProductos;
 	private ItemData itemData = new ItemData(); //conecto con la BD
@@ -211,10 +212,14 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 		List<Servicio> listaServicios = servicioData.getListaServiciosXCriterioDeBusqueda(
 				-1, "", "", -1, Servicio.TipoServicio.SERVICIO, ServicioData.OrdenacionServicio.PORIDSERVICIO);
 		
-		//genero un mapa con las categorias
+		//genero un mapa con los servicios que despachan productos
 		mapaServicios = new LinkedHashMap();
 		listaServicios.stream().forEach(servicio -> mapaServicios.put(servicio.getIdServicio(), servicio));
 		//System.out.println("CargarServicios: MapaServicios: " + mapaServicios);
+		
+		//Obtengo la lista de recepcionistas que asignan las mesas
+		listaRecepcionistas = servicioData.getListaServiciosXCriterioDeBusqueda(
+				-1, "", "", -1, Servicio.TipoServicio.RECEPCION, ServicioData.OrdenacionServicio.PORIDSERVICIO);
 	} //cargarServicios
 	
 	
@@ -1569,6 +1574,12 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 		if (mesa.getEstado() != Mesa.EstadoMesa.ATENDIDA) {
 			mesa.setEstado(Mesa.EstadoMesa.ATENDIDA);
 			mesaData.modificarMesa(mesa);
+			
+			//Mandar a Recepcion un mensaje informando que se atendió la mesa
+			//recorro todos los elementos de recepcion
+			for (Servicio recepcionista:listaRecepcionistas)
+				comunicarConServicio(recepcionista,	"M " + mesa.getIdMesa()); // me comunico con el recepcionista para informar cambio de estado de mesa
+		
 		}
 		
 		//cargo los datos
@@ -1577,6 +1588,7 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 		//deshabilito boton de cancelarPedido (no quedó ningun pedido seleccionado) y botonesItems
 		deshabilitarBotonesItems();
 		deshabilitarBotonesPedidos();
+		
     }//GEN-LAST:event_btnAltaPedidoActionPerformed
 
 	
@@ -1607,7 +1619,8 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 		Pedido pedido = tablaPedidosGetPedidoSeleccionado();
 		pedido.setEstado(Pedido.EstadoPedido.CANCELADO);
 		pedidoData.modificarPedido(pedido);
-        Utils.sonido1("src/sonidos/agua.wav");
+        //Utils.sonido1("src/sonidos/agua.wav");
+		Utils.sonido1("src/sonidos/reciclar.wav");
 		cargarPedidos();
 		if (tablaPedidos.getRowCount() == 0) { // si no tiene pedidos
 			//libero la mesa, queda libre
@@ -1673,6 +1686,12 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 			mesaData.modificarMesa(mesa);
 			cargarMesas();
 			cargarPedidos();
+			
+			//Mandar a Recepcion un mensaje informando que se atendió la mesa
+			//recorro todos los elementos de recepcion
+			for (Servicio recepcionista:listaRecepcionistas)
+				comunicarConServicio(recepcionista,	"M " + mesa.getIdMesa()); // me comunico con el recepcionista para informar cambio de estado de mesa
+		
 		}
 		deshabilitarBotonesItems();
 		deshabilitarBotonesPedidos();
