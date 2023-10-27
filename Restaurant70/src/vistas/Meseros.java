@@ -161,11 +161,13 @@ public class Meseros extends javax.swing.JFrame implements Observer {
 	 */
 	private void comunicarConServicio(Servicio queServicio, String mensaje) {
 		// esta es la parte de comunicación con la cocina
-		ClienteSocket cliente = new ClienteSocket( //creo un cliente que pueda mandar a ese host en ese puerto
-			queServicio.getHost(), queServicio.getPuerto(), 
-			"M " + mesero.getIdServicio() + " " + mensaje); 
-        Thread hilo = new Thread(cliente);	//creo un hilo para el clienteSocket
-        hilo.start();						//ejecuto ese hilo para el cliente	
+		if (queServicio != null) {
+			ClienteSocket cliente = new ClienteSocket( //creo un cliente que pueda mandar a ese host en ese puerto
+				queServicio.getHost(), queServicio.getPuerto(), 
+				"M " + mesero.getIdServicio() + " " + mensaje); 
+			Thread hilo = new Thread(cliente);	//creo un hilo para el clienteSocket
+			hilo.start();						//ejecuto ese hilo para el cliente	
+		}
 	}
 	//--------------------------- FIN PARTE DE COMUNICACION VIA SOCKETS ----------------------------------------------------
 	

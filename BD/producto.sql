@@ -1,17 +1,8 @@
-CREATE TABLE `mesa` (
-  `idMesa` int(11) NOT NULL AUTO_INCREMENT,
-  `capacidad` int(11) NOT NULL COMMENT 'Cuantas personas admite la mesa',
-  `estado` varchar(1) NOT NULL COMMENT 'Estado de la mesa: L libre, O ocupada, A atendida.\n',
-  `idmesero` int(11) DEFAULT NULL COMMENT 'Es el mesero que está atendiendo la mesa. Corresponde al idServicio que sea tipo M\n',
-  PRIMARY KEY (`idMesa`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4
-
-
 /*
 -- Query: SELECT * FROM restaurante.producto
 LIMIT 0, 5000
 
--- Date: 2023-10-18 16:39
+-- Date: 2023-10-27 14:21
 */
 INSERT INTO `producto` (`idproducto`,`nombre`,`descripcion`,`stock`,`precio`,`disponible`,`idcategoria`,`despachadopor`) VALUES (1,'Pizza Jamón y Morrones','Mozzarella, Jamón y Morrones asados ',40,4500,1,2,2);
 INSERT INTO `producto` (`idproducto`,`nombre`,`descripcion`,`stock`,`precio`,`disponible`,`idcategoria`,`despachadopor`) VALUES (2,'Pizza Mozzarela','Mozzarella, salsa de tomate',50,4500,1,3,2);

@@ -334,16 +334,19 @@ public class Administracion extends javax.swing.JFrame {
 		escritorio.moveToFront(gestionPedidos); //pongo la ventana al frente:
     }//GEN-LAST:event_btnPedidosActionPerformed
 
+	
+	
+	
     private void btnAcercaDeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcercaDeActionPerformed
-        escritorio.removeAll(); // cierro todas las ventanas del escritorio
-        mostrarFondo(); // recargo la foto del fondo
-        escritorio.repaint();
+		escritorio.removeAll(); // cierro todas las ventanas del escritorio
+		mostrarFondo(); // recargo la foto del fondo
+		escritorio.repaint();
 
-       AcercaDe acercaDe = new AcercaDe(); // creo un internal Frame
-       acercaDe.setVisible(true); // lo pongo visible
-		
-       escritorio.add(acercaDe); // lo pongo en el escritorio
-       escritorio.moveToFront(acercaDe); //pongo la ventana al frente:
+		AcercaDe acercaDe = new AcercaDe(); // creo un internal Frame
+		acercaDe.setVisible(true); // lo pongo visible
+
+		escritorio.add(acercaDe); // lo pongo en el escritorio
+		escritorio.moveToFront(acercaDe); //pongo la ventana al frente:
     }//GEN-LAST:event_btnAcercaDeActionPerformed
 
 		

@@ -417,6 +417,50 @@ ADD CONSTRAINT `producto_ibfk`
   ON DELETE SET NULL
   ON UPDATE CASCADE;
 
+-- cambios del 27/10/23
+ALTER TABLE `restaurante`.`producto` 
+ADD INDEX `producto_ibfk_2_idx` (`despachadopor` ASC);
+ALTER TABLE `restaurante`.`producto` 
+ADD CONSTRAINT `producto_ibfk_2`
+  FOREIGN KEY (`despachadopor`)
+  REFERENCES `restaurante`.`servicio` (`idservicio`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+ALTER TABLE `restaurante`.`mesa` 
+ADD INDEX `mesa_fk_1_idx` (`idmesero` ASC);
+ALTER TABLE `restaurante`.`mesa` 
+ADD CONSTRAINT `mesa_fk_1`
+  FOREIGN KEY (`idmesero`)
+  REFERENCES `restaurante`.`servicio` (`idservicio`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+  
+  
+ALTER TABLE `restaurante`.`pedido` 
+DROP FOREIGN KEY `pedido_ibfk_1`,
+DROP FOREIGN KEY `pedido_ibfk_2`;
+ALTER TABLE `restaurante`.`pedido` 
+ADD CONSTRAINT `pedido_ibfk_1`
+  FOREIGN KEY (`idMesero`)
+  REFERENCES `restaurante`.`servicio` (`idservicio`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `pedido_ibfk_2`
+  FOREIGN KEY (`idMesa`)
+  REFERENCES `restaurante`.`mesa` (`idMesa`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+ALTER TABLE `restaurante`.`producto` 
+DROP FOREIGN KEY `producto_ibfk`;
+ALTER TABLE `restaurante`.`producto` 
+ADD CONSTRAINT `producto_ibfk`
+  FOREIGN KEY (`idcategoria`)
+  REFERENCES `restaurante`.`categoria` (`idcategoria`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
 
 
 
@@ -435,8 +479,11 @@ ADD CONSTRAINT `item_ibfk_2`
   ON UPDATE CASCADE;
 -- fin cambios olo para mi
 
+
 INSERT INTO `producto` (`idProducto`, `nombre`, `descripcion`, `stock`, `precio`) 
 VALUES (NULL, 'Prueba', 'Producto de prueba', '40', '0');
+
+
 
 ALTER TABLE `restaurante`.`item` 
 CHANGE COLUMN `estado` `estado` VARCHAR(1) NULL DEFAULT NULL COMMENT 'Estado del item: A anotado, S solicitado, D despachado, E entregado, C cancelado, V cancelado y visto.\nCuando el mozo toma nota del pedido del cliente, que como Anotado, luego el mozo solicita ese producto a la cocina o bar quedando como Solicitado, cuando la cocina o bar lo despacha queda Despachado, y cuando el mozo lo sirve queda como Entregado. Si en algún momento se cancela el pedido, el item queda como Cancelado.' ;
